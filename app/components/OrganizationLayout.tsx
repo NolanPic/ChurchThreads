@@ -142,7 +142,6 @@ export default function OrganizationLayout({
         isOpen={isProfileModalOpen}
         onClose={() => {
           setIsProfileModalOpen(false);
-          router.back();
         }}
       />
       <AnimatePresence>
