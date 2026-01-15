@@ -40,7 +40,6 @@ export default function ProfileModal({
     const handleFileChange =async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
-
       try {
         await uploadImage(file);
         console.log("Upload successful");
@@ -54,10 +53,12 @@ console.log(imageUrl, previewUrl)
       return (
     <div>
       <input
+        id="avatar-file-input"
         type="file"
         accept="image/jpeg,image/png"
         onChange={handleFileChange}
         disabled={isUploading}
+        style={{ display: "none" }}
       />
 
       {isUploading && <p>Is Uploading</p>}
@@ -98,7 +99,9 @@ console.log(imageUrl, previewUrl)
           <div className={styles.avatarContainer}>
             {user && <UserAvatar user={user} size={100} />}
             <UseAvatarUploader />
+            <label htmlFor="avatar-file-input" style={{ cursor: "pointer" }}>
             <p>Change Photo</p>
+            </label>
           </div>
           <div className={styles.content}>
             <div className={styles.form}>
