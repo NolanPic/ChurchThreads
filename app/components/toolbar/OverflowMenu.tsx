@@ -6,6 +6,10 @@ import { useUserAuth } from "@/auth/client/useUserAuth";
 import { CurrentFeedAndThreadContext } from "@/app/context/CurrentFeedAndThreadProvider";
 import { useContext } from "react";
 
+type PopoverElement = HTMLElement & {
+  hidePopover: () => void;
+};
+
 interface MenuItem {
   label: string;
   icon: React.ReactNode;
@@ -13,9 +17,19 @@ interface MenuItem {
 }
 
 const OverflowMenuItem = ({ label, icon, href }: MenuItem) => {
+  const handleClick = () => {
+    // Close the popover when a menu item is clicked
+    const popover = document.getElementById(
+      "overflow-menu"
+    ) as PopoverElement | null;
+    if (popover && "hidePopover" in popover) {
+      popover.hidePopover();
+    }
+  };
+
   return (
     <li role="none" className={styles.overflowMenuItem}>
-      <Link role="menuitem" href={href}>
+      <Link role="menuitem" href={href} onClick={handleClick}>
         {icon}
         <p>{label}</p>
       </Link>
