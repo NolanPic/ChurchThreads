@@ -2,7 +2,7 @@ export {};
 
 declare global {
   interface Window {
-    __churchfeed?: {
+    __churchthreads?: {
       showNotification?: (title: string, body: string) => Promise<void>;
     };
   }

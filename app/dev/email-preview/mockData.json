@@ -1,0 +1,118 @@
+{
+  "new_thread_in_member_feed": {
+    "author": {
+      "_id": "mock_user_1",
+      "_creationTime": 1700000000000,
+      "name": "John Jenkin",
+      "email": "john@example.com",
+      "orgId": "mock_org_1",
+      "role": "user"
+    },
+    "authorImageUrl": "https://i.pravatar.cc/150?img=1",
+    "feed": {
+      "_id": "mock_feed_1",
+      "_creationTime": 1700000000000,
+      "name": "Jenkins homegroup",
+      "privacy": "public",
+      "orgId": "mock_org_1",
+      "updatedAt": 1700000000000
+    },
+    "threadHtml": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis non mauris eget turpis interdum vitae vel enim.</p><p>Sed mauris lectus, scelerisque et ultricies in, posuere id augue. Donec sit amet mauris quis mi pulvinar condimentum. Phasellus porta vel purus vel consectetur. Pellentesque quis lacus molestie, ornare felis vel, vestibulum arcu.</p>",
+    "threadId": "mock_post_1",
+    "notificationId": "mock_notif_1",
+    "orgHost": "example.churchthreads.com"
+  },
+  "new_message_in_thread": {
+    "messages": [
+      {
+        "message": {
+          "_id": "mock_message_1",
+          "_creationTime": 1700000000000,
+          "threadId": "mock_post_1",
+          "senderId": "mock_user_2",
+          "content": "Is this mass or something?",
+          "orgId": "mock_org_1",
+          "updatedAt": 1700000000000
+        },
+        "author": {
+          "_id": "mock_user_2",
+          "_creationTime": 1700000000000,
+          "name": "Art Bartilson",
+          "email": "art@example.com",
+          "orgId": "mock_org_1",
+          "role": "user"
+        },
+        "authorImageUrl": "https://i.pravatar.cc/150?img=22",
+        "messageHtml": "<p>Is this mass or something?</p>"
+      },
+      {
+        "message": {
+          "_id": "mock_message_2",
+          "_creationTime": 1700000001000,
+          "threadId": "mock_post_1",
+          "senderId": "mock_user_3",
+          "content": "Bacon ipsum dolor amet ground round pork belly sausage chislic flank.",
+          "orgId": "mock_org_1",
+          "updatedAt": 1700000001000
+        },
+        "author": {
+          "_id": "mock_user_3",
+          "_creationTime": 1700000000000,
+          "name": "Gertrude Jenkins",
+          "email": "gertrude@example.com",
+          "orgId": "mock_org_1",
+          "role": "user"
+        },
+        "authorImageUrl": "https://i.pravatar.cc/150?img=43",
+        "messageHtml": "<p>Bacon ipsum dolor amet ground round pork belly sausage chislic flank. Chuck turducken flank, jerky ball tip bresaola pork loin swine capicola drumstick beef kielbasa short ribs.</p>"
+      },
+      {
+        "message": {
+          "_id": "mock_message_3",
+          "_creationTime": 1700000002000,
+          "threadId": "mock_post_1",
+          "senderId": "mock_user_4",
+          "content": "Shankle sirloin chislic pork. Pastrami beef ribs shank, sausage jowl ham pork ball tip landjaeger meatloaf flank turkey short ribs drumstick.",
+          "orgId": "mock_org_1",
+          "updatedAt": 1700000002000
+        },
+        "author": {
+          "_id": "mock_user_4",
+          "_creationTime": 1700000000000,
+          "name": "Ben Ackles",
+          "email": "ben@example.com",
+          "orgId": "mock_org_1",
+          "role": "user"
+        },
+        "authorImageUrl": "https://i.pravatar.cc/150?img=65",
+        "messageHtml": "<p>Shankle sirloin chislic pork. Pastrami beef ribs shank, sausage jowl ham pork ball tip landjaeger meatloaf flank turkey short ribs drumstick. Pork belly andouille chislic prosciutto leberkas tri-tip shankle. Jowl pig landjaeger ribeye pork chop strip steak turkey sirloin tongue short loin doner prosciutto ball tip.</p>"
+      }
+    ],
+    "threadId": "mock_post_1",
+    "threadTitle": "John's post",
+    "notificationId": "mock_notif_2",
+    "orgHost": "example.churchthreads.com"
+  },
+  "new_feed_member": {
+    "author": {
+      "_id": "mock_user_5",
+      "_creationTime": 1700000000000,
+      "name": "John",
+      "email": "john@example.com",
+      "orgId": "mock_org_1",
+      "role": "user"
+    },
+    "authorImageUrl": "https://i.pravatar.cc/150?img=1",
+    "feed": {
+      "_id": "mock_feed_2",
+      "_creationTime": 1700000000000,
+      "name": "Men's group",
+      "privacy": "private",
+      "orgId": "mock_org_1",
+      "updatedAt": 1700000000000
+    },
+    "feedId": "mock_feed_2",
+    "notificationId": "mock_notif_3",
+    "orgHost": "example.churchthreads.com"
+  }
+}

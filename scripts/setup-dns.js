@@ -3,7 +3,7 @@ const fs = require('fs');
 const { execSync } = require('child_process');
 const os = require('os');
 
-console.log('Setting up local DNS for *.churchfeed.dev...');
+console.log('Setting up local DNS for *.churchthreads.dev...');
 
 if (os.platform() === 'darwin') {
   try {
@@ -12,15 +12,15 @@ if (os.platform() === 'darwin') {
     
     // Configure dnsmasq
     const dnsmasqConf = '/opt/homebrew/etc/dnsmasq.conf';
-    const config = 'address=/churchfeed.dev/127.0.0.1\n';
+    const config = 'address=/churchthreads.dev/127.0.0.1\n';
     
     if (fs.existsSync(dnsmasqConf)) {
       const currentConfig = fs.readFileSync(dnsmasqConf, 'utf8');
-      if (!currentConfig.includes('churchfeed.dev')) {
+      if (!currentConfig.includes('churchthreads.dev')) {
         fs.appendFileSync(dnsmasqConf, config);
-        console.log('Added churchfeed.dev to dnsmasq config');
+        console.log('Added churchthreads.dev to dnsmasq config');
       } else {
-        console.log('dnsmasq already configured for churchfeed.dev');
+        console.log('dnsmasq already configured for churchthreads.dev');
       }
     } else {
       fs.writeFileSync(dnsmasqConf, config);
@@ -34,8 +34,8 @@ if (os.platform() === 'darwin') {
     execSync('sudo mkdir -p /etc/resolver', { stdio: 'inherit' });
     
     // Check if resolver already exists
-    if (!fs.existsSync('/etc/resolver/churchfeed.dev')) {
-      execSync('echo "nameserver 127.0.0.1" | sudo tee /etc/resolver/churchfeed.dev', { stdio: 'inherit' });
+    if (!fs.existsSync('/etc/resolver/churchthreads.dev')) {
+      execSync('echo "nameserver 127.0.0.1" | sudo tee /etc/resolver/churchthreads.dev', { stdio: 'inherit' });
       console.log('Created DNS resolver');
     } else {
       console.log('DNS resolver already exists');
@@ -49,6 +49,6 @@ if (os.platform() === 'darwin') {
 } else {
   console.log('⚠️  Manual DNS setup required for your OS');
   console.log('Add these entries to /etc/hosts:');
-  console.log('127.0.0.1 churchfeed.dev');
-  console.log('127.0.0.1 *.churchfeed.dev');
+  console.log('127.0.0.1 churchthreads.dev');
+  console.log('127.0.0.1 *.churchthreads.dev');
 }

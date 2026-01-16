@@ -18,7 +18,7 @@ interface BaseButtonProps {
 
 interface ButtonAsButton extends BaseButtonProps {
   as?: "button";
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLElement>) => void;
   type?: "button" | "submit";
   href?: never;
 }

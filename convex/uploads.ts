@@ -43,8 +43,8 @@ export const createUploadRecord = internalMutation({
     orgId: v.id("organizations"),
     userId: v.id("users"),
     storageId: v.id("_storage"),
-    source: v.union(v.literal("post"), v.literal("message"), v.literal("avatar")),
-    sourceId: v.optional(v.union(v.id("posts"), v.id("messages"), v.id("users"))),
+    source: v.union(v.literal("thread"), v.literal("message"), v.literal("avatar")),
+    sourceId: v.optional(v.union(v.id("threads"), v.id("messages"), v.id("users"))),
     fileExtension: v.string(),
   },
   handler: async (ctx, args) => {
@@ -102,13 +102,13 @@ export const deletePreviousAvatar = internalMutation({
 });
 
 /**
- * Mutation to patch upload source IDs after post/message creation
+ * Mutation to patch upload source IDs after thread/message creation
  * Updates uploadIds with the newly created source ID
  */
 export const patchUploadSourceIds = mutation({
   args: {
     uploadIds: v.array(v.id("uploads")),
-    sourceId: v.union(v.id("posts"), v.id("messages")),
+    sourceId: v.union(v.id("threads"), v.id("messages")),
     orgId: v.id("organizations"),
   },
   handler: async (ctx, args) => {
@@ -138,7 +138,7 @@ export const patchUploadSourceIds = mutation({
         continue;
       }
 
-      // Only patch post/message uploads
+      // Only patch thread/message uploads
       if(upload.source === "avatar") {
         continue;
       }
@@ -149,10 +149,10 @@ export const patchUploadSourceIds = mutation({
       }
 
       // Verify the record belongs to the authenticated user
-      const post = upload.source === "post" ? record as Doc<"posts"> : null;
+      const thread = upload.source === "thread" ? record as Doc<"threads"> : null;
       const message = upload.source === "message" ? record as Doc<"messages"> : null;
 
-      if (post && post.posterId !== user._id) {
+      if (thread && thread.posterId !== user._id) {
         continue;
       }
 
@@ -174,14 +174,14 @@ export const patchUploadSourceIds = mutation({
 });
 
 /**
- * Internal mutation to delete uploads for multiple posts or messages
+ * Internal mutation to delete uploads for multiple threads or messages
  * Deletes both the upload records and storage files
  */
 export const deleteUploadsForSources = internalMutation({
   args: {
     orgId: v.id("organizations"),
-    source: v.union(v.literal("post"), v.literal("message")),
-    sourceIds: v.array(v.union(v.id("posts"), v.id("messages"))),
+    source: v.union(v.literal("thread"), v.literal("message")),
+    sourceIds: v.array(v.union(v.id("threads"), v.id("messages"))),
   },
   handler: async (ctx, args) => {
     const { orgId, source, sourceIds } = args;

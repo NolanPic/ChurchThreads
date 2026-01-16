@@ -3,7 +3,11 @@ import { useLockBodyScroll } from "@/app/hooks/useLockBodyScroll";
 import styles from "./Backdrop.module.css";
 import { motion } from "framer-motion";
 
-export default function Backdrop({ onClick }: { onClick: () => void }) {
+export default function Backdrop({
+  onClick,
+}: {
+  onClick: (e: React.MouseEvent<HTMLElement>) => void;
+}) {
   useLockBodyScroll(true);
 
   return (

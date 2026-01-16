@@ -70,7 +70,7 @@ export const seedUserFeed = mutation({
   },
 });
 
-export const seedPost = mutation({
+export const seedThread = mutation({
   args: {
     orgId: v.id("organizations"),
     feedId: v.id("feeds"),
@@ -81,7 +81,7 @@ export const seedPost = mutation({
   handler: async (ctx, args) => {
     const updatedAt = Date.now();
 
-    return await ctx.db.insert("posts", {
+    return await ctx.db.insert("threads", {
       orgId: args.orgId,
       feedId: args.feedId,
       posterId: args.posterId,
@@ -95,7 +95,7 @@ export const seedPost = mutation({
 export const seedMessage = mutation({
   args: {
     orgId: v.id("organizations"),
-    postId: v.id("posts"),
+    threadId: v.id("threads"),
     senderId: v.id("users"),
     content: v.string(),
   },
@@ -104,7 +104,7 @@ export const seedMessage = mutation({
 
     return await ctx.db.insert("messages", {
       orgId: args.orgId,
-      postId: args.postId,
+      threadId: args.threadId,
       senderId: args.senderId,
       content: args.content,
       updatedAt,
@@ -140,8 +140,8 @@ export const seedDatabase = mutation({
         owner: v.boolean(),
       })),
 
-      // Posts data (will be distributed across feeds)
-      posts: v.array(v.object({
+      // Threads data (will be distributed across feeds)
+      threads: v.array(v.object({
         content: v.string(),
         postedAt: v.number(),
         feedIndex: v.number(), // Index of feed in the feeds array
@@ -151,7 +151,7 @@ export const seedDatabase = mutation({
 
       // Messages data
       messages: v.array(v.object({
-        postIndex: v.number(), // Index of post in the posts array
+        threadIndex: v.number(), // Index of thread in the threads array
         userIndex: v.number(), // Index of user in the users array
         content: v.string(),
       })),
@@ -165,13 +165,13 @@ export const seedDatabase = mutation({
           userIds: Id<"users">[];
           feedIds: Id<"feeds">[];
           userFeedIds: Id<"userFeeds">[];
-          postIds: Id<"posts">[];
+          threadIds: Id<"threads">[];
           messageIds: Id<"messages">[];
         }[],
         totalUsers: 0,
         totalFeeds: 0,
         totalUserFeeds: 0,
-        totalPosts: 0,
+        totalThreads: 0,
         totalMessages: 0,
       };
 
@@ -183,7 +183,7 @@ export const seedDatabase = mutation({
         userIds: [] as Id<"users">[],
         feedIds: [] as Id<"feeds">[],
         userFeedIds: [] as Id<"userFeeds">[],
-        postIds: [] as Id<"posts">[],
+        threadIds: [] as Id<"threads">[],
         messageIds: [] as Id<"messages">[],
       };
 
@@ -227,26 +227,26 @@ export const seedDatabase = mutation({
         }
       }
 
-    // 5. Create posts for this organization
-      for (const post of orgData.posts) {
-        if (post.feedIndex < orgResults.feedIds.length && post.userIndex < orgResults.userIds.length) {
-          const postId = await ctx.runMutation(api.seed.seed.seedPost, {
+    // 5. Create threads for this organization
+      for (const thread of orgData.threads) {
+        if (thread.feedIndex < orgResults.feedIds.length && thread.userIndex < orgResults.userIds.length) {
+          const threadId = await ctx.runMutation(api.seed.seed.seedThread, {
             orgId: orgResults.organizationId,
-            feedId: orgResults.feedIds[post.feedIndex],
-            posterId: orgResults.userIds[post.userIndex],
-            content: post.content,
-            postedAt: post.postedAt,
+            feedId: orgResults.feedIds[thread.feedIndex],
+            posterId: orgResults.userIds[thread.userIndex],
+            content: thread.content,
+            postedAt: thread.postedAt,
           });
-          orgResults.postIds.push(postId);
+          orgResults.threadIds.push(threadId);
         }
       }
 
       // 6. Create messages for this organization
       for (const message of orgData.messages) {
-        if (message.postIndex < orgResults.postIds.length && message.userIndex < orgResults.userIds.length) {
+        if (message.threadIndex < orgResults.threadIds.length && message.userIndex < orgResults.userIds.length) {
           const messageId = await ctx.runMutation(api.seed.seed.seedMessage, {
             orgId: orgResults.organizationId,
-            postId: orgResults.postIds[message.postIndex],
+            threadId: orgResults.threadIds[message.threadIndex],
             senderId: orgResults.userIds[message.userIndex],
             content: message.content,
           });
@@ -259,7 +259,7 @@ export const seedDatabase = mutation({
       allResults.totalUsers += orgResults.userIds.length;
       allResults.totalFeeds += orgResults.feedIds.length;
       allResults.totalUserFeeds += orgResults.userFeedIds.length;
-      allResults.totalPosts += orgResults.postIds.length;
+      allResults.totalThreads += orgResults.threadIds.length;
       allResults.totalMessages += orgResults.messageIds.length;
     }
 

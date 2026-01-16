@@ -53,8 +53,8 @@ export const createUploadRecord = action({
     orgId: v.id("organizations"),
     userId: v.id("users"),
     storageId: v.id("_storage"),
-    source: v.union(v.literal("post"), v.literal("message"), v.literal("avatar")),
-    sourceId: v.optional(v.union(v.id("posts"), v.id("messages"), v.id("users"))),
+    source: v.union(v.literal("thread"), v.literal("message"), v.literal("avatar")),
+    sourceId: v.optional(v.union(v.id("threads"), v.id("messages"), v.id("users"))),
     fileExtension: v.string(),
   },
   handler: async (ctx, args): Promise<Id<"uploads">> => {

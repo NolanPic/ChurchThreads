@@ -1,4 +1,4 @@
-I need to generate seed data for my Convex database that will be used in a church communication app called churchfeed.
+I need to generate seed data for my Convex database that will be used in a church communication app called churchthreads.
 
 The app allows Christian churches and groups within churches to communicate in a social-like feed. Each church is an "organization" in the database. Each organization has:
 
@@ -22,7 +22,7 @@ Here is a full JSON example of what we want in the end:
     {
       "orgName": "Communion",
       "orgLocation": "Mount Vernon, WA",
-      "orgHost": "communion.churchfeed.dev",
+      "orgHost": "communion.churchthreads.dev",
 
       "users": [
         {
@@ -169,7 +169,7 @@ Create exactly **1 organization** with the following:
 
 - **orgName**: King's Cross
 - **orgLocation**: Bellingham, WA
-- **orgHost**: kingscross.churchfeed.dev
+- **orgHost**: kingscross.churchthreads.dev
 - **Users**: Between 8-12 users
 - **Extra testing user**: Add an extra test user with the name Nolan Picini and the email nolanpic+kingscross@gmail.com. This user should be added as a member of all feeds
 

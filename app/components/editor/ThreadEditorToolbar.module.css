@@ -1,0 +1,10 @@
+/* TODO: This is used in EditorToolbar but should be removed */
+
+.threadEditorToolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: var(--spacing1);
+    align-self: flex-end;
+    width: 100%;
+}

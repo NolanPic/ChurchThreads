@@ -1,0 +1,19 @@
+.threadWrapper {
+    padding-left: var(--modal-gutter);
+    padding-right: var(--modal-gutter);
+}
+
+.threadSeparator {
+    margin: var(--spacing9) auto;
+    background: var(--light);
+    width: 210px;
+    height: 1px;
+    border: none;
+}
+
+@media (--tablet) {
+    .threadSeparator {
+        margin-top: var(--spacing16);
+        margin-bottom: var(--spacing16);
+    }
+}

@@ -27,6 +27,7 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
+  subtitle?: string;
   children?: ReactNode;
   ariaLabel?: string;
   dragToClose?: boolean;
@@ -40,6 +41,7 @@ export default function Modal({
   isOpen,
   onClose,
   title,
+  subtitle,
   children,
   ariaLabel,
   dragToClose = false,
@@ -185,12 +187,12 @@ export default function Modal({
           <Icon name="close" size={24} />
         </button>
         {title && (
-          <>
+          <div className={styles.heading}>
             <h1 className={styles.title} id={titleId}>
               {title}
             </h1>
-            <hr className={styles.titleSeparator} />
-          </>
+            {subtitle && <h2 className={styles.subtitle}>{subtitle}</h2>}
+          </div>
         )}
         {tabs && tabs.length > 1 && (
           <div className={styles.tabsContainer}>
@@ -222,6 +224,7 @@ export default function Modal({
             </div>
           </div>
         )}
+        {(title || tabs) && <hr className={styles.separator} />}
         <div
           role={tabs ? "tabpanel" : undefined}
           id={tabs ? tabPanelId : undefined}

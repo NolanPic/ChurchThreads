@@ -1,7 +1,7 @@
 /**
  * Upload type
  */
-export type UploadType = "post" | "message" | "avatar";
+export type UploadType = "thread" | "message" | "avatar";
 
 /**
  * Validation error codes

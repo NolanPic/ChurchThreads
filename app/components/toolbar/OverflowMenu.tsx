@@ -3,7 +3,7 @@ import Link from "next/link";
 import styles from "./OverflowMenu.module.css";
 import UserAvatar from "../UserAvatar";
 import { useUserAuth } from "@/auth/client/useUserAuth";
-import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
+import { CurrentFeedAndThreadContext } from "@/app/context/CurrentFeedAndThreadProvider";
 import { useContext } from "react";
 
 interface MenuItem {
@@ -37,7 +37,7 @@ export default function OverflowMenu({
   showFeedMembers,
 }: OverflowMenuProps) {
   const [, { user }] = useUserAuth();
-  const { feedId } = useContext(CurrentFeedAndPostContext);
+  const { feedId } = useContext(CurrentFeedAndThreadContext);
   return (
     <ul
       popover="auto"

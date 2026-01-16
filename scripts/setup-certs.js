@@ -12,10 +12,10 @@ try {
   execSync('mkcert -install', { stdio: 'inherit' });
   
   // Check if certificates already exist
-  if (fs.existsSync('_wildcard.churchfeed.dev.pem')) {
+  if (fs.existsSync('_wildcard.churchthreads.dev.pem')) {
     console.log('Certificates already exist');
   } else {
-    execSync('mkcert "*.churchfeed.dev" churchfeed.dev', { stdio: 'inherit' });
+    execSync('mkcert "*.churchthreads.dev" churchthreads.dev', { stdio: 'inherit' });
     console.log('Generated new certificates');
   }
   

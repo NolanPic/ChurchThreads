@@ -1,0 +1,15 @@
+.editor {
+    margin: 0 var(--modal-gutter);
+}
+
+.threadEditorPhoneToolbar {
+    display: flex;
+    justify-content: space-between;
+}
+
+.error {
+    color: var(--warning);
+    font-size: var(--text-base);
+    margin: 0 var(--modal-gutter);
+    margin-bottom: var(--spacing4);
+}

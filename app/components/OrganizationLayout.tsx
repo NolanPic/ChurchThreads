@@ -7,7 +7,7 @@ import { useOrganization } from "../context/OrganizationProvider";
 import { usePathname, useRouter } from "next/navigation";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 import styles from "./OrganizationLayout.module.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ProfileModal from "./ProfileModal";
 import Image from "next/image";
 import { useQuery } from "convex/react";
@@ -40,6 +40,15 @@ export default function OrganizationLayout({
   const [isNotificationsSidebarOpen, setIsNotificationsSidebarOpen] =
     useState(false);
 
+  const feedWrapperRef = useRef<HTMLElement>(null);
+
+  const scrollToFeed = () => {
+    feedWrapperRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
   const orgId = org?._id as Id<"organizations">;
   const unreadCount = useQuery(
     api.notifications.getUnreadCount,
@@ -54,11 +63,11 @@ export default function OrganizationLayout({
       });
 
       // Create test notification function on window object
-      if (!window.__churchfeed) {
-        window.__churchfeed = {};
+      if (!window.__churchthreads) {
+        window.__churchthreads = {};
       }
 
-      window.__churchfeed.showNotification = async (
+      window.__churchthreads.showNotification = async (
         title: string,
         body: string
       ) => {
@@ -119,17 +128,24 @@ export default function OrganizationLayout({
       <section className={styles.header}>
         <h1 className={styles.mainTitle}>{org?.name}</h1>
         <h2 className={styles.location}>{org?.location}</h2>
-        <Image
-          src="/icons/chevron-down.svg"
-          role="presentation"
-          alt=""
-          width={22}
-          height={22}
-          className={styles.lightPointer}
-        />
+        <button
+          type="button"
+          onClick={scrollToFeed}
+          className={styles.scrollToFeedButton}
+          aria-label="Scroll to feed"
+        >
+          <Image
+            src="/icons/chevron-down.svg"
+            alt=""
+            width={22}
+            height={22}
+            className={styles.lightPointer}
+          />
+        </button>
       </section>
       {org?._id && (
         <motion.section
+          ref={feedWrapperRef}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.25 }}

@@ -38,6 +38,27 @@
     margin: var(--spacing7) 0 var(--spacing13) 0;
 }
 
+.scrollToFeedButton {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+}
+
+.scrollToFeedButton:hover {
+    opacity: 0.7;
+}
+
+.scrollToFeedButton:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--spacing1);
+}
+
 .notFound {
     display: grid;
     place-items: center;

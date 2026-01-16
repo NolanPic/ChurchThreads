@@ -9,7 +9,7 @@ export default async function App({
   const { slug } = await params;
 
   let feedId: Id<"feeds"> | null = null;
-  let postId: Id<"posts"> | null = null;
+  let threadId: Id<"threads"> | null = null;
   let feedSettingsFeedId: Id<"feeds"> | null = null;
 
   if (slug && slug[0] === "feed" && slug[1]) {
@@ -19,14 +19,14 @@ export default async function App({
       feedSettingsFeedId = slug[1] as Id<"feeds">;
     }
   }
-  if (slug && slug[0] === "post" && slug[1]) {
-    postId = slug[1] as Id<"posts">;
+  if (slug && slug[0] === "thread" && slug[1]) {
+    threadId = slug[1] as Id<"threads">;
   }
 
   return (
     <Feed
       feedIdSlug={feedId}
-      postIdSlug={postId}
+      threadIdSlug={threadId}
       feedSettingsFeedIdSlug={feedSettingsFeedId}
     />
   );

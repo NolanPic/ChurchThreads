@@ -1,0 +1,14 @@
+.logo {
+    display: grid;
+    place-items: center;
+    text-decoration: none;
+    margin: var(--spacing10) 0 var(--spacing24);
+
+    & p {
+        font-family: var(--font-gentium-plus);
+    }
+    
+    & span {
+        color: var(--accent);
+    }
+}

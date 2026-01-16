@@ -1,15 +1,12 @@
 /* Sidebar width variable for easy tweaking */
-:root {
-  --notifications-sidebar-width: 400px;
-}
-
 .sidebar {
+  --notifications-sidebar-width: 400px;
   position: fixed;
   top: 0;
   left: 0;
   width: 100dvw;
   height: 100dvh;
-  background-color: var(--dark);
+  background-color: var(--mid);
   z-index: 2;
   display: flex;
   flex-direction: column;
@@ -19,7 +16,7 @@
 @media (--tablet) {
   .sidebar {
     width: var(--notifications-sidebar-width);
-    border-right: 1px solid var(--mid);
+    border-right: 1px solid var(--mid2);
   }
 }
 
@@ -28,7 +25,7 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--spacing6);
-  border-bottom: 1px solid var(--mid);
+  border-bottom: 1px solid var(--mid2);
 }
 
 .title {
@@ -53,7 +50,7 @@
 }
 
 .closeButton:hover {
-  background-color: var(--mid);
+  background-color: var(--mid2);
 }
 
 .tabsAndClearContainer {
@@ -62,7 +59,7 @@
   align-items: center;
   padding: var(--spacing4);
   padding-bottom: var(--spacing2);
-  border-bottom: 1px solid var(--mid);
+  border-bottom: 1px solid var(--mid2);
 }
 
 .tabs {
@@ -84,12 +81,12 @@
 
 .tab:hover {
   color: var(--white);
-  background-color: rgba(from var(--white) r g b / 0.05);
+  background-color: var(--mid2);
 }
 
 .tab.active {
   color: var(--white);
-  background-color: rgba(from var(--accent) r g b / 0.15);
+  background-color: var(--dark);
 }
 
 .clearAllButton {
@@ -134,18 +131,19 @@
   text-align: left;
   transition: background-color 0.2s;
   margin-bottom: var(--spacing2);
+  background-color: var(--mid2);
 }
 
 .notificationItem:hover {
-  background-color: var(--mid);
+  background-color: rgba(from var(--mid2) r g b / 0.5);
 }
 
 .notificationItem.unread {
-  background-color: rgba(from var(--accent) r g b / 0.1);
+  background-color: var(--dark)
 }
 
 .notificationItem.unread:hover {
-  background-color: rgba(from var(--accent) r g b / 0.15);
+  background-color: rgba(from var(--dark) r g b / 0.5);
 }
 
 .notificationContent {

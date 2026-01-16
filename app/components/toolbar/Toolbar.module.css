@@ -84,7 +84,7 @@
         display: none;
     }
 
-    .closeNewPostButton {
+    .closeNewThreadButton {
         z-index: 1;
     }
 }

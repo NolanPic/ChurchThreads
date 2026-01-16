@@ -5,11 +5,11 @@ import { useMutation } from "convex/react";
 import { useAuth } from "@clerk/nextjs";
 import { api } from "../../../../convex/_generated/api";
 import { useOrganization } from "../../../context/OrganizationProvider";
-import { CurrentFeedAndPostContext } from "../../../context/CurrentFeedAndPostProvider";
+import { CurrentFeedAndThreadContext } from "../../../context/CurrentFeedAndThreadProvider";
 import { Id } from "@/convex/_generated/dataModel";
 import { validateFile } from "@/validation";
 
-type UploadType = "post" | "message" | "avatar";
+type UploadType = "thread" | "message" | "avatar";
 
 export interface UseImageUploadReturn {
   /**
@@ -31,14 +31,14 @@ export interface UseImageUploadReturn {
 
 export interface UseImageUploadOptions {
   /**
-   * The type of upload (post, message, or avatar)
+   * The type of upload (thread, message, or avatar)
    */
   source: UploadType;
   /**
-   * The source ID (post ID, message ID, or user ID)
+   * The source ID (thread ID, message ID, or user ID)
    * Can be null while drafting, then updated once published
    */
-  sourceId?: Id<"posts"> | Id<"messages"> | Id<"users"> | null;
+  sourceId?: Id<"threads"> | Id<"messages"> | Id<"users"> | null;
 }
 
 /**
@@ -53,8 +53,8 @@ export interface UseImageUploadOptions {
  * @example
  * ```tsx
  * const { imageUrl, previewUrl, isUploading, error, uploadImage } = useImageUpload({
- *   source: "post",
- *   sourceId: postId,
+ *   source: "thread",
+ *   sourceId: threadId,
  * });
  *
  * const handleFileSelect = async (file: File) => {
@@ -77,15 +77,15 @@ export function useImageUpload(
   const { getToken } = useAuth();
 
   const org = useOrganization();
-  const { feedId, feedIdOfCurrentPost } = useContext(CurrentFeedAndPostContext);
+  const { feedId, feedIdOfCurrentThread } = useContext(CurrentFeedAndThreadContext);
 
-  const feedIdForPostsAndMessages = feedId || feedIdOfCurrentPost;
+  const feedIdForThreadsAndMessages = feedId || feedIdOfCurrentThread;
 
   // Effect to patch upload source IDs when sourceId changes
   useEffect(() => {
     const updateUploadSourceIds = async () => {
-      // Only run for post and message uploads (not avatars)
-      if (source !== "post" && source !== "message") {
+      // Only run for thread and message uploads (not avatars)
+      if (source !== "thread" && source !== "message") {
         return;
       }
 
@@ -94,7 +94,7 @@ export function useImageUpload(
         try {
           await patchUploadSourceIds({
             uploadIds,
-            sourceId: sourceId as Id<"posts"> | Id<"messages">,
+            sourceId: sourceId as Id<"threads"> | Id<"messages">,
             orgId: org._id as Id<"organizations">,
           });
           // Clear uploadIds after successful patch
@@ -154,12 +154,12 @@ export function useImageUpload(
         formData.append("orgId", orgId);
         formData.append("source", source);
 
-        // Only include feedId for post/message uploads
-        if (source === "post" || source === "message") {
-          if (!feedIdForPostsAndMessages) {
-            throw new Error("Feed ID is required for post/message uploads");
+        // Only include feedId for thread/message uploads
+        if (source === "thread" || source === "message") {
+          if (!feedIdForThreadsAndMessages) {
+            throw new Error("Feed ID is required for thread/message uploads");
           }
-          formData.append("feedId", feedIdForPostsAndMessages);
+          formData.append("feedId", feedIdForThreadsAndMessages);
         }
 
         // Include sourceId if available
@@ -192,8 +192,8 @@ export function useImageUpload(
 
         setImageUrl(url);
 
-        // Track uploadId if sourceId is not yet set (for post/message drafts)
-        if (!sourceId && (source === "post" || source === "message")) {
+        // Track uploadId if sourceId is not yet set (for thread/message drafts)
+        if (!sourceId && (source === "thread" || source === "message")) {
           setUploadIds((prev) => [...prev, uploadId]);
         }
       } catch (err) {
@@ -204,7 +204,7 @@ export function useImageUpload(
         setIsUploading(false);
       }
     },
-    [source, sourceId, feedIdForPostsAndMessages, org, getToken],
+    [source, sourceId, feedIdForThreadsAndMessages, org, getToken],
   );
 
   const returnObject ={

@@ -148,7 +148,7 @@ export const CustomRenderOption: Story = {
             width: "20px",
             height: "20px",
             borderRadius: "4px",
-            backgroundColor: option.color,
+            backgroundColor: option.color as string,
             border: "1px solid #ccc",
           }}
         />
@@ -162,7 +162,7 @@ export const CustomRenderOption: Story = {
             width: "12px",
             height: "12px",
             borderRadius: "2px",
-            backgroundColor: option.color,
+            backgroundColor: option.color as string,
           }}
         />
         {option.text}

@@ -1,20 +1,26 @@
-// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-import storybook from "eslint-plugin-storybook";
-
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+import nextConfig from "eslint-config-next";
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-  ...storybook.configs["flat/recommended"]
+  ...nextConfig,
+  {
+    rules: {
+      // Disable new strict rules from react-hooks that weren't in previous version
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/static-components": "off",
+      "react-hooks/refs": "off",
+    },
+  },
+  {
+    files: ["**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)"],
+    rules: {
+      "@typescript-eslint/no-unused-vars": "off",
+      // Allow hooks in Storybook render functions
+      "react-hooks/rules-of-hooks": "off",
+    },
+  },
+  {
+    ignores: ["convex/_generated/**", ".storybook-static/**"],
+  },
 ];
 
 export default eslintConfig;

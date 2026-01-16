@@ -4,7 +4,7 @@ import { useUserAuth } from "@/auth/client/useUserAuth";
 import OverflowMenu from "./OverflowMenu";
 import FeedSelector from "../FeedSelector";
 import { useContext, RefObject, useState, useEffect } from "react";
-import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
+import { CurrentFeedAndThreadContext } from "@/app/context/CurrentFeedAndThreadProvider";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFloating, offset } from "@floating-ui/react-dom";
@@ -13,26 +13,28 @@ import { api } from "@/convex/_generated/api";
 import { useOrganization } from "@/app/context/OrganizationProvider";
 import { Id } from "@/convex/_generated/dataModel";
 import NotificationsSidebar from "../NotificationsSidebar";
-import Icon from "../common/Icon";
 
 interface ToolbarProps {
-  onNewPost: () => void;
-  isNewPostOpen: boolean;
-  setIsNewPostOpen: (isNewPostOpen: boolean) => void;
+  onNewThread: () => void;
+  isNewThreadOpen: boolean;
+  setIsNewThreadOpen: (isNewThreadOpen: boolean) => void;
   feedWrapperRef: RefObject<HTMLDivElement | null>;
 }
 
 export default function Toolbar({
-  onNewPost,
-  isNewPostOpen,
-  setIsNewPostOpen,
+  onNewThread,
+  isNewThreadOpen,
+  setIsNewThreadOpen,
   feedWrapperRef,
 }: ToolbarProps) {
   const [auth, { user }] = useUserAuth();
-  const { feedId } = useContext(CurrentFeedAndPostContext);
+  const { feedId } = useContext(CurrentFeedAndThreadContext);
   const [isFeedOwner, setIsFeedOwner] = useState(false);
   const [isFeedMember, setIsFeedMember] = useState(false);
-  const [isNotificationsSidebarOpen, setIsNotificationsSidebarOpen] = useState(false);
+  const [isNotificationsSidebarOpen, setIsNotificationsSidebarOpen] =
+    useState(false);
+  const [canUserPostInSelectedFeed, setCanUserPostInSelectedFeed] =
+    useState(false);
 
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
@@ -70,8 +72,24 @@ export default function Toolbar({
       });
   }, [auth, feedId]);
 
-  const showNewPostButton = !isNewPostOpen;
-  const showCloseButton = !showNewPostButton;
+  useEffect(() => {
+    if (!auth) {
+      return;
+    }
+
+    // Check if user can post a thread
+    if (!feedId) {
+      setCanUserPostInSelectedFeed(true); // show the thread button, which will open up feed selection
+    } else {
+      auth
+        .feed(feedId)
+        .canPost()
+        .then((result) => setCanUserPostInSelectedFeed(result.allowed));
+    }
+  }, [auth, feedId]);
+
+  const showNewThreadButton = !isNewThreadOpen;
+  const showCloseButton = !showNewThreadButton;
 
   // position the close button relative to the feed
   const { refs, floatingStyles } = useFloating({
@@ -96,13 +114,13 @@ export default function Toolbar({
               className={styles.overflowMenuButton}
               popoverTarget="overflow-menu"
             />
-            {showNewPostButton && (
+            {showNewThreadButton && canUserPostInSelectedFeed && (
               <IconButton
                 icon="pen"
                 variant="primary"
-                label="New post"
-                className={styles.newPostButton}
-                onClick={onNewPost}
+                label="New thread"
+                className={styles.newThreadButton}
+                onClick={onNewThread}
               />
             )}
             <div className={styles.notificationBellButton}>
@@ -163,12 +181,12 @@ export default function Toolbar({
                 animate={{ opacity: 1, marginTop: 0 }}
                 exit={{ opacity: 0, marginTop: `var(--spacing13)` }}
                 transition={{ duration: 0.2 }}
-                className={styles.closeNewPostButton}
+                className={styles.closeNewThreadButton}
               >
                 <IconButton
                   icon="close"
-                  ariaLabel="Close post editor"
-                  onClick={() => setIsNewPostOpen(false)}
+                  ariaLabel="Close thread editor"
+                  onClick={() => setIsNewThreadOpen(false)}
                 />
               </motion.div>
             )}

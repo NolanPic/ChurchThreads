@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 import UserAvatar from "./UserAvatar";
 import SanitizedUserContent from "./common/SanitizedUserContent";
@@ -23,7 +23,7 @@ interface MessageProps {
       image: string | null;
     };
     content: string;
-    postId: Id<"posts">;
+    threadId: Id<"threads">;
   };
   feedId: Id<"feeds">;
   timeAgoLabel: string;
@@ -44,7 +44,7 @@ export default function Message({
   const deleteMessage = useMutation(api.messages.deleteMessage);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [canDelete, setCanDelete] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLElement>(null);
 
   // Check if user can delete this message
   useEffect(() => {
@@ -127,7 +127,7 @@ export default function Message({
             {canDelete && isTabletOrUp && (
               <div
                 className={styles.messageMenu}
-                ref={menuRef}
+                ref={menuRef as React.RefObject<HTMLDivElement>}
                 data-menu-open={isMenuOpen}
               >
                 <Button
@@ -184,7 +184,7 @@ export default function Message({
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.1 }}
-              ref={menuRef}
+              ref={menuRef as React.RefObject<HTMLUListElement>}
             >
               <li className={styles.messageMenuItem}>
                 <button

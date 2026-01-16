@@ -3,55 +3,55 @@
     {
       "orgName": "King's Cross",
       "orgLocation": "Bellingham, WA",
-      "orgHost": "kingscross.churchfeed.dev",
+      "orgHost": "kingscross.churchthreads.dev",
       "users": [
         {
-          "email": "pastor@kingscross.church",
+          "email": "pastor@churchplace.app",
           "name": "David Cromwell",
           "image": "man2.jpg"
         },
         {
-          "email": "emma@kingscross.church",
+          "email": "emma@churchplace.app",
           "name": "Emma Richardson",
           "image": "woman1.jpg"
         },
         {
-          "email": "tom@kingscross.church",
+          "email": "tom@churchplace.app",
           "name": "Tom Henderson",
           "image": "man3.jpg"
         },
         {
-          "email": "sarah@kingscross.church",
+          "email": "sarah@churchplace.app",
           "name": "Sarah Martinez",
           "image": "woman3.jpg"
         },
         {
-          "email": "james@kingscross.church",
+          "email": "james@churchplace.app",
           "name": "James Park",
           "image": "man4.jpg"
         },
         {
-          "email": "lisa@kingscross.church",
+          "email": "lisa@churchplace.app",
           "name": "Lisa Chen",
           "image": "woman4.jpg"
         },
         {
-          "email": "mike@kingscross.church",
+          "email": "mike@churchplace.app",
           "name": "Mike Thompson",
           "image": "man5.jpg"
         },
         {
-          "email": "rachel@kingscross.church",
+          "email": "rachel@churchplace.app",
           "name": "Rachel Johnson",
           "image": "woman5.jpg"
         },
         {
-          "email": "ben@kingscross.church",
+          "email": "ben@churchplace.app",
           "name": "Ben Walker",
           "image": "man6.jpg"
         },
         {
-          "email": "anna@kingscross.church",
+          "email": "anna@churchplace.app",
           "name": "Anna Cromwell",
           "image": "woman2.jpg"
         },
@@ -293,7 +293,7 @@
           "owner": false
         }
       ],
-      "posts": [
+      "threads": [
         {
           "content": {
             "type": "doc",
@@ -358,9 +358,7 @@
           },
           "feedIndex": 0,
           "userIndex": 0,
-          "images": [
-            "front-of-church-in-snow-storm_stay-safe.avif"
-          ],
+          "images": ["front-of-church-in-snow-storm_stay-safe.avif"],
           "postedAt": 1757777248284
         },
         {
@@ -478,9 +476,7 @@
           },
           "feedIndex": 0,
           "userIndex": 9,
-          "images": [
-            "outdoor-potluck-in-the-city.avif"
-          ],
+          "images": ["outdoor-potluck-in-the-city.avif"],
           "postedAt": 1760146048284
         },
         {
@@ -519,9 +515,7 @@
           },
           "feedIndex": 0,
           "userIndex": 0,
-          "images": [
-            "new-stained-glass-window-in-sanctuary-completed.avif"
-          ],
+          "images": ["new-stained-glass-window-in-sanctuary-completed.avif"],
           "postedAt": 1760322448284
         },
         {
@@ -787,9 +781,7 @@
           },
           "feedIndex": 2,
           "userIndex": 3,
-          "images": [
-            "mere-christianity-cs-lewis.webp"
-          ],
+          "images": ["mere-christianity-cs-lewis.webp"],
           "postedAt": 1758317248285
         },
         {
@@ -1068,9 +1060,7 @@
           },
           "feedIndex": 3,
           "userIndex": 2,
-          "images": [
-            "people-working-in-yard_successful-work-party.avif"
-          ],
+          "images": ["people-working-in-yard_successful-work-party.avif"],
           "postedAt": 1756895248285
         },
         {
@@ -1166,9 +1156,7 @@
           },
           "feedIndex": 3,
           "userIndex": 2,
-          "images": [
-            "basement-floor-project-near-completion.avif"
-          ],
+          "images": ["basement-floor-project-near-completion.avif"],
           "postedAt": 1760009248285
         },
         {
@@ -1410,9 +1398,7 @@
           },
           "feedIndex": 4,
           "userIndex": 1,
-          "images": [
-            "person-getting-coffee-at-coffee-bar.avif"
-          ],
+          "images": ["person-getting-coffee-at-coffee-bar.avif"],
           "postedAt": 1761676048285
         },
         {
@@ -1470,9 +1456,7 @@
           },
           "feedIndex": 5,
           "userIndex": 4,
-          "images": [
-            "oyster-dome-hike.jpeg"
-          ],
+          "images": ["oyster-dome-hike.jpeg"],
           "postedAt": 1757809648285
         },
         {
@@ -1530,9 +1514,7 @@
           },
           "feedIndex": 5,
           "userIndex": 4,
-          "images": [
-            "chain-lakes-hike_fall-colors.jpeg"
-          ],
+          "images": ["chain-lakes-hike_fall-colors.jpeg"],
           "postedAt": 1759141648285
         },
         {
@@ -1647,9 +1629,7 @@
           },
           "feedIndex": 6,
           "userIndex": 6,
-          "images": [
-            "new-soundboard-is-setup.jpg"
-          ],
+          "images": ["new-soundboard-is-setup.jpg"],
           "postedAt": 1759267648285
         },
         {
@@ -1698,9 +1678,7 @@
           },
           "feedIndex": 6,
           "userIndex": 6,
-          "images": [
-            "new-nord-keyboard-for-worship-team.avif"
-          ],
+          "images": ["new-nord-keyboard-for-worship-team.avif"],
           "postedAt": 1760326048285
         },
         {
@@ -1763,7 +1741,7 @@
       ],
       "messages": [
         {
-          "postIndex": 3,
+          "threadIndex": 3,
           "userIndex": 5,
           "content": {
             "type": "doc",
@@ -1781,7 +1759,7 @@
           }
         },
         {
-          "postIndex": 3,
+          "threadIndex": 3,
           "userIndex": 2,
           "content": {
             "type": "doc",
@@ -1799,7 +1777,7 @@
           }
         },
         {
-          "postIndex": 8,
+          "threadIndex": 8,
           "userIndex": 1,
           "content": {
             "type": "doc",
@@ -1817,7 +1795,7 @@
           }
         },
         {
-          "postIndex": 10,
+          "threadIndex": 10,
           "userIndex": 0,
           "content": {
             "type": "doc",
@@ -1835,7 +1813,7 @@
           }
         },
         {
-          "postIndex": 10,
+          "threadIndex": 10,
           "userIndex": 3,
           "content": {
             "type": "doc",
@@ -1853,7 +1831,7 @@
           }
         },
         {
-          "postIndex": 11,
+          "threadIndex": 11,
           "userIndex": 3,
           "content": {
             "type": "doc",
@@ -1871,7 +1849,7 @@
           }
         },
         {
-          "postIndex": 12,
+          "threadIndex": 12,
           "userIndex": 1,
           "content": {
             "type": "doc",
@@ -1889,7 +1867,7 @@
           }
         },
         {
-          "postIndex": 12,
+          "threadIndex": 12,
           "userIndex": 3,
           "content": {
             "type": "doc",
@@ -1907,7 +1885,7 @@
           }
         },
         {
-          "postIndex": 13,
+          "threadIndex": 13,
           "userIndex": 3,
           "content": {
             "type": "doc",
@@ -1925,7 +1903,7 @@
           }
         },
         {
-          "postIndex": 13,
+          "threadIndex": 13,
           "userIndex": 5,
           "content": {
             "type": "doc",
@@ -1943,7 +1921,7 @@
           }
         },
         {
-          "postIndex": 16,
+          "threadIndex": 16,
           "userIndex": 0,
           "content": {
             "type": "doc",
@@ -1961,7 +1939,7 @@
           }
         },
         {
-          "postIndex": 16,
+          "threadIndex": 16,
           "userIndex": 1,
           "content": {
             "type": "doc",
@@ -1979,7 +1957,7 @@
           }
         },
         {
-          "postIndex": 17,
+          "threadIndex": 17,
           "userIndex": 1,
           "content": {
             "type": "doc",
@@ -1997,7 +1975,7 @@
           }
         },
         {
-          "postIndex": 19,
+          "threadIndex": 19,
           "userIndex": 3,
           "content": {
             "type": "doc",
@@ -2015,7 +1993,7 @@
           }
         },
         {
-          "postIndex": 21,
+          "threadIndex": 21,
           "userIndex": 3,
           "content": {
             "type": "doc",
@@ -2033,7 +2011,7 @@
           }
         },
         {
-          "postIndex": 22,
+          "threadIndex": 22,
           "userIndex": 3,
           "content": {
             "type": "doc",
@@ -2051,7 +2029,7 @@
           }
         },
         {
-          "postIndex": 24,
+          "threadIndex": 24,
           "userIndex": 3,
           "content": {
             "type": "doc",
@@ -2069,7 +2047,7 @@
           }
         },
         {
-          "postIndex": 24,
+          "threadIndex": 24,
           "userIndex": 4,
           "content": {
             "type": "doc",
@@ -2087,7 +2065,7 @@
           }
         },
         {
-          "postIndex": 28,
+          "threadIndex": 28,
           "userIndex": 8,
           "content": {
             "type": "doc",
@@ -2105,7 +2083,7 @@
           }
         },
         {
-          "postIndex": 28,
+          "threadIndex": 28,
           "userIndex": 2,
           "content": {
             "type": "doc",
@@ -2123,7 +2101,7 @@
           }
         },
         {
-          "postIndex": 29,
+          "threadIndex": 29,
           "userIndex": 5,
           "content": {
             "type": "doc",
@@ -2141,7 +2119,7 @@
           }
         },
         {
-          "postIndex": 29,
+          "threadIndex": 29,
           "userIndex": 8,
           "content": {
             "type": "doc",
@@ -2159,7 +2137,7 @@
           }
         },
         {
-          "postIndex": 29,
+          "threadIndex": 29,
           "userIndex": 2,
           "content": {
             "type": "doc",
@@ -2177,7 +2155,7 @@
           }
         },
         {
-          "postIndex": 30,
+          "threadIndex": 30,
           "userIndex": 5,
           "content": {
             "type": "doc",
@@ -2195,7 +2173,7 @@
           }
         },
         {
-          "postIndex": 33,
+          "threadIndex": 33,
           "userIndex": 2,
           "content": {
             "type": "doc",
@@ -2213,7 +2191,7 @@
           }
         },
         {
-          "postIndex": 33,
+          "threadIndex": 33,
           "userIndex": 5,
           "content": {
             "type": "doc",
@@ -2231,7 +2209,7 @@
           }
         },
         {
-          "postIndex": 36,
+          "threadIndex": 36,
           "userIndex": 2,
           "content": {
             "type": "doc",
@@ -2249,7 +2227,7 @@
           }
         },
         {
-          "postIndex": 38,
+          "threadIndex": 38,
           "userIndex": 6,
           "content": {
             "type": "doc",
@@ -2267,7 +2245,7 @@
           }
         },
         {
-          "postIndex": 38,
+          "threadIndex": 38,
           "userIndex": 1,
           "content": {
             "type": "doc",
@@ -2285,7 +2263,7 @@
           }
         },
         {
-          "postIndex": 39,
+          "threadIndex": 39,
           "userIndex": 3,
           "content": {
             "type": "doc",
@@ -2303,7 +2281,7 @@
           }
         },
         {
-          "postIndex": 39,
+          "threadIndex": 39,
           "userIndex": 6,
           "content": {
             "type": "doc",
@@ -2321,7 +2299,7 @@
           }
         },
         {
-          "postIndex": 43,
+          "threadIndex": 43,
           "userIndex": 7,
           "content": {
             "type": "doc",
@@ -2339,7 +2317,7 @@
           }
         },
         {
-          "postIndex": 43,
+          "threadIndex": 43,
           "userIndex": 6,
           "content": {
             "type": "doc",
@@ -2357,7 +2335,7 @@
           }
         },
         {
-          "postIndex": 46,
+          "threadIndex": 46,
           "userIndex": 2,
           "content": {
             "type": "doc",
@@ -2375,7 +2353,7 @@
           }
         },
         {
-          "postIndex": 46,
+          "threadIndex": 46,
           "userIndex": 6,
           "content": {
             "type": "doc",
@@ -2393,7 +2371,7 @@
           }
         },
         {
-          "postIndex": 46,
+          "threadIndex": 46,
           "userIndex": 8,
           "content": {
             "type": "doc",
@@ -2411,7 +2389,7 @@
           }
         },
         {
-          "postIndex": 47,
+          "threadIndex": 47,
           "userIndex": 2,
           "content": {
             "type": "doc",
@@ -2429,7 +2407,7 @@
           }
         },
         {
-          "postIndex": 49,
+          "threadIndex": 49,
           "userIndex": 2,
           "content": {
             "type": "doc",
@@ -2447,7 +2425,7 @@
           }
         },
         {
-          "postIndex": 51,
+          "threadIndex": 51,
           "userIndex": 4,
           "content": {
             "type": "doc",
@@ -2465,7 +2443,7 @@
           }
         },
         {
-          "postIndex": 51,
+          "threadIndex": 51,
           "userIndex": 2,
           "content": {
             "type": "doc",
@@ -2483,7 +2461,7 @@
           }
         },
         {
-          "postIndex": 54,
+          "threadIndex": 54,
           "userIndex": 0,
           "content": {
             "type": "doc",
@@ -2501,7 +2479,7 @@
           }
         },
         {
-          "postIndex": 55,
+          "threadIndex": 55,
           "userIndex": 8,
           "content": {
             "type": "doc",
@@ -2519,7 +2497,7 @@
           }
         },
         {
-          "postIndex": 55,
+          "threadIndex": 55,
           "userIndex": 6,
           "content": {
             "type": "doc",
@@ -2537,7 +2515,7 @@
           }
         },
         {
-          "postIndex": 57,
+          "threadIndex": 57,
           "userIndex": 6,
           "content": {
             "type": "doc",
@@ -2555,7 +2533,7 @@
           }
         },
         {
-          "postIndex": 57,
+          "threadIndex": 57,
           "userIndex": 9,
           "content": {
             "type": "doc",
@@ -2573,7 +2551,7 @@
           }
         },
         {
-          "postIndex": 59,
+          "threadIndex": 59,
           "userIndex": 0,
           "content": {
             "type": "doc",

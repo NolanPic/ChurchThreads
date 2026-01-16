@@ -3,7 +3,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    margin-bottom: var(--spacing20);
+    margin-bottom: var(--spacing10);
 
     .feedIntroRule {
         --intro-rule-width: 68px;

@@ -10,13 +10,13 @@ try {
 
   // Create Caddyfile with correct certificate names
   const caddyfile = `
-*.churchfeed.dev {
-    tls ./_wildcard.churchfeed.dev+1.pem ./_wildcard.churchfeed.dev+1-key.pem
+*.churchthreads.dev {
+    tls ./_wildcard.churchthreads.dev+1.pem ./_wildcard.churchthreads.dev+1-key.pem
     reverse_proxy localhost:3000
 }
 
-churchfeed.dev {
-    tls ./_wildcard.churchfeed.dev+1.pem ./_wildcard.churchfeed.dev+1-key.pem
+churchthreads.dev {
+    tls ./_wildcard.churchthreads.dev+1.pem ./_wildcard.churchthreads.dev+1-key.pem
     reverse_proxy localhost:3000
 }
 `;

@@ -13,6 +13,7 @@ import { useRegisterEditorCommands } from "../../context/EditorCommands";
 import { Focus } from "@tiptap/extensions";
 import { useEditorImageUpload } from "./hooks/useEditorImageUpload";
 import { Id } from "@/convex/_generated/dataModel";
+import Hint from "@/app/components/common/Hint";
 
 export interface EditorHandle {
   getJSON: () => JSONContent | null;
@@ -25,12 +26,12 @@ interface EditorProps {
   autofocus?: boolean;
   onSubmit?: () => void;
   className?: string;
-  sourceId?: Id<"posts"> | Id<"messages">; // the id of the source of the content once it's saved
+  sourceId?: Id<"threads"> | Id<"messages">; // the id of the source of the content once it's saved
 }
 
 const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
   { placeholder, autofocus = false, onSubmit, className, sourceId },
-  ref,
+  ref
 ) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const handleDropRef = useRef<
@@ -74,10 +75,11 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
     },
   });
 
-  const { handleChooseFile, handleDrop } = useEditorImageUpload(
-    editor,
-    sourceId,
-  );
+  const {
+    handleChooseFile,
+    handleDrop,
+    error: imageUploadError,
+  } = useEditorImageUpload(editor, sourceId);
 
   // Store handleDrop in ref so it can be accessed in editorProps
   handleDropRef.current = handleDrop;
@@ -91,11 +93,11 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
       focus: () => editor?.commands.focus(),
       clear: () => editor?.commands.clearContent(true),
     }),
-    [editor],
+    [editor]
   );
 
   const handleChooseFileInput = async (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -130,6 +132,7 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
 
   return (
     <>
+      {imageUploadError && <Hint type="error">{imageUploadError.message}</Hint>}
       <input
         ref={fileInputRef}
         type="file"

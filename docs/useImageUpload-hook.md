@@ -14,7 +14,7 @@ The `useImageUpload` hook provides core image upload functionality that can be u
 - **File Validation**: Validates file type, size, and format based on upload source
 - **Error Handling**: Comprehensive error states with detailed error messages
 - **Upload Tracking**: Automatically tracks uploads in the `uploads` table with source metadata
-- **Deferred Source IDs**: Supports uploading before source entity (post/message) is created, with automatic patching once available
+- **Deferred Source IDs**: Supports uploading before source entity (thread/message) is created, with automatic patching once available
 - **Authentication**: Integrates with Clerk for secure uploads
 
 ## API Reference
@@ -22,9 +22,7 @@ The `useImageUpload` hook provides core image upload functionality that can be u
 ### Hook Signature
 
 ```typescript
-function useImageUpload(
-  options: UseImageUploadOptions
-): UseImageUploadReturn
+function useImageUpload(options: UseImageUploadOptions): UseImageUploadReturn;
 ```
 
 ### Options
@@ -32,25 +30,26 @@ function useImageUpload(
 ```typescript
 interface UseImageUploadOptions {
   /**
-   * The type of upload (post, message, or avatar)
+   * The type of upload (thread, message, or avatar)
    */
-  source: "post" | "message" | "avatar";
+  source: "thread" | "message" | "avatar";
 
   /**
-   * The source ID (post ID, message ID, or user ID)
+   * The source ID (thread ID, message ID, or user ID)
    * Can be null while drafting, then updated once published
    */
-  sourceId?: Id<"posts"> | Id<"messages"> | Id<"users"> | null;
+  sourceId?: Id<"threads"> | Id<"messages"> | Id<"users"> | null;
 }
 ```
 
 **Parameters:**
+
 - `source` (required): Determines what type of image upload this is
-  - `"post"`: Image uploaded to a post
+  - `"thread"`: Image uploaded to a thread
   - `"message"`: Image uploaded to a message
   - `"avatar"`: User avatar (GIFs not allowed, replaces previous avatar)
 - `sourceId` (optional): The ID of the entity the image belongs to
-  - Can be `null` during drafting (e.g., composing a post before saving)
+  - Can be `null` during drafting (e.g., composing a thread before saving)
   - Hook will automatically patch uploads with sourceId when it becomes available
 
 ### Return Value
@@ -86,6 +85,7 @@ interface UseImageUploadReturn {
 ```
 
 **Properties:**
+
 - `imageUrl`: The final Convex storage URL, available after upload completes
 - `previewUrl`: A data URL for immediate preview, available as soon as file is selected
 - `isUploading`: Boolean indicating whether an upload is in progress
@@ -100,15 +100,15 @@ The hook manages several internal states:
 2. **previewUrl**: Data URL for immediate preview while uploading
 3. **isUploading**: Upload progress indicator
 4. **error**: Error state for failed uploads
-5. **uploadIds**: Tracked upload IDs when sourceId is deferred (for posts/messages)
+5. **uploadIds**: Tracked upload IDs when sourceId is deferred (for threads/messages)
 
 ### Deferred Source ID Handling
 
-When uploading images for posts or messages that haven't been created yet:
+When uploading images for threads or messages that haven't been created yet:
 
 1. Images are uploaded with `sourceId: null`
 2. Upload IDs are tracked in internal state
-3. When `sourceId` becomes available (e.g., after post is published), the hook automatically patches the upload records via `patchUploadSourceIds` mutation
+3. When `sourceId` becomes available (e.g., after thread is published), the hook automatically patches the upload records via `patchUploadSourceIds` mutation
 4. This ensures upload metadata is correctly linked even for draft content
 
 ## Usage Examples
@@ -122,10 +122,11 @@ import { useState } from "react";
 function AvatarUploader() {
   const [userId, setUserId] = useState<Id<"users"> | null>(null);
 
-  const { imageUrl, previewUrl, isUploading, error, uploadImage } = useImageUpload({
-    source: "avatar",
-    sourceId: userId,
-  });
+  const { imageUrl, previewUrl, isUploading, error, uploadImage } =
+    useImageUpload({
+      source: "avatar",
+      sourceId: userId,
+    });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -164,7 +165,7 @@ function AvatarUploader() {
 }
 ```
 
-### Post Upload with Deferred Source ID
+### Thread Upload with Deferred Source ID
 
 ```tsx
 import { useImageUpload } from "@/app/components/editor/hooks/useImageUpload";
@@ -172,15 +173,16 @@ import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
-function PostComposer() {
-  const [postId, setPostId] = useState<Id<"posts"> | null>(null);
-  const createPost = useMutation(api.posts.create);
+function ThreadComposer() {
+  const [threadId, setThreadId] = useState<Id<"threads"> | null>(null);
+  const createThread = useMutation(api.threads.create);
 
-  // Start with null sourceId - will be patched after post is created
-  const { imageUrl, previewUrl, isUploading, error, uploadImage } = useImageUpload({
-    source: "post",
-    sourceId: postId,
-  });
+  // Start with null sourceId - will be patched after thread is created
+  const { imageUrl, previewUrl, isUploading, error, uploadImage } =
+    useImageUpload({
+      source: "thread",
+      sourceId: threadId,
+    });
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -190,14 +192,14 @@ function PostComposer() {
   };
 
   const handlePublish = async () => {
-    // Create post
-    const newPostId = await createPost({
+    // Create thread
+    const newThreadId = await createThread({
       content: `<img src="${imageUrl}" />`,
-      // ... other post data
+      // ... other thread data
     });
 
-    // Setting postId triggers automatic patching of upload sourceIds
-    setPostId(newPostId);
+    // Setting threadId triggers automatic patching of upload sourceIds
+    setThreadId(newThreadId);
   };
 
   return (
@@ -214,11 +216,11 @@ function PostComposer() {
 
       {/* Show preview immediately, replace with final URL when ready */}
       {(previewUrl || imageUrl) && (
-        <img src={imageUrl || previewUrl || ""} alt="Post image" />
+        <img src={imageUrl || previewUrl || ""} alt="Thread image" />
       )}
 
       <button onClick={handlePublish} disabled={!imageUrl}>
-        Publish Post
+        Publish Thread
       </button>
     </div>
   );
@@ -234,10 +236,11 @@ import { useImageUpload } from "@/app/components/editor/hooks/useImageUpload";
 import { useState } from "react";
 
 function ImageUploadExample() {
-  const { imageUrl, previewUrl, isUploading, error, uploadImage } = useImageUpload({
-    source: "post",
-    sourceId: null, // No post created yet
-  });
+  const { imageUrl, previewUrl, isUploading, error, uploadImage } =
+    useImageUpload({
+      source: "thread",
+      sourceId: null, // No thread created yet
+    });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -266,9 +269,7 @@ function ImageUploadExample() {
 
       {/* Upload Status */}
       {isUploading && (
-        <div style={{ color: "blue", marginBottom: 10 }}>
-          Uploading...
-        </div>
+        <div style={{ color: "blue", marginBottom: 10 }}>Uploading...</div>
       )}
 
       {/* Error Display */}
@@ -311,16 +312,19 @@ The hook validates files using the `validateFile` function from `@/validation`:
 ### Validation Rules by Source
 
 **All Sources:**
+
 - Allowed MIME types: `image/jpeg`, `image/png`, `image/webp`, `image/gif`, `image/heic`, `image/heif`
 - Maximum file size: 10MB
 
 **Avatar Specific:**
+
 - GIF files are **not allowed** for avatars
 - Previous avatars are automatically replaced
 
 ### Validation Errors
 
 Common validation errors include:
+
 - "File validation failed: Invalid file type"
 - "File validation failed: File size exceeds 10MB"
 - "File validation failed: GIF files not allowed for avatars"
@@ -331,7 +335,7 @@ The hook provides comprehensive error handling:
 
 ```tsx
 const { error, uploadImage } = useImageUpload({
-  source: "post",
+  source: "thread",
   sourceId: null,
 });
 
@@ -359,7 +363,7 @@ const handleUpload = async (file: File) => {
 - `"No organization found. Please ensure you're logged in."`
 - `"File validation failed: [validation errors]"`
 - `"Failed to get authentication token"`
-- `"Feed ID is required for post/message uploads"`
+- `"Feed ID is required for thread/message uploads"`
 - `"Upload URL is not set"`
 - `"Failed to upload image"` (HTTP error from server)
 
@@ -368,14 +372,18 @@ const handleUpload = async (file: File) => {
 The hook integrates with several context providers:
 
 ### Required Context
+
 - **OrganizationProvider**: Provides `orgId` for upload metadata
-- **CurrentFeedAndPostContext**: Provides `feedId` for post/message uploads
+- **CurrentFeedAndThreadContext**: Provides `feedId` for thread/message uploads
 - **Clerk Auth**: Provides authentication token
 
 ### Context Usage
+
 ```typescript
 const org = useOrganization(); // from OrganizationProvider
-const { feedId, feedIdOfCurrentPost } = useContext(CurrentFeedAndPostContext);
+const { feedId, feedIdOfCurrentThread } = useContext(
+  CurrentFeedAndThreadContext
+);
 const { getToken } = useAuth(); // from Clerk
 ```
 
@@ -402,13 +410,12 @@ A specialized wrapper around `useImageUpload` for TipTap editor integration:
 ```typescript
 import { useEditorImageUpload } from "@/app/components/editor/hooks/useEditorImageUpload";
 
-const { handleChooseFile, handleDrop, error, isUploading } = useEditorImageUpload(
-  editor,
-  postId
-);
+const { handleChooseFile, handleDrop, error, isUploading } =
+  useEditorImageUpload(editor, threadId);
 ```
 
 **Features:**
+
 - Automatic placeholder insertion with preview URL
 - Automatic replacement with final URL when upload completes
 - Drag-and-drop support
@@ -420,7 +427,7 @@ const { handleChooseFile, handleDrop, error, isUploading } = useEditorImageUploa
 2. **Disable input during upload**: Set `disabled={isUploading}` on file inputs
 3. **Show upload progress**: Display loading state using `isUploading`
 4. **Use preview for UX**: Show `previewUrl` immediately for better user experience
-5. **Update sourceId for drafts**: When creating posts/messages, update `sourceId` after entity is created
+5. **Update sourceId for drafts**: When creating threads/messages, update `sourceId` after entity is created
 6. **Validate file types**: Use appropriate `accept` attribute on file inputs
 7. **Handle auth failures**: Ensure user is logged in before allowing uploads
 
@@ -439,11 +446,11 @@ This is used to construct the upload endpoint: `${NEXT_PUBLIC_CONVEX_HTTP_ACTION
 ```typescript
 import { Id } from "@/convex/_generated/dataModel";
 
-type UploadType = "post" | "message" | "avatar";
+type UploadType = "thread" | "message" | "avatar";
 
 interface UseImageUploadOptions {
   source: UploadType;
-  sourceId?: Id<"posts"> | Id<"messages"> | Id<"users"> | null;
+  sourceId?: Id<"threads"> | Id<"messages"> | Id<"users"> | null;
 }
 
 interface UseImageUploadReturn {
@@ -462,7 +469,7 @@ When testing components that use `useImageUpload`:
 1. Mock the Convex mutations (`useMutation` for `patchUploadSourceIds`)
 2. Mock Clerk's `useAuth` hook to provide test tokens
 3. Mock the OrganizationProvider context
-4. Mock the CurrentFeedAndPostContext
+4. Mock the CurrentFeedAndThreadContext
 5. Mock fetch for the upload endpoint
 6. Test error states by rejecting promises
 7. Test the deferred sourceId patching flow

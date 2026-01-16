@@ -1,0 +1,23 @@
+.emptyState {
+    display: grid;
+    place-items: center;
+    padding: var(--spacing10) var(--spacing7) var(--spacing20);
+    gap: var(--spacing7);
+}
+
+.emptyStateMessage {
+    color: var(--white);
+    font-size: var(--text-md);
+    text-align: center;
+}
+
+.newThreadButton {
+    font-size: var(--text-md);
+    padding: var(--spacing6) var(--spacing8);
+}
+
+@media(--tablet) {
+    .newThreadButton {
+        padding: var(--spacing5) var(--spacing7);
+    }
+}

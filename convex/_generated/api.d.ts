@@ -9,21 +9,24 @@
  */
 
 import type * as auth_actionAuth from "../auth/actionAuth.js";
+import type * as emailNotifications from "../emailNotifications.js";
 import type * as feeds from "../feeds.js";
 import type * as http from "../http.js";
 import type * as messages from "../messages.js";
 import type * as notifications from "../notifications.js";
 import type * as organizations from "../organizations.js";
-import type * as posts from "../posts.js";
 import type * as pushNotifications from "../pushNotifications.js";
 import type * as pushSubscriptions from "../pushSubscriptions.js";
+import type * as renderEmailTemplate from "../renderEmailTemplate.js";
 import type * as seed_seed from "../seed/seed.js";
 import type * as seed_storage from "../seed/storage.js";
+import type * as threads from "../threads.js";
+import type * as types_notifications from "../types/notifications.js";
 import type * as uploadAction from "../uploadAction.js";
 import type * as uploads from "../uploads.js";
 import type * as user from "../user.js";
 import type * as userMemberships from "../userMemberships.js";
-import type * as utils_postContentConverter from "../utils/postContentConverter.js";
+import type * as utils_threadContentConverter from "../utils/threadContentConverter.js";
 
 import type {
   ApiFromModules,
@@ -33,21 +36,24 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   "auth/actionAuth": typeof auth_actionAuth;
+  emailNotifications: typeof emailNotifications;
   feeds: typeof feeds;
   http: typeof http;
   messages: typeof messages;
   notifications: typeof notifications;
   organizations: typeof organizations;
-  posts: typeof posts;
   pushNotifications: typeof pushNotifications;
   pushSubscriptions: typeof pushSubscriptions;
+  renderEmailTemplate: typeof renderEmailTemplate;
   "seed/seed": typeof seed_seed;
   "seed/storage": typeof seed_storage;
+  threads: typeof threads;
+  "types/notifications": typeof types_notifications;
   uploadAction: typeof uploadAction;
   uploads: typeof uploads;
   user: typeof user;
   userMemberships: typeof userMemberships;
-  "utils/postContentConverter": typeof utils_postContentConverter;
+  "utils/threadContentConverter": typeof utils_threadContentConverter;
 }>;
 
 /**

@@ -4,15 +4,18 @@ import { Id } from "./_generated/dataModel";
 import { getManyFrom, getAll } from 'convex-helpers/server/relationships';
 import { getUserAuth } from "@/auth/convex";
 import { validateTextField } from "@/validation";
+import { paginationOptsValidator } from "convex/server";
 
 export const getUserFeeds = query({
   args: {
     orgId: v.id("organizations"),
+    onlyIncludeFeedsUserCanPostIn: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const auth = await getUserAuth(ctx, args.orgId);
+    const { orgId, onlyIncludeFeedsUserCanPostIn } = args; 
+    const auth = await getUserAuth(ctx, orgId);
     const user = auth.getUser();
-    const publicFeeds = await getPublicFeeds(ctx, args.orgId);
+    const publicFeeds = await getPublicFeeds(ctx, orgId);
 
     if (user) {
       const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id);
@@ -24,7 +27,20 @@ export const getUserFeeds = query({
         feed => !publicFeedIds.has(feed._id)
       );
 
-      return [...publicFeeds, ...uniqueFeedsUserIsMemberOf];
+      let finalFeeds = [...publicFeeds, ...uniqueFeedsUserIsMemberOf]
+
+      if(onlyIncludeFeedsUserCanPostIn) {
+        const feedChecks = await Promise.all(
+          finalFeeds.map(async feed => {
+            const canPost = await auth.feed(feed._id).canPost();
+            return canPost.allowed;
+          })
+        );
+
+        finalFeeds = finalFeeds.filter((_, index) => feedChecks[index]);
+      }
+
+      return finalFeeds;
     } else {
       return publicFeeds;
     }
@@ -88,7 +104,7 @@ export const get = internalQuery({
 
 /**
  * Get a feed by ID for users with access
- * Returns feed if user is a member, owner, or if feed is public
+ * Returns feed if user is a member, owner, feed is public, or feed is open and user is logged in
  */
 export const getFeed = query({
   args: {
@@ -112,6 +128,7 @@ export const getFeed = query({
 
     // Check if user has access to this feed
     const isPublic = feed.privacy === "public";
+    const isOpen = feed.privacy === "open";
     let isMember = false;
 
     if (user) {
@@ -119,7 +136,9 @@ export const getFeed = query({
       isMember = isMemberCheck.allowed;
     }
 
-    if (!isPublic && !isMember) {
+    const allowUserToViewThisFeed = isPublic || (user && (isOpen || isMember));
+
+    if (!allowUserToViewThisFeed) {
       throw new Error("You do not have access to this feed");
     }
 
@@ -225,5 +244,36 @@ export const updateFeed = mutation({
     // Return the updated feed
     const updatedFeed = await ctx.db.get(feedId);
     return updatedFeed;
+  },
+});
+
+/**
+ * Get all open and public feeds in an organization with pagination
+ * Only authenticated users can call this query
+ */
+export const getAllOpenFeeds = query({
+  args: {
+    orgId: v.id("organizations"),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const { orgId, paginationOpts } = args;
+
+    const auth = await getUserAuth(ctx, orgId);
+    auth.getUserOrThrow();
+
+    // Get all feeds and filter for open or public
+    const allFeeds = await ctx.db
+      .query("feeds")
+      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .filter((q) =>
+        q.or(
+          q.eq(q.field("privacy"), "open"),
+          q.eq(q.field("privacy"), "public")
+        )
+      )
+      .paginate(paginationOpts);
+
+    return allFeeds;
   },
 });

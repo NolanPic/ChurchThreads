@@ -9,16 +9,16 @@ import { isEditorEmpty } from "../components/editor/editor-utils";
 type PublishState = "drafting" | "publishing" | "published" | "error";
 
 export function useOnPublish(
-  source: "post" | "message",
+  source: "thread" | "message",
   editorRef: RefObject<EditorHandle | null>,
-  parentId: Id<"feeds"> | Id<"posts"> | null
+  parentId: Id<"feeds"> | Id<"threads"> | null
 ) {
   const [state, setState] = useState<PublishState>("drafting");
   const [error, setError] = useState<string | null>(null);
   const [publishedSourceId, setPublishedSourceId] = useState<
-    Id<"posts"> | Id<"messages">
+    Id<"threads"> | Id<"messages">
   >();
-  const createPost = useMutation(api.posts.createPost);
+  const createThread = useMutation(api.threads.createThread);
   const createMessage = useMutation(api.messages.create);
   const org = useOrganization();
 
@@ -42,8 +42,8 @@ export function useOnPublish(
 
     let sourceId;
     try {
-      if (source === "post") {
-        sourceId = await createPost({
+      if (source === "thread") {
+        sourceId = await createThread({
           orgId: org._id,
           feedId: parentId as Id<"feeds">,
           content: JSON.stringify(content),
@@ -51,7 +51,7 @@ export function useOnPublish(
       } else {
         sourceId = await createMessage({
           orgId: org._id,
-          postId: parentId as Id<"posts">,
+          threadId: parentId as Id<"threads">,
           content: JSON.stringify(content),
         });
       }

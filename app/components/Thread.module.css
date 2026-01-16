@@ -1,0 +1,187 @@
+.threadWrapper {
+    --messageThreadButtonWidth: 32px;
+    --threadMenuButtonWidth: 40px;
+}
+
+.thread {
+    display: grid;
+    grid-template-columns: repeat(2, fit-content(14ch)) 1fr fit-content(var(--threadMenuButtonWidth)) fit-content(var(--messageThreadButtonWidth));
+    grid-template-rows: repeat(2, fit-content);
+    grid-template-areas: "authorAvatar authorName metadata threadMenu messageThread"
+                         "content content content content content";
+    gap: var(--spacing3);
+}
+
+.authorAvatar {
+    grid-area: authorAvatar;
+    position: relative;
+    width: 24px;
+    height: 24px;
+}
+
+.authorName,
+.metadata,
+.postedIn {
+    font-weight: 700;
+}
+
+.authorName {
+    grid-area: authorName;
+    white-space: nowrap;
+}
+
+.metadata {
+    grid-area: metadata;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    color: var(--light2);
+}
+
+.threadMenu {
+    grid-area: threadMenu;
+    position: relative;
+    justify-self: end;
+    opacity: 1;
+}
+
+.threadMenuButton {
+    background-color: transparent !important;
+    cursor: pointer;
+}
+
+.threadMenuList {
+    background-color: var(--mid);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    list-style: none;
+    padding: var(--spacing2) 0;
+    margin: 0;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 174px;
+    text-align: center;
+    color: var(--white);
+    font-family: var(--font-gentium-plus);
+    font-size: var(--text-base);
+    overflow: hidden;
+    z-index: 1;
+}
+
+.threadMenuItem > button {
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: inherit;
+    width: 100%;
+    padding: var(--spacing1) 0;
+}
+
+.threadMenuItem > button:hover {
+    background-color: var(--mid2);
+}
+
+.messageThreadButton {
+    position: relative;
+    grid-area: messageThread;
+    background-color: inherit;
+    border: none;
+    width: var(--messageThreadButtonWidth);
+    justify-self: end;
+    cursor: pointer;
+    transition: scale 0.2s ease-in-out;
+}
+
+.messageThreadButton:hover {
+    scale: 1.2;
+}
+
+.messageThreadCount {
+    position: absolute;
+    top: calc(-1.5 * var(--spacing1));
+    right: calc(-1 * var(--spacing1));
+    color: var(--white);
+    font-size: var(--text-sm);
+    font-weight: 700;
+}
+
+.content {
+    margin-top: 0;
+    grid-area: content;
+}
+
+/* Add cursor pointer for clickable threads */
+.thread[role="button"] {
+    cursor: pointer;
+}
+
+/* Focus outline for keyboard navigation */
+.thread[role="button"]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.postedIn {
+    grid-area: postedIn;
+    white-space: nowrap;
+    text-align: right;
+    font-size: 0.875rem;
+    color: var(--light2);
+    padding-top: var(--spacing4);
+
+    a {
+        color: var(--light2);
+    }
+}
+
+.postedIn_tabletUp {
+    display: none;
+}
+
+
+@media (--tablet) {
+
+    .thread {
+        grid-template-areas: "authorAvatar authorName metadata threadMenu messageThread"
+                         ". content content content content";
+        gap: var(--spacing4);
+    }
+
+    .authorAvatar {
+        width: 34px;
+        height: 34px;
+    }
+
+    .authorName,
+    .metadata,
+    .threadMenu,
+    .messageThreadButton {
+        align-self: center;
+    }
+
+    /* Hide thread menu by default on desktop, show on hover or when menu is open */
+    .threadMenu {
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .thread:hover .threadMenu,
+    .threadMenu[data-menu-open="true"] {
+        opacity: 1;
+    }
+
+    .postedIn {
+        display: none;
+    }
+
+    .postedIn_tabletUp {
+        display: inline;
+
+        & a {
+            color: var(--light2);
+        }
+    }
+}
+

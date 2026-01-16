@@ -8,12 +8,12 @@ import { EditorCommandsProvider } from "../../context/EditorCommands";
 import styles from "./MessageEditor.module.css";
 import { useOnPublish } from "@/app/hooks/useOnPublish";
 
-export default function MessageEditor({ postId }: { postId: Id<"posts"> }) {
+export default function MessageEditor({ threadId }: { threadId: Id<"threads"> }) {
   const editorRef = useRef<EditorHandle | null>(null);
   const { state, error, onPublish, publishedSourceId, reset } = useOnPublish(
     "message",
     editorRef,
-    postId,
+    threadId,
   );
 
   useEffect(() => {

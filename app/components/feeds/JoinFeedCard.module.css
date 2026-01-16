@@ -1,0 +1,52 @@
+.cardHeader,
+.cardBody {
+  padding: var(--spacing4);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing3);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing2);
+}
+
+.title {
+  font-family: var(--font-gentium-plus);
+  font-size: var(--text-md);
+  font-weight: 400;
+}
+
+.globeIcon {
+  flex-shrink: 0;
+}
+
+.descriptionContainer {
+  position: relative;
+  margin-bottom: var(--spacing4);
+}
+
+.readMoreButton {
+  display: inline;
+  color: var(--accent);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.actions {
+  display: flex;
+  gap: var(--spacing3);
+}
+
+.error {
+  margin-top: var(--spacing3);
+  color: var(--error);
+  font-size: var(--text-sm);
+}

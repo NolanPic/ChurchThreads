@@ -19,9 +19,9 @@ export default defineSchema({
     settings: v.optional(
       v.object({
         notifications: v.optional(
-          v.array(v.union(v.literal("push"), v.literal("email")))
+          v.array(v.union(v.literal("push"), v.literal("email"))),
         ),
-      })
+      }),
     ),
   })
     .index("by_org", ["orgId"])
@@ -56,7 +56,7 @@ export default defineSchema({
   })
     .index("by_org_and_feed_and_user", ["orgId", "feedId", "userId"])
     .index("by_userId", ["userId"]),
-  posts: defineTable({
+  threads: defineTable({
     ...defaultColumns,
     feedId: v.id("feeds"),
     posterId: v.id("users"),
@@ -65,10 +65,10 @@ export default defineSchema({
   }).index("by_org_and_postedAt", ["orgId", "postedAt"]),
   messages: defineTable({
     ...defaultColumns,
-    postId: v.id("posts"),
+    threadId: v.id("threads"),
     senderId: v.id("users"),
     content: v.string(),
-  }).index("by_orgId_postId", ["orgId", "postId"]),
+  }).index("by_orgId_threadId", ["orgId", "threadId"]),
   invites: defineTable({
     orgId: v.id("organizations"),
     email: v.string(),
@@ -83,12 +83,12 @@ export default defineSchema({
     ...defaultColumns,
     storageId: v.id("_storage"),
     source: v.union(
-      v.literal("post"),
+      v.literal("thread"),
       v.literal("message"),
       v.literal("avatar"),
     ),
     sourceId: v.optional(
-      v.union(v.id("posts"), v.id("messages"), v.id("users")),
+      v.union(v.id("threads"), v.id("messages"), v.id("users")),
     ),
     userId: v.id("users"),
     fileExtension: v.string(),
@@ -100,22 +100,23 @@ export default defineSchema({
     ...defaultColumns,
     userId: v.id("users"),
     type: v.union(
-      v.literal("new_post_in_member_feed"),
-      v.literal("new_message_in_post"),
+      v.literal("new_thread_in_member_feed"),
+      v.literal("new_message_in_thread"),
       v.literal("new_feed_member"),
       v.literal("new_user_needs_approval"),
     ),
     data: v.union(
-      // new_post_in_member_feed
+      // new_thread_in_member_feed
       v.object({
         userId: v.id("users"),
         feedId: v.id("feeds"),
-        postId: v.id("posts"),
+        threadId: v.id("threads"),
       }),
-      // new_message_in_post
+      // new_message_in_thread
       v.object({
         userId: v.id("users"),
         messageId: v.id("messages"),
+        threadId: v.id("threads"),
         messageContent: v.string(),
       }),
       // new_feed_member

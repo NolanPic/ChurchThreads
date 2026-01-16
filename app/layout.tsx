@@ -4,7 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import ConvexClientProvider from "./context/ConvexClientProvider";
 import { OrganizationProvider } from "./context/OrganizationProvider";
-import { CurrentFeedAndPostProvider } from "./context/CurrentFeedAndPostProvider";
+import { CurrentFeedAndThreadProvider } from "./context/CurrentFeedAndThreadProvider";
 import { api } from "../convex/_generated/api";
 import { preloadQuery } from "convex/nextjs";
 import { headers } from "next/headers";
@@ -12,7 +12,7 @@ import OrganizationLayout from "./components/OrganizationLayout";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "churchfeed",
+  title: "churchthreads",
   description: "Your feed",
 };
 
@@ -58,9 +58,9 @@ export default async function RootLayout({
         <ClerkProvider>
           <ConvexClientProvider>
             <OrganizationProvider organization={preloadedOrg}>
-              <CurrentFeedAndPostProvider>
+              <CurrentFeedAndThreadProvider>
                 <OrganizationLayout>{children}</OrganizationLayout>
-              </CurrentFeedAndPostProvider>
+              </CurrentFeedAndThreadProvider>
             </OrganizationProvider>
           </ConvexClientProvider>
         </ClerkProvider>

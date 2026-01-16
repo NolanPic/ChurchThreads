@@ -1,6 +1,7 @@
 "use client";
 
-import styles from "./PostEditorToolbar.module.css";
+// TODO: ThreadEditorToolbar should be removed
+import styles from "./ThreadEditorToolbar.module.css";
 import Button from "../common/Button";
 import classNames from "classnames";
 import { useEditorCommands } from "@/app/context/EditorCommands";
@@ -23,7 +24,7 @@ export default function EditorToolbar({
   const { addImageDrop } = useEditorCommands();
 
   return (
-    <div className={classNames(styles.postEditorToolbar, className)}>
+    <div className={classNames(styles.threadEditorToolbar, className)}>
       <Button
         icon="image"
         onClick={addImageDrop}

@@ -16,8 +16,6 @@
   backdrop-filter: blur(27px);
   pointer-events: auto;
   position: relative;
-  display: flex;
-  flex-direction: column;
   padding: var(--spacing7) 0;
   box-shadow: 21px -16px 64px -36px rgba(0,0,0,0.25),
   -21px 16px 64px -36px rgba(0,0,0,0.25);
@@ -29,22 +27,23 @@
   overscroll-behavior: contain;
 }
 
-.title {
-  position: relative;
-  font-size: 36px;
-  margin: var(--spacing5) var(--modal-gutter) 0;
+.title,
+.subtitle {
   font-family: var(--font-gentium-plus);
   font-style: italic;
   font-weight: 400;
   text-align: center;
 }
 
-.titleSeparator {
-  margin: var(--spacing4) auto var(--spacing12);
-  width: 211px;
-  height: 1px;
-  border: none;
-  background-color: var(--light);
+.title {
+  position: relative;
+  font-size: 36px;
+  margin: var(--spacing5) var(--modal-gutter) 0;
+}
+
+.subtitle {
+  font-size: var(--text-lg);
+  margin: var(--spacing1) var(--modal-gutter) 0;
 }
 
 .handleBar_PhoneOnly {
@@ -89,7 +88,7 @@
 
 .tabsContainer {
   position: relative;
-  margin: 0 var(--modal-gutter) var(--spacing8);
+  margin: var(--spacing8) var(--modal-gutter) 0;
 }
 
 .tabsFade {
@@ -105,11 +104,10 @@
 
 .tabList {
   display: flex;
-  gap: var(--spacing8);
+  gap: var(--spacing6);
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding-bottom: var(--spacing2);
   padding-right: var(--spacing10);
 
   &::-webkit-scrollbar {
@@ -123,7 +121,7 @@
   border: none;
   color: var(--white);
   font-family: var(--font-lato);
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: 400;
   padding: var(--spacing2) 0;
   cursor: pointer;
@@ -144,6 +142,7 @@
 
 .tab.active {
   opacity: 1;
+  color: var(--accent);
 
   &::after {
     content: "";
@@ -151,9 +150,17 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 2px;
-    background-color: var(--white);
+    height: 1px;
+    background-color: var(--accent);
   }
+}
+
+.separator {
+  position: relative;
+  margin: 0 var(--spacing7) var(--spacing12);
+  height: 1px;
+  border: none;
+  background-color: var(--light);
 }
 
 @media (--tablet) {
@@ -164,14 +171,15 @@
     border-radius: var(--border-radius-lg);
   }
 
-  .title {
-    font-size: var(--text-xxl);
+  .title,
+  .subtitle {
     text-align: left;
   }
 
-  .titleSeparator {
-    width: 100%;
+  .title {
+    font-size: var(--text-xxl);
   }
+
 
   .handleBar_PhoneOnly {
     display: none;
@@ -192,6 +200,10 @@
     background: transparent;
     border: none;
     cursor: pointer;
+  }
+
+  .tab {
+    font-size: var(--text-md);
   }
 }
 

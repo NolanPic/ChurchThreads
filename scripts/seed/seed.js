@@ -38,8 +38,8 @@ function loadSeedData() {
  * @param {string} imagePath - Absolute path to the image file
  * @param {string} userId - User ID who owns this upload
  * @param {string} orgId - Organization ID
- * @param {string} source - Upload source: "avatar", "post", or "message"
- * @param {string} sourceId - Optional source ID (user/post/message ID)
+ * @param {string} source - Upload source: "avatar", "thread", or "message"
+ * @param {string} sourceId - Optional source ID (user/thread/message ID)
  * @returns {Promise<{uploadId: string, url: string, storageId: string}>}
  */
 async function uploadImageToConvex(imagePath, userId, orgId, source, sourceId = undefined) {
@@ -182,34 +182,34 @@ async function seedDatabase() {
       }
       console.log(`✅ Created ${userFeedIds.length} user-feed relationships`);
 
-      // Process posts with images
-      console.log(`\n🖼️  Processing post images...`);
-      let postImageCount = 0;
-      const processedPosts = [];
+      // Process threads with images
+      console.log(`\n🖼️  Processing thread images...`);
+      let threadImageCount = 0;
+      const processedThreads = [];
 
-      for (let postIdx = 0; postIdx < orgData.posts.length; postIdx++) {
-        const post = orgData.posts[postIdx];
-        let processedContent = post.content;
+      for (let threadIdx = 0; threadIdx < orgData.threads.length; threadIdx++) {
+        const thread = orgData.threads[threadIdx];
+        let processedContent = thread.content;
 
         // Handle image uploads and placeholder replacement
-        if (post.images && post.images.length > 0) {
-          console.log(`  Uploading ${post.images.length} images for post...`);
+        if (thread.images && thread.images.length > 0) {
+          console.log(`  Uploading ${thread.images.length} images for thread...`);
           const imageUploads = [];
 
-          for (const imageFilename of post.images) {
-            const imagePath = path.join(__dirname, 'assets', 'posts', imageFilename);
+          for (const imageFilename of thread.images) {
+            const imagePath = path.join(__dirname, 'assets', 'threads', imageFilename);
             if (fs.existsSync(imagePath)) {
               try {
-                const posterId = userIds[post.userIndex];
+                const posterId = userIds[thread.userIndex];
                 const { url } = await uploadImageToConvex(
                   imagePath,
                   posterId,
                   orgId,
-                  'post'
-                  // Note: sourceId not set yet, will be post._id after creation
+                  'thread'
+                  // Note: sourceId not set yet, will be thread._id after creation
                 );
                 imageUploads.push({ filename: imageFilename, url });
-                postImageCount++;
+                threadImageCount++;
               } catch (error) {
                 console.log(`  ⚠️  Failed to upload image ${imageFilename}: ${error.message}`);
               }
@@ -233,35 +233,35 @@ async function seedDatabase() {
           processedContent = JSON.stringify(processedContent);
         }
 
-        processedPosts.push({
-          ...post,
+        processedThreads.push({
+          ...thread,
           content: processedContent
         });
       }
-      console.log(`✅ Uploaded ${postImageCount} post images`);
+      console.log(`✅ Uploaded ${threadImageCount} thread images`);
 
-      // Create posts
-      console.log(`\n📝 Creating ${processedPosts.length} posts...`);
-      const postIds = [];
-      for (const post of processedPosts) {
-        if (post.feedIndex < feedIds.length && post.userIndex < userIds.length) {
-          const postId = await client.mutation(api.seed.seed.seedPost, {
+      // Create threads
+      console.log(`\n📝 Creating ${processedThreads.length} threads...`);
+      const threadIds = [];
+      for (const thread of processedThreads) {
+        if (thread.feedIndex < feedIds.length && thread.userIndex < userIds.length) {
+          const threadId = await client.mutation(api.seed.seed.seedThread, {
             orgId: orgId,
-            feedId: feedIds[post.feedIndex],
-            posterId: userIds[post.userIndex],
-            content: post.content,
-            postedAt: post.postedAt,
+            feedId: feedIds[thread.feedIndex],
+            posterId: userIds[thread.userIndex],
+            content: thread.content,
+            postedAt: thread.postedAt,
           });
-          postIds.push(postId);
+          threadIds.push(threadId);
         }
       }
-      console.log(`✅ Created ${postIds.length} posts`);
+      console.log(`✅ Created ${threadIds.length} threads`);
 
       // Process and create messages
       console.log(`\n💬 Creating ${orgData.messages.length} messages...`);
       const messageIds = [];
       for (const message of orgData.messages) {
-        if (message.postIndex < postIds.length && message.userIndex < userIds.length) {
+        if (message.threadIndex < threadIds.length && message.userIndex < userIds.length) {
           // Ensure message content is stringified if it's an object
           let messageContent = message.content;
           if (typeof messageContent === 'object') {
@@ -270,7 +270,7 @@ async function seedDatabase() {
 
           const messageId = await client.mutation(api.seed.seed.seedMessage, {
             orgId: orgId,
-            postId: postIds[message.postIndex],
+            threadId: threadIds[message.threadIndex],
             senderId: userIds[message.userIndex],
             content: messageContent,
           });
@@ -285,8 +285,8 @@ async function seedDatabase() {
       console.log(`  - Avatars: ${avatarCount}`);
       console.log(`  - Feeds: ${feedIds.length}`);
       console.log(`  - User-Feed Relationships: ${userFeedIds.length}`);
-      console.log(`  - Posts: ${postIds.length}`);
-      console.log(`  - Post Images: ${postImageCount}`);
+      console.log(`  - Threads: ${threadIds.length}`);
+      console.log(`  - Thread Images: ${threadImageCount}`);
       console.log(`  - Messages: ${messageIds.length}`);
     }
 

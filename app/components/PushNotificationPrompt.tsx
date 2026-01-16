@@ -15,7 +15,7 @@ interface PushNotificationPromptProps {
 
 type Platform = "ios" | "android" | "desktop";
 
-const DISMISS_KEY = "churchfeed_push_prompt_dismissed_until";
+const DISMISS_KEY = "churchthreads_push_prompt_dismissed_until";
 const DISMISS_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 1 month
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {

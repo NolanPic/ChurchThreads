@@ -4,8 +4,8 @@ import { Id } from "./_generated/dataModel";
 import { getUserAuth } from "@/auth/convex";
 import { getStorageUrl } from "./uploads";
 import { paginationOptsValidator } from "convex/server";
-import { internal } from "./_generated/api";
-import { enqueueNotification } from "./notifications";
+import { sendNotifications } from "./notifications";
+import { getAll } from "convex-helpers/server/relationships";
 
 /**
  * Helper function to check if a user is the last owner of a feed
@@ -14,12 +14,12 @@ async function isLastOwner(
   ctx: QueryCtx,
   orgId: Id<"organizations">,
   feedId: Id<"feeds">,
-  userId: Id<"users">
+  userId: Id<"users">,
 ): Promise<boolean> {
   const membership = await ctx.db
     .query("userFeeds")
     .withIndex("by_org_and_feed_and_user", (q) =>
-      q.eq("orgId", orgId).eq("feedId", feedId).eq("userId", userId)
+      q.eq("orgId", orgId).eq("feedId", feedId).eq("userId", userId),
     )
     .first();
 
@@ -30,7 +30,7 @@ async function isLastOwner(
   const allOwners = await ctx.db
     .query("userFeeds")
     .withIndex("by_org_and_feed_and_user", (q) =>
-      q.eq("orgId", orgId).eq("feedId", feedId)
+      q.eq("orgId", orgId).eq("feedId", feedId),
     )
     .filter((q) => q.eq(q.field("owner"), true))
     .collect();
@@ -56,13 +56,15 @@ export const getFeedMembers = query({
 
     const memberCheck = await auth.feed(feedId).hasRole("member");
     if (!memberCheck.allowed) {
-      throw new Error("You do not have permission to view members of this feed");
+      throw new Error(
+        "You do not have permission to view members of this feed",
+      );
     }
 
     const allUserFeeds = await ctx.db
       .query("userFeeds")
       .withIndex("by_org_and_feed_and_user", (q) =>
-        q.eq("orgId", orgId).eq("feedId", feedId)
+        q.eq("orgId", orgId).eq("feedId", feedId),
       )
       .collect();
 
@@ -82,11 +84,11 @@ export const getFeedMembers = query({
           image: avatarUrl,
           isOwner: userFeed.owner,
         };
-      })
+      }),
     );
 
     const filteredMembers = membersWithDetails.filter(
-      (member) => member !== null
+      (member) => member !== null,
     );
 
     const sortedMembers = filteredMembers.sort((a, b) => {
@@ -132,7 +134,7 @@ export const getUsersNotInFeed = query({
     const ownerCheck = await auth.feed(feedId).hasRole("owner");
     if (!ownerCheck.allowed) {
       throw new Error(
-        "You do not have permission to invite users to this feed"
+        "You do not have permission to invite users to this feed",
       );
     }
 
@@ -145,14 +147,14 @@ export const getUsersNotInFeed = query({
     const userFeeds = await ctx.db
       .query("userFeeds")
       .withIndex("by_org_and_feed_and_user", (q) =>
-        q.eq("orgId", orgId).eq("feedId", feedId)
+        q.eq("orgId", orgId).eq("feedId", feedId),
       )
       .collect();
 
     const userIdsInFeed = new Set(userFeeds.map((uf) => uf.userId));
 
     const usersNotInFeed = allUsers.filter(
-      (user) => !userIdsInFeed.has(user._id)
+      (user) => !userIdsInFeed.has(user._id),
     );
 
     const usersWithAvatars = await Promise.all(
@@ -163,7 +165,7 @@ export const getUsersNotInFeed = query({
           name: user.name,
           image: avatarUrl,
         };
-      })
+      }),
     );
 
     return usersWithAvatars;
@@ -189,7 +191,7 @@ export const inviteUsersToFeed = mutation({
     const ownerCheck = await auth.feed(feedId).hasRole("owner");
     if (!ownerCheck.allowed) {
       throw new Error(
-        "You do not have permission to invite users to this feed"
+        "You do not have permission to invite users to this feed",
       );
     }
 
@@ -209,15 +211,13 @@ export const inviteUsersToFeed = mutation({
         throw new Error(`User not found: ${userId}`);
       }
       if (user.orgId !== orgId) {
-        throw new Error(
-          `User ${userId} does not belong to this organization`
-        );
+        throw new Error(`User ${userId} does not belong to this organization`);
       }
 
       const existingMembership = await ctx.db
         .query("userFeeds")
         .withIndex("by_org_and_feed_and_user", (q) =>
-          q.eq("orgId", orgId).eq("feedId", feedId).eq("userId", userId)
+          q.eq("orgId", orgId).eq("feedId", feedId).eq("userId", userId),
         )
         .first();
 
@@ -233,8 +233,8 @@ export const inviteUsersToFeed = mutation({
         updatedAt: now,
       });
 
-      // Enqueue notification for feed owners
-      await enqueueNotification(ctx, orgId, "new_feed_member", {
+      // Send notifications for feed owners
+      await sendNotifications(ctx, orgId, "new_feed_member", {
         userId,
         feedId,
       });
@@ -269,7 +269,7 @@ export const removeMemberFromFeed = mutation({
       const ownerCheck = await auth.feed(feedId).hasRole("owner");
       if (!ownerCheck.allowed) {
         throw new Error(
-          "You do not have permission to remove members from this feed"
+          "You do not have permission to remove members from this feed",
         );
       }
     }
@@ -277,7 +277,7 @@ export const removeMemberFromFeed = mutation({
     const membershipToRemove = await ctx.db
       .query("userFeeds")
       .withIndex("by_org_and_feed_and_user", (q) =>
-        q.eq("orgId", orgId).eq("feedId", feedId).eq("userId", userToRemove)
+        q.eq("orgId", orgId).eq("feedId", feedId).eq("userId", userToRemove),
       )
       .first();
 
@@ -288,7 +288,7 @@ export const removeMemberFromFeed = mutation({
     const isLast = await isLastOwner(ctx, orgId, feedId, userToRemove);
     if (isLast) {
       throw new Error(
-        "Cannot remove the last owner from the feed. Please assign another owner first."
+        "Cannot remove the last owner from the feed. Please assign another owner first.",
       );
     }
 
@@ -318,14 +318,14 @@ export const changeMemberRole = mutation({
     const ownerCheck = await auth.feed(feedId).hasRole("owner");
     if (!ownerCheck.allowed) {
       throw new Error(
-        "You do not have permission to change member roles in this feed"
+        "You do not have permission to change member roles in this feed",
       );
     }
 
     const membership = await ctx.db
       .query("userFeeds")
       .withIndex("by_org_and_feed_and_user", (q) =>
-        q.eq("orgId", orgId).eq("feedId", feedId).eq("userId", userId)
+        q.eq("orgId", orgId).eq("feedId", feedId).eq("userId", userId),
       )
       .first();
 
@@ -337,7 +337,7 @@ export const changeMemberRole = mutation({
       const isLast = await isLastOwner(ctx, orgId, feedId, userId);
       if (isLast) {
         throw new Error(
-          "Cannot demote the last owner. Please assign another owner first."
+          "Cannot demote the last owner. Please assign another owner first.",
         );
       }
     }
@@ -348,5 +348,167 @@ export const changeMemberRole = mutation({
     });
 
     return { success: true };
+  },
+});
+
+/**
+ * Join an open or public feed
+ * Only authenticated users can call this mutation
+ */
+export const joinOpenFeed = mutation({
+  args: {
+    orgId: v.id("organizations"),
+    feedId: v.id("feeds"),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, feedId } = args;
+
+    const auth = await getUserAuth(ctx, orgId);
+    const user = auth.getUserOrThrow();
+
+    // Get the feed
+    const feed = await ctx.db.get(feedId);
+    if (!feed) {
+      throw new Error("Feed not found");
+    }
+
+    // Verify feed belongs to organization
+    if (feed.orgId !== orgId) {
+      throw new Error("Feed does not belong to this organization");
+    }
+
+    // Verify feed is open or public
+    if (feed.privacy !== "open" && feed.privacy !== "public") {
+      throw new Error("Can only join open or public feeds");
+    }
+
+    // Check if user is already a member
+    const existingMembership = await ctx.db
+      .query("userFeeds")
+      .withIndex("by_org_and_feed_and_user", (q) =>
+        q.eq("orgId", orgId).eq("feedId", feedId).eq("userId", user._id)
+      )
+      .first();
+
+    if (existingMembership) {
+      throw new Error("You are already a member of this feed");
+    }
+
+    // Create membership
+    await ctx.db.insert("userFeeds", {
+      orgId,
+      userId: user._id,
+      feedId,
+      owner: false,
+      updatedAt: Date.now(),
+    });
+
+    // Send notifications to feed owners
+    await sendNotifications(ctx, orgId, "new_feed_member", {
+      userId: user._id,
+      feedId,
+    });
+
+    return { success: true };
+  },
+});
+
+/**
+ * Get members for multiple open/public feeds at once
+ * Only authenticated users can call this query
+ * Returns up to 50 members per feed
+ */
+export const getOpenFeedMembers = query({
+  args: {
+    orgId: v.id("organizations"),
+    feedIds: v.array(v.id("feeds")),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, feedIds } = args;
+
+    const auth = await getUserAuth(ctx, orgId);
+    auth.getUserOrThrow();
+
+    // Get all feeds and verify they belong to the organization
+    const feeds = await getAll(ctx.db, feedIds);
+    const result: Record<
+      Id<"feeds">,
+      Array<{
+        _id: Id<"users">;
+        name: string;
+        email: string;
+        image: string | null;
+        isOwner: boolean;
+      }>
+    > = {};
+
+    for (let i = 0; i < feedIds.length; i++) {
+      const feedId = feedIds[i];
+      const feed = feeds[i];
+
+      if (!feed) {
+        continue;
+      }
+
+      // Verify feed belongs to the organization
+      if (feed.orgId !== orgId) {
+        throw new Error(`Feed ${feedId} does not belong to organization ${orgId}`);
+      }
+
+      // Only return members if feed is open or public
+      if (feed.privacy !== "open" && feed.privacy !== "public") {
+        continue;
+      }
+
+      // Get all user feeds for this feed
+      const allUserFeeds = await ctx.db
+        .query("userFeeds")
+        .withIndex("by_org_and_feed_and_user", (q) =>
+          q.eq("orgId", orgId).eq("feedId", feedId)
+        )
+        .collect();
+
+      // Get member details
+      const membersWithDetails = await Promise.all(
+        allUserFeeds.map(async (userFeed) => {
+          const user = await ctx.db.get(userFeed.userId);
+          if (!user) {
+            return null;
+          }
+
+          const avatarUrl = await getStorageUrl(ctx, user.image);
+
+          return {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            image: avatarUrl,
+            isOwner: userFeed.owner,
+          };
+        })
+      );
+
+      const filteredMembers = membersWithDetails.filter(
+        (member) => member !== null
+      ) as Array<{
+        _id: Id<"users">;
+        name: string;
+        email: string;
+        image: string | null;
+        isOwner: boolean;
+      }>;
+
+      // Sort by owner status first, then by name
+      const sortedMembers = filteredMembers.sort((a, b) => {
+        if (a.isOwner !== b.isOwner) {
+          return a.isOwner ? -1 : 1;
+        }
+        return a.name.localeCompare(b.name);
+      });
+
+      result[feedId] = sortedMembers.slice(0, 50);
+    }
+
+    return result;
   },
 });

@@ -5,7 +5,7 @@ import { validateFile, getFileExtension } from "../validation";
 
 /**
  * Uploads a file with validation and auth checks
- * Accepts FormData with: file, orgId, source, sourceId (optional), feedId (for post/message)
+ * Accepts FormData with: file, orgId, source, sourceId (optional), feedId (for thread/message)
  */
 export const uploadFile = httpAction(async (ctx, request) => {
   // Parse form data
@@ -39,16 +39,16 @@ export const uploadFile = httpAction(async (ctx, request) => {
     return jsonResponse({ error: "Missing orgId" }, 400);
   }
 
-  if (source !== "post" && source !== "message" && source !== "avatar" || typeof source !== "string") {
+  if (source !== "thread" && source !== "message" && source !== "avatar" || typeof source !== "string") {
     return jsonResponse(
-      { error: "Invalid source. Must be 'post', 'message', or 'avatar'" },
+      { error: "Invalid source. Must be 'thread', 'message', or 'avatar'" },
       400,
     );
   }
 
   const sourceIdStr = formData.get("sourceId");
   const sourceId = sourceIdStr && typeof sourceIdStr === "string"
-    ? (sourceIdStr as Id<"posts"> | Id<"messages"> | Id<"users">)
+    ? (sourceIdStr as Id<"threads"> | Id<"messages"> | Id<"users">)
     : undefined;
 
   const feedIdStr = formData.get("feedId");
@@ -70,10 +70,10 @@ export const uploadFile = httpAction(async (ctx, request) => {
   const user = authResult.user;
 
   // Check Authorization based on source type
-  if (source === "post" || source === "message") {
+  if (source === "thread" || source === "message") {
     if (!feedId) {
       return jsonResponse(
-        { error: "feedId is required for post/message uploads" },
+        { error: "feedId is required for thread/message uploads" },
         400,
       );
     }
@@ -85,7 +85,7 @@ export const uploadFile = httpAction(async (ctx, request) => {
         userId: user._id,
         feedId,
         orgId,
-        action: source === "post" ? "post" : "message",
+        action: source === "thread" ? "post" : "message",
       },
     );
 

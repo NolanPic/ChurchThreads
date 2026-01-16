@@ -5,7 +5,7 @@ import type { Editor } from "@tiptap/react";
 import type { EditorView } from "prosemirror-view";
 import { Selection } from "prosemirror-state";
 import { useImageUpload } from "./useImageUpload";
-import { CurrentFeedAndPostContext } from "../../../context/CurrentFeedAndPostProvider";
+import { CurrentFeedAndThreadContext } from "../../../context/CurrentFeedAndThreadProvider";
 import { Id } from "@/convex/_generated/dataModel";
 
 export interface UseEditorImageUploadReturn {
@@ -35,29 +35,29 @@ export interface UseEditorImageUploadReturn {
  * for inserting placeholder images and replacing them with final URLs.
  *
  * @param editor - TipTap editor instance
- * @param sourceId - Optional source ID (post ID or message ID) from parent component
+ * @param sourceId - Optional source ID (thread ID or message ID) from parent component
  * @returns Object with uploadImage function and error state
  *
  * @example
  * ```tsx
- * const [publishedPostId, setPublishedPostId] = useState(null);
- * const { uploadImage, error } = useEditorImageUpload(editor, publishedPostId);
+ * const [publishedThreadId, setPublishedThreadId] = useState(null);
+ * const { uploadImage, error } = useEditorImageUpload(editor, publishedThreadId);
  *
  * const handlePublish = async () => {
- *   const postId = await createPost();
- *   setPublishedPostId(postId); // Triggers patchUploadSourceIds
+ *   const threadId = await createThread();
+ *   setPublishedThreadId(threadId); // Triggers patchUploadSourceIds
  * };
  * ```
  */
 export function useEditorImageUpload(
   editor: Editor | null,
-  sourceId?: Id<"posts"> | Id<"messages"> | null,
+  sourceId?: Id<"threads"> | Id<"messages"> | null,
 ): UseEditorImageUploadReturn {
-  const { postId } = useContext(CurrentFeedAndPostContext);
+  const { threadId } = useContext(CurrentFeedAndThreadContext);
 
   // Determine source based on context
-  // If postId exists, we're messaging in a post, otherwise we're creating a post
-  const source = postId ? "message" : "post";
+  // If threadId exists, we're messaging in a thread, otherwise we're creating a thread
+  const source = threadId ? "message" : "thread";
 
   const {
     previewUrl,

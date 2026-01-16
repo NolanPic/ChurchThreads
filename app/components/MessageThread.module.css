@@ -1,5 +1,6 @@
 .messagesContainer {
     position: relative;
+    overflow: hidden;
 }
 
 .messages {

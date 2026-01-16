@@ -15,30 +15,33 @@ import Link from "next/link";
 import { motion, useMotionValue, animate } from "motion/react";
 import { useState, useEffect } from "react";
 
-export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
+export default function MessageThread({ threadId }: { threadId: Id<"threads"> }) {
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
-  const post = useQuery(api.posts.getById, {
+  const thread = useQuery(api.threads.getById, {
     orgId,
-    postId,
+    threadId,
   });
-  const messages = useQuery(api.messages.getForPost, { orgId, postId });
-  const [auth, { isLoading: isUserLoaded, user }] = useUserAuth();
+  const messages = useQuery(api.messages.getForThread, { orgId, threadId });
+  const [auth, { isLoading: isUserLoading, user }] = useUserAuth();
   const [canSendMessage, setCanSendMessage] = useState(false);
 
   const isSignedIn = auth !== null;
 
   // Check if user can send message using new auth system
   useEffect(() => {
-    if (!auth || !post?.feedId) {
+    if (!auth || !thread?.feedId) {
       setCanSendMessage(false);
       return;
     }
 
-    auth.feed(post.feedId).canMessage().then((result) => {
-      setCanSendMessage(result.allowed);
-    });
-  }, [auth, post?.feedId]);
+    auth
+      .feed(thread.feedId)
+      .canMessage()
+      .then((result) => {
+        setCanSendMessage(result.allowed);
+      });
+  }, [auth, thread?.feedId]);
 
   const isTabletOrUp = useMediaQuery("(min-width: 34.375rem)");
   const doAnimateTimeStampRevealOnPhone = !isTabletOrUp;
@@ -74,7 +77,7 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
                 <Message
                   key={m._id}
                   message={m}
-                  feedId={post!.feedId}
+                  feedId={thread!.feedId}
                   timeAgoLabel={timeAgoLabel}
                   isCurrentUser={m.sender._id === user?._id}
                   isTabletOrUp={isTabletOrUp}
@@ -90,13 +93,13 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
             You can <Link href="/login">sign in</Link> to send messages.
           </p>
         </Hint>
-      ) : !canSendMessage && isUserLoaded ? (
+      ) : !canSendMessage && !isUserLoading ? (
         <Hint type="info" className={styles.hint}>
           <p>You don&apos;t have permission to send messages in this feed.</p>
         </Hint>
       ) : (
         <div className={styles.messageEditorWrapper}>
-          <MessageEditor postId={postId} />
+          <MessageEditor threadId={threadId} />
         </div>
       )}
     </>

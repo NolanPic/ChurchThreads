@@ -1,0 +1,29 @@
+.currentlyViewingCard {
+  width: 100%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing3);
+  text-align: center;
+}
+
+.label {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.feedTitle {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-family: var(--font-gentium-plus);
+  font-weight: 400;
+}
+
+.error {
+  margin: 0;
+  color: var(--error);
+  font-size: var(--text-sm);
+}

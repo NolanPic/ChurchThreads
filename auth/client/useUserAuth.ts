@@ -256,6 +256,7 @@ export function useUserAuth(): [
     error: Error | null;
     user: UserWithImageUrl | null;
     clerkUser: UserResource | null;
+    userFeeds: Doc<"userFeeds">[];
     signOut: (options?: { redirectUrl?: string }) => Promise<void>;
   }
 ] {
@@ -281,7 +282,7 @@ export function useUserAuth(): [
   if (!isLoaded || user === undefined || feedsData === undefined) {
     return [
       null,
-      { isLoading: true, error: null, user: null, clerkUser: null, signOut },
+      { isLoading: true, error: null, user: null, clerkUser: null, userFeeds: [], signOut },
     ];
   }
 
@@ -289,7 +290,7 @@ export function useUserAuth(): [
   if (!user || !clerkUser) {
     return [
       null,
-      { isLoading: false, error: null, user: null, clerkUser: null, signOut },
+      { isLoading: false, error: null, user: null, clerkUser: null, userFeeds: [], signOut },
     ];
   }
 
@@ -297,6 +298,6 @@ export function useUserAuth(): [
   const auth = new UserAuthClient(user, clerkUser, userFeeds, feeds);
   return [
     auth,
-    { isLoading: false, error: null, user, clerkUser, signOut },
+    { isLoading: false, error: null, user, clerkUser, userFeeds, signOut },
   ];
 }

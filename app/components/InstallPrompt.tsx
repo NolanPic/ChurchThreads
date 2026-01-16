@@ -12,7 +12,7 @@ interface InstallPromptProps {
 
 type Platform = "ios" | "android" | "desktop";
 
-const DISMISS_KEY = "churchfeed_install_prompt_dismissed_until";
+const DISMISS_KEY = "churchthreads_install_prompt_dismissed_until";
 const DISMISS_DURATION_MS = 90 * 24 * 60 * 60 * 1000; // 3 months
 
 export default function InstallPrompt({ isAuthenticated }: InstallPromptProps) {
@@ -79,9 +79,9 @@ export default function InstallPrompt({ isAuthenticated }: InstallPromptProps) {
     <Modal
       isOpen={isOpen}
       onClose={handleSoftClose}
-      title="Install churchfeed"
+      title="Install churchthreads"
       dragToClose={true}
-      ariaLabel="Install churchfeed app instructions"
+      ariaLabel="Install churchthreads app instructions"
     >
       <div className={styles.content}>
         {platform === "ios" && (

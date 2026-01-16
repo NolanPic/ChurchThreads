@@ -28,7 +28,7 @@ export default function NotificationsSidebar({
   const router = useRouter();
   const endOfList = useRef<HTMLDivElement>(null);
   const intersectionCb = useRef<IntersectionObserverCallback | null>(null);
-  const [activeTab, setActiveTab] = useState<TabType>("all");
+  const [activeTab, setActiveTab] = useState<TabType>("unread");
 
   const itemsPerPage = 25;
 
@@ -45,7 +45,7 @@ export default function NotificationsSidebar({
   const filteredResults = useMemo(() => {
     if (!results) return [];
     if (activeTab === "all") return results;
-    return results.filter(notification => !notification.readAt);
+    return results.filter((notification) => !notification.readAt);
   }, [results, activeTab]);
 
   // IntersectionObserver for pagination
@@ -60,7 +60,12 @@ export default function NotificationsSidebar({
   });
 
   useEffect(() => {
-    if (status === "LoadingFirstPage" || status === "Exhausted" || !results || results.length === 0) {
+    if (
+      status === "LoadingFirstPage" ||
+      status === "Exhausted" ||
+      !results ||
+      results.length === 0
+    ) {
       return;
     }
 
@@ -73,14 +78,16 @@ export default function NotificationsSidebar({
     }
 
     return () => observer.disconnect();
-  }, [status, results?.length]);
+  }, [status, results]);
 
   const handleClearAll = async () => {
     if (!orgId) return;
     await clearAll({ orgId });
   };
 
-  const handleNotificationClick = async (notification: EnrichedNotification) => {
+  const handleNotificationClick = async (
+    notification: EnrichedNotification
+  ) => {
     if (!orgId) return;
 
     // Mark as read
@@ -93,7 +100,10 @@ export default function NotificationsSidebar({
     onClose();
   };
 
-  const handleDotClick = async (e: React.MouseEvent, notificationId: Id<"notifications">) => {
+  const handleDotClick = async (
+    e: React.MouseEvent,
+    notificationId: Id<"notifications">
+  ) => {
     e.stopPropagation();
     if (!orgId) return;
     await markAsRead({ orgId, notificationId });
@@ -127,17 +137,17 @@ export default function NotificationsSidebar({
           <div className={styles.tabs}>
             <button
               type="button"
-              className={`${styles.tab} ${activeTab === "all" ? styles.active : ""}`}
-              onClick={() => setActiveTab("all")}
-            >
-              All
-            </button>
-            <button
-              type="button"
               className={`${styles.tab} ${activeTab === "unread" ? styles.active : ""}`}
               onClick={() => setActiveTab("unread")}
             >
               Unread
+            </button>
+            <button
+              type="button"
+              className={`${styles.tab} ${activeTab === "all" ? styles.active : ""}`}
+              onClick={() => setActiveTab("all")}
+            >
+              All
             </button>
           </div>
 
@@ -159,7 +169,9 @@ export default function NotificationsSidebar({
 
           {filteredResults.length === 0 && status !== "LoadingFirstPage" && (
             <div className={styles.empty}>
-              {activeTab === "unread" ? "No unread notifications" : "No notifications"}
+              {activeTab === "unread"
+                ? "No unread notifications"
+                : "No notifications"}
             </div>
           )}
 
@@ -171,8 +183,12 @@ export default function NotificationsSidebar({
               onClick={() => handleNotificationClick(notification)}
             >
               <div className={styles.notificationContent}>
-                <div className={styles.notificationTitle}>{notification.title}</div>
-                <div className={styles.notificationBody}>{notification.body}</div>
+                <div className={styles.notificationTitle}>
+                  {notification.title}
+                </div>
+                <div className={styles.notificationBody}>
+                  {notification.body}
+                </div>
               </div>
               {!notification.readAt && (
                 <button

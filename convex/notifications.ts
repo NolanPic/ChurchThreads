@@ -10,34 +10,35 @@ import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 import { getUserAuth } from "@/auth/convex";
 import { Doc, Id } from "./_generated/dataModel";
-import { fromJSONToPlainText } from "./utils/postContentConverter";
+import { fromJSONToPlainText } from "./utils/threadContentConverter";
 import { getAll } from "convex-helpers/server/relationships";
 import { internal } from "./_generated/api";
 
 export const notificationTypeValidator = v.union(
-  v.literal("new_post_in_member_feed"),
-  v.literal("new_message_in_post"),
+  v.literal("new_thread_in_member_feed"),
+  v.literal("new_message_in_thread"),
   v.literal("new_feed_member"),
   v.literal("new_user_needs_approval"),
 );
 
 export type NotificationType =
-  | "new_post_in_member_feed"
-  | "new_message_in_post"
+  | "new_thread_in_member_feed"
+  | "new_message_in_thread"
   | "new_feed_member"
   | "new_user_needs_approval";
 
 export const notificationDataValidator = v.union(
-  // new_post_in_member_feed
+  // new_thread_in_member_feed
   v.object({
     userId: v.id("users"),
     feedId: v.id("feeds"),
-    postId: v.id("posts"),
+    threadId: v.id("threads"),
   }),
-  // new_message_in_post
+  // new_message_in_thread
   v.object({
     userId: v.id("users"),
     messageId: v.id("messages"),
+    threadId: v.id("threads"),
     messageContent: v.string(),
   }),
   // new_feed_member
@@ -62,19 +63,20 @@ export type EnrichedNotification = Doc<"notifications"> & {
 
 type CollectedNotificationData =
   | {
-      type: "new_post_in_member_feed";
+      type: "new_thread_in_member_feed";
       user: Doc<"users"> | null;
       feed: Doc<"feeds"> | null;
-      postId: Id<"posts">;
+      threadId: Id<"threads">;
       feedId: Id<"feeds">;
     }
   | {
-      type: "new_message_in_post";
+      type: "new_message_in_thread";
       message: Doc<"messages"> | null;
       sender: Doc<"users"> | null;
-      post: Doc<"posts"> | null;
+      thread: Doc<"threads"> | null;
       messageText: string;
       messageId: Id<"messages">;
+      threadId: Id<"threads">;
     }
   | {
       type: "new_feed_member";
@@ -100,42 +102,44 @@ export async function collectNotificationData(
 
   try {
     switch (type) {
-      case "new_post_in_member_feed": {
+      case "new_thread_in_member_feed": {
         const typedData = data as {
           userId: Id<"users">;
           feedId: Id<"feeds">;
-          postId: Id<"posts">;
+          threadId: Id<"threads">;
         };
         const user = await ctx.db.get(typedData.userId);
         const feed = await ctx.db.get(typedData.feedId);
 
         return {
-          type: "new_post_in_member_feed",
+          type: "new_thread_in_member_feed",
           user,
           feed,
-          postId: typedData.postId,
+          threadId: typedData.threadId,
           feedId: typedData.feedId,
         };
       }
 
-      case "new_message_in_post": {
+      case "new_message_in_thread": {
         const typedData = data as {
           userId: Id<"users">;
           messageId: Id<"messages">;
+          threadId: Id<"threads">;
           messageContent: string;
         };
         const message = await ctx.db.get(typedData.messageId);
         const sender = message ? await ctx.db.get(message.senderId) : null;
-        const post = message ? await ctx.db.get(message.postId) : null;
+        const thread = message ? await ctx.db.get(message.threadId) : null;
         const messageText = fromJSONToPlainText(typedData.messageContent, 100);
 
         return {
-          type: "new_message_in_post",
+          type: "new_message_in_thread",
           message,
           sender,
-          post,
+          thread,
           messageText,
           messageId: typedData.messageId,
+          threadId: typedData.threadId,
         };
       }
 
@@ -189,8 +193,8 @@ export function generateNotificationText(
 ): EnrichedNotification | null {
   try {
     switch (collectedData.type) {
-      case "new_post_in_member_feed": {
-        const { user, feed, postId } = collectedData;
+      case "new_thread_in_member_feed": {
+        const { user, feed, threadId } = collectedData;
 
         if (!user || !feed) {
           return null;
@@ -200,33 +204,33 @@ export function generateNotificationText(
 
         return {
           ...notification,
-          title: isOwner ? "New post in your feed" : "New post",
+          title: isOwner ? "New thread in your feed" : "New thread",
           body: isOwner
-            ? `${user.name} just published a post in your feed, ${feed.name}`
-            : `${user.name} just published a post in ${feed.name}`,
+            ? `${user.name} just published a thread in your feed, ${feed.name}`
+            : `${user.name} just published a thread in ${feed.name}`,
           action: {
-            url: `/post/${postId}`,
+            url: `/thread/${threadId}`,
           },
         };
       }
 
-      case "new_message_in_post": {
-        const { sender, post, messageText, messageId } = collectedData;
+      case "new_message_in_thread": {
+        const { sender, thread, messageText, messageId } = collectedData;
 
-        if (!sender || !post) {
+        if (!sender || !thread) {
           return null;
         }
 
-        const isOwner = post.posterId === targetUserId;
+        const isOwner = thread.posterId === targetUserId;
 
         return {
           ...notification,
           title: isOwner
-            ? `${sender.name} messaged in your post`
-            : `${sender.name} responded in a post`,
+            ? `${sender.name} messaged in your thread`
+            : `${sender.name} responded in a thread`,
           body: messageText || "New message",
           action: {
-            url: `/post/${post._id}#${messageId}`,
+            url: `/thread/${thread._id}#${messageId}`,
           },
         };
       }
@@ -335,7 +339,7 @@ export const getUserNotifications = query({
         }
 
         let userFeedData: Doc<"userFeeds"> | null = null;
-        if (collectedData.type === "new_post_in_member_feed") {
+        if (collectedData.type === "new_thread_in_member_feed") {
           userFeedData = await ctx.db
             .query("userFeeds")
             .withIndex("by_org_and_feed_and_user", (q) =>
@@ -490,8 +494,13 @@ async function userIdsToRecipients(
 }
 
 type NotificationData =
-  | { userId: Id<"users">; feedId: Id<"feeds">; postId: Id<"posts"> }
-  | { userId: Id<"users">; messageId: Id<"messages">; messageContent: string }
+  | { userId: Id<"users">; feedId: Id<"feeds">; threadId: Id<"threads"> }
+  | {
+      userId: Id<"users">;
+      messageId: Id<"messages">;
+      messageContent: string;
+      threadId: Id<"threads">;
+    }
   | { userId: Id<"users">; feedId: Id<"feeds"> }
   | { userId: Id<"users">; organizationId: Id<"organizations"> };
 
@@ -509,11 +518,11 @@ async function getNotificationRecipients(
 > {
   try {
     switch (type) {
-      case "new_post_in_member_feed": {
+      case "new_thread_in_member_feed": {
         const { userId: posterId, feedId } = data as {
           userId: Id<"users">;
           feedId: Id<"feeds">;
-          postId: Id<"posts">;
+          threadId: Id<"threads">;
         };
 
         // Get all members of the feed except the poster
@@ -531,7 +540,7 @@ async function getNotificationRecipients(
         return await userIdsToRecipients(ctx, userIds);
       }
 
-      case "new_message_in_post": {
+      case "new_message_in_thread": {
         const { userId: senderId, messageId } = data as {
           userId: Id<"users">;
           messageId: Id<"messages">;
@@ -541,21 +550,21 @@ async function getNotificationRecipients(
         const message = await ctx.db.get(messageId);
         if (!message) return [];
 
-        const post = await ctx.db.get(message.postId);
-        if (!post) return [];
+        const thread = await ctx.db.get(message.threadId);
+        if (!thread) return [];
 
         const recipientUserIds = new Set<Id<"users">>();
 
-        // Add post owner if not the sender
-        if (post.posterId !== senderId) {
-          recipientUserIds.add(post.posterId);
+        // Add thread owner if not the sender
+        if (thread.posterId !== senderId) {
+          recipientUserIds.add(thread.posterId);
         }
 
-        // Get all users who have previously messaged in this post
+        // Get all users who have previously messaged in this thread
         const messages = await ctx.db
           .query("messages")
-          .withIndex("by_orgId_postId", (q) =>
-            q.eq("orgId", orgId).eq("postId", message.postId),
+          .withIndex("by_orgId_threadId", (q) =>
+            q.eq("orgId", orgId).eq("threadId", message.threadId),
           )
           .collect();
 
@@ -600,10 +609,10 @@ async function getNotificationRecipients(
 }
 
 /**
- * Enqueue a notification to be sent to relevant users
- * This schedules a batch send operation
+ * Schedules notifications to send to the relevant users
+ * after a specific action has taken place in the app
  */
-export async function enqueueNotification(
+export async function sendNotifications(
   ctx: MutationCtx,
   orgId: Id<"organizations">,
   type: NotificationType,
@@ -616,26 +625,21 @@ export async function enqueueNotification(
     return { recipientCount: 0 };
   }
 
-  // Schedule the batch send
-  await ctx.scheduler.runAfter(
-    0,
-    internal.notifications.sendNotificationBatch,
-    {
-      orgId,
-      type,
-      data,
-      recipients,
-    },
-  );
+  await ctx.runMutation(internal.notifications.scheduleNotifications, {
+    orgId,
+    type,
+    data,
+    recipients,
+  });
 
   return { recipientCount: recipients.length };
 }
 
 /**
- * Send notifications to a batch of users
+ * Schedules notifications to send to a batch of users
  * Creates notification records and sends push/email notifications
  */
-export const sendNotificationBatch = internalMutation({
+export const scheduleNotifications = internalMutation({
   args: {
     orgId: v.id("organizations"),
     type: notificationTypeValidator,
@@ -674,11 +678,11 @@ export const sendNotificationBatch = internalMutation({
       r.preferences.includes("push"),
     );
 
-    const emailRecipients = recipients.filter((r) =>
+    const emailRecipients = recipientsWithNotificationIds.filter((r) =>
       r.preferences.includes("email"),
     );
 
-    // Send push notifications via Node.js action
+    // Send push notifications
     if (pushRecipients.length > 0) {
       await ctx.scheduler.runAfter(
         0,
@@ -692,20 +696,54 @@ export const sendNotificationBatch = internalMutation({
       );
     }
 
-    // Send email notifications (not implemented yet)
+    // Send email notifications
     if (emailRecipients.length > 0) {
-      // await sendEmailNotifications(ctx, orgId, type, data, emailRecipients);
-      // Structure would be:
-      // 1. Call collectNotificationData to get shared data
-      // 2. For each recipient:
-      //    - Call generateNotificationText with user-specific data
-      //    - Format and send email with title, body, and action URL
-      // 3. Handle email sending errors gracefully (log and continue)
-      console.warn("Email notifications not implemented yet");
+      // Special handling for new_message_in_thread with 15-minute delay
+      if (type === "new_message_in_thread") {
+        const threadId = (data as { threadId: Id<"threads"> }).threadId;
+
+        // Check if email already scheduled for this thread
+        const alreadyScheduled = await ctx.runQuery(
+          internal.emailNotifications.getScheduledMessageNotifications,
+          { threadId },
+        );
+
+        await Promise.all(
+          alreadyScheduled.map(({ _id }) => {
+            ctx.scheduler.cancel(_id);
+          }),
+        );
+
+        // Schedule with 15-minute delay
+        await ctx.scheduler.runAfter(
+          15 * 60 * 1000,
+          internal.emailNotifications.sendEmailNotifications,
+          {
+            orgId,
+            type,
+            data,
+            recipients: emailRecipients,
+          },
+        );
+      } else {
+        // Send immediately for other notification types
+        await ctx.scheduler.runAfter(
+          0,
+          internal.emailNotifications.sendEmailNotifications,
+          {
+            orgId,
+            type,
+            data,
+            recipients: emailRecipients,
+          },
+        );
+      }
     }
 
     return {
-      notificationIds: recipientsWithNotificationIds.map((r) => r.notificationId),
+      notificationIds: recipientsWithNotificationIds.map(
+        (r) => r.notificationId,
+      ),
       sentCount: recipients.length,
     };
   },
@@ -748,11 +786,11 @@ export const getNotificationDataForPush = internalQuery({
       return [];
     }
 
-    // For new_post_in_member_feed, gather userFeed data for all recipients
+    // For new_thread_in_member_feed, gather userFeed data for all recipients
     const userFeedMap = new Map<Id<"users">, Doc<"userFeeds"> | null>();
     if (
-      type === "new_post_in_member_feed" &&
-      collectedData.type === "new_post_in_member_feed"
+      type === "new_thread_in_member_feed" &&
+      collectedData.type === "new_thread_in_member_feed"
     ) {
       const { feedId } = collectedData;
       const userFeeds = await ctx.db

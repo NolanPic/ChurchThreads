@@ -9,7 +9,8 @@ export interface CardListProps<T> {
   status: "LoadingFirstPage" | "CanLoadMore" | "LoadingMore" | "Exhausted";
   loadMore?: (numItems: number) => void;
   renderCardHeader?: (item: T) => ReactNode;
-  renderCardBody: (item: T) => ReactNode;
+  renderCardBody?: (item: T) => ReactNode;
+  renderCard?: (item: T) => ReactNode;
   className?: string;
   emptyMessage?: string;
   itemsPerPage?: number;
@@ -21,16 +22,26 @@ export function CardList<T extends { _id?: string }>({
   loadMore,
   renderCardHeader,
   renderCardBody,
+  renderCard,
   className = "",
   emptyMessage = "No data",
   itemsPerPage = 10,
 }: CardListProps<T>) {
+  if (!renderCard && !renderCardBody) {
+    throw new Error(
+      "CardList requires either renderCard or renderCardBody prop"
+    );
+  }
+  if (renderCard && renderCardBody) {
+    throw new Error(
+      "CardList cannot use both renderCard and renderCardBody props"
+    );
+  }
   const endOfList = useRef<HTMLDivElement>(null);
   const intersectionCb = useRef<IntersectionObserverCallback | null>(null);
 
-  const handleIntersection = (
-    entries: IntersectionObserverEntry[],
-    observer: IntersectionObserver
+  const handleIntersection: IntersectionObserverCallback = (
+    entries
   ) => {
     if (
       entries[0] &&
@@ -76,14 +87,18 @@ export function CardList<T extends { _id?: string }>({
   return (
     <div className={styles.cardListWrapper}>
       <div className={className || styles.cardList}>
-        {data.map((item, index) => (
-          <Card key={item._id || index}>
-            {renderCardHeader && (
-              <CardHeader>{renderCardHeader(item)}</CardHeader>
-            )}
-            <CardBody>{renderCardBody(item)}</CardBody>
-          </Card>
-        ))}
+        {data.map((item, index) =>
+          renderCard ? (
+            <div key={item._id || index}>{renderCard(item)}</div>
+          ) : (
+            <Card key={item._id || index}>
+              {renderCardHeader && (
+                <CardHeader>{renderCardHeader(item)}</CardHeader>
+              )}
+              <CardBody>{renderCardBody!(item)}</CardBody>
+            </Card>
+          )
+        )}
       </div>
       <div ref={endOfList} />
     </div>

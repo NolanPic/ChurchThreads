@@ -1,0 +1,27 @@
+.stackedUsers {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing2);
+}
+
+.avatarsContainer {
+  display: flex;
+  align-items: center;
+}
+
+.avatarWrapper {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  margin-left: calc(-1 * var(--spacing4));
+}
+
+.avatarWrapper:first-child {
+  margin-left: 0;
+}
+
+.remainingCount {
+  color: var(--accent);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
