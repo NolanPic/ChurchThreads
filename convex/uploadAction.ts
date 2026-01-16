@@ -155,15 +155,19 @@ export const uploadFile = httpAction(async (ctx, request) => {
     fileExtension,
   });
 
-  console.log("****STORAGE ID*****", storageId)
+  // user record should reference the avatar
+  if (source === "avatar") {
+    await ctx.runMutation(internal.user.updateUserAvatar, {
+      userId: user._id,
+      imageId: uploadId,
+    });
+  }
 
   // Get storage URL
   const url = await ctx.storage.getUrl(storageId);
   if (!url) {
     return jsonResponse({ error: "Failed to get storage URL" }, 500);
   }
-
-  console.log("******URL*****", url)
 
   // Return successful response
   return jsonResponse({

@@ -1,6 +1,6 @@
 import { Id, Doc } from "./_generated/dataModel";
 import { UserIdentity } from "convex/server";
-import { query, QueryCtx, MutationCtx } from "./_generated/server";
+import { query, QueryCtx, MutationCtx, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getStorageUrl } from "./uploads";
 
@@ -113,3 +113,18 @@ export const requireAuth = async (
   }
   return { clerkUser: result.clerkUser, user: result.user };
 };
+
+/**
+ * Update user's avatar
+ */
+export const updateUserAvatar = internalMutation({
+  args: {
+    userId: v.id("users"),
+    imageId: v.id("uploads"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.userId, {
+      image: args.imageId,
+    });
+  },
+});
