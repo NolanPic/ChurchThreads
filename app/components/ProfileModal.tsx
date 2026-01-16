@@ -5,6 +5,7 @@ import Button from "./common/Button";
 import UserAvatar from "./UserAvatar";
 import { Input } from "./common/Input";
 import IconButton from "./common/IconButton";
+import Toggle from "./common/Toggle";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 import { useImageUpload } from "./editor/hooks/useImageUpload";
 import { useMutation } from "convex/react";
@@ -130,22 +131,20 @@ export default function ProfileModal({
               />
               <div className={styles.notificationsSection}>
                 <h3>Notifications</h3>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={pushNotifications}
-                    onChange={(e) => setPushNotifications(e.target.checked)}
+                <div className={styles.notificationToggles}>
+                  <Toggle
+                    value={pushNotifications}
+                    onToggle={setPushNotifications}
+                    label="Receive push notifications"
+                    className={styles.notificationToggle}
                   />
-                  Receive push notifications
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={emailNotifications}
-                    onChange={(e) => setEmailNotifications(e.target.checked)}
+                  <Toggle
+                    value={emailNotifications}
+                    onToggle={setEmailNotifications}
+                    label="Receive email notifications"
+                    className={styles.notificationToggle}
                   />
-                  Receive email notifications
-                </label>
+                </div>
               </div>
             </div>
             <div className={styles.actionsDesktop}>
