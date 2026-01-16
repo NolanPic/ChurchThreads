@@ -7,6 +7,8 @@ import { Input } from "./common/Input";
 import IconButton from "./common/IconButton";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 import { useImageUpload } from "./editor/hooks/useImageUpload";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export default function ProfileModal({
   isOpen,
@@ -17,13 +19,21 @@ export default function ProfileModal({
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [pushNotifications, setPushNotifications] = useState(false);
+  const [emailNotifications, setEmailNotifications] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const disableSave = name.trim() === "" || email.trim() === "";
   const [, { user }] = useUserAuth();
+  const updateUser = useMutation(api.user.updateUser);
 
   useEffect(() => {
     if (user) {
       setName(user.name || "");
       setEmail(user.email || "");
+
+      const notifications = user.settings?.notifications || [];
+      setPushNotifications(notifications.includes("push"));
+      setEmailNotifications(notifications.includes("email"));
     }
   }, [user]);
 
@@ -42,6 +52,27 @@ export default function ProfileModal({
     }
   };
 
+  const handleSave = async () => {
+    if (!user || disableSave) return;
+
+    setIsSaving(true);
+    try {
+      const notifications: ("push" | "email")[] = [];
+      if (pushNotifications) notifications.push("push");
+      if (emailNotifications) notifications.push("email");
+
+      await updateUser({
+        orgId: user.orgId,
+        name: name.trim(),
+        notifications,
+      });
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <Modal
       title="Profile"
@@ -51,10 +82,11 @@ export default function ProfileModal({
         <div className={styles.toolbarActions}>
           <IconButton icon="close" onClick={onClose} />
           <IconButton
-            type="submit"
+            type="button"
             icon="save"
             variant="primary"
-            disabled={disableSave}
+            onClick={handleSave}
+            disabled={disableSave || isSaving}
           />
         </div>
       )}
@@ -96,15 +128,35 @@ export default function ProfileModal({
                 onChange={(e) => setEmail(e.target.value)}
                 disabled
               />
+              <div className={styles.notificationsSection}>
+                <h3>Notifications</h3>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={pushNotifications}
+                    onChange={(e) => setPushNotifications(e.target.checked)}
+                  />
+                  Receive push notifications
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={emailNotifications}
+                    onChange={(e) => setEmailNotifications(e.target.checked)}
+                  />
+                  Receive email notifications
+                </label>
+              </div>
             </div>
             <div className={styles.actionsDesktop}>
               <Button
-                type="submit"
+                type="button"
                 icon="send"
                 variant="primary"
-                disabled={disableSave}
+                onClick={handleSave}
+                disabled={disableSave || isSaving}
               >
-                Save
+                {isSaving ? "Saving..." : "Save"}
               </Button>
             </div>
           </div>
