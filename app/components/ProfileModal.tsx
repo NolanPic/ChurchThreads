@@ -52,7 +52,7 @@ export default function ProfileModal({
           <IconButton icon="close" onClick={onClose} />
           <IconButton
             type="submit"
-            icon="image"
+            icon="save"
             variant="primary"
             disabled={disableSave}
           />
