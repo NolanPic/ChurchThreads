@@ -23,6 +23,10 @@
     gap: var(--spacing7);
 }
 
+.changeAvatarLabel {
+    cursor: pointer;
+}
+
 .actionsDesktop {
     display: none;
 }
@@ -65,6 +69,7 @@
         order: 2;
         margin-right: var(--spacing13);
         margin-top: 0;
+        cursor: pointer;
     }
 
     .content{

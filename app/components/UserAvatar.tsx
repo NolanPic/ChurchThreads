@@ -19,16 +19,27 @@ interface UserAvatarProps {
   user: AvatarUser;
   size?: number;
   highlight?: boolean;
+  imageUploadPreview?: string | null;
 }
 
-const UserAvatar = ({ user, size, highlight }: UserAvatarProps) => {
+const UserAvatar = ({
+  user,
+  size,
+  highlight,
+  imageUploadPreview,
+}: UserAvatarProps) => {
   const { name, image } = user;
 
   const avatar = image ? (
     size ? (
-      <Image src={image} alt={name} width={size} height={size} />
+      <Image
+        src={imageUploadPreview || image}
+        alt={name}
+        width={size}
+        height={size}
+      />
     ) : (
-      <Image src={image} alt={name} fill />
+      <Image src={imageUploadPreview || image} alt={name} fill />
     )
   ) : (
     <div>{getAuthorInitialsAvatar(name)}</div>
