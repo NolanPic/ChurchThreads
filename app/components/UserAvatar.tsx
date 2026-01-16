@@ -50,7 +50,7 @@ const UserAvatar = ({
       className={classNames(styles.userAvatar, highlight && styles.highlight)}
       style={{ width: size, height: size }}
     >
-      {avatar}
+      <div className={styles.inner}>{avatar}</div>
     </div>
   );
 };
