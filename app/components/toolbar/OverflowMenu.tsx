@@ -1,3 +1,5 @@
+"use client";
+
 import Icon from "../common/Icon";
 import Link from "next/link";
 import styles from "./OverflowMenu.module.css";
