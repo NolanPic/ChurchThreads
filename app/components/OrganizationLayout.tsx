@@ -117,10 +117,7 @@ export default function OrganizationLayout({
               </button>
               <div className={styles.userAvatarMenu}>
                 <UserAvatarMenu
-                  openProfileModal={() => {
-                    setIsProfileModalOpen(true);
-                    historyRouter.push("/profile");
-                  }}
+                  openProfileModal={() => historyRouter.push("/profile")}
                 />
               </div>
             </>
@@ -162,10 +159,7 @@ export default function OrganizationLayout({
       )}
       <ProfileModal
         isOpen={isProfileModalOpen}
-        onClose={() => {
-          setIsProfileModalOpen(false);
-          historyRouter.push("/");
-        }}
+        onClose={() => historyRouter.push("/")}
       />
       <AnimatePresence>
         {isNotificationsSidebarOpen && (
