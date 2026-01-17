@@ -32,14 +32,6 @@ const Toggle = ({
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Space and Enter should toggle
-    if (e.key === " " || e.key === "Enter") {
-      e.preventDefault();
-      handleToggle();
-    }
-  };
-
   return (
     <div className={`${styles.toggleWrapper} ${className}`.trim()}>
       {label && (
@@ -57,7 +49,6 @@ const Toggle = ({
         aria-label={!label ? ariaLabel : undefined}
         disabled={disabled}
         onClick={handleToggle}
-        onKeyDown={handleKeyDown}
         className={`${styles.toggle} ${value ? styles.on : styles.off}`.trim()}
       >
         <span className={styles.track}>
