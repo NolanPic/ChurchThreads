@@ -23,18 +23,50 @@ export default function ProfileModal({
   const [pushNotifications, setPushNotifications] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const disableSave = name.trim() === "" || email.trim() === "";
+
+  // Track original values for change detection
+  const [originalName, setOriginalName] = useState("");
+  const [originalPushNotifications, setOriginalPushNotifications] =
+    useState(false);
+  const [originalEmailNotifications, setOriginalEmailNotifications] =
+    useState(false);
+
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
   const [, { user }] = useUserAuth();
   const updateUser = useMutation(api.user.updateUser);
 
+  const hasNameChanged = name !== originalName;
+  const hasPushChanged = pushNotifications !== originalPushNotifications;
+  const hasEmailChanged = emailNotifications !== originalEmailNotifications;
+  const hasChanges = hasNameChanged || hasPushChanged || hasEmailChanged;
+  const isNameEmpty = name.trim() === "";
+
+  const disableSave = !hasChanges || isNameEmpty || isSaving || saveSuccess;
+
+  // Reset save success state when user makes changes
+  useEffect(() => {
+    if (hasChanges && saveSuccess) {
+      setSaveSuccess(false);
+    }
+  }, [hasChanges, saveSuccess]);
+
   useEffect(() => {
     if (user) {
-      setName(user.name || "");
-      setEmail(user.email || "");
-
+      const userName = user.name || "";
       const notifications = user.settings?.notifications || [];
-      setPushNotifications(notifications.includes("push"));
-      setEmailNotifications(notifications.includes("email"));
+      const pushEnabled = notifications.includes("push");
+      const emailEnabled = notifications.includes("email");
+
+      setName(userName);
+      setEmail(user.email || "");
+      setPushNotifications(pushEnabled);
+      setEmailNotifications(emailEnabled);
+
+      // Set original values for change detection
+      setOriginalName(userName);
+      setOriginalPushNotifications(pushEnabled);
+      setOriginalEmailNotifications(emailEnabled);
     }
   }, [user]);
 
@@ -57,6 +89,8 @@ export default function ProfileModal({
     if (!user || disableSave) return;
 
     setIsSaving(true);
+    setSaveSuccess(false);
+
     try {
       const notifications: ("push" | "email")[] = [];
       if (pushNotifications) notifications.push("push");
@@ -67,10 +101,18 @@ export default function ProfileModal({
         name: name.trim(),
         notifications,
       });
+
+      // Save successful - show "Saved!" until user makes changes
+      setIsSaving(false);
+      setSaveSuccess(true);
+
+      setOriginalName(name);
+      setOriginalPushNotifications(pushNotifications);
+      setOriginalEmailNotifications(emailNotifications);
     } catch (error) {
       console.error("Failed to update profile:", error);
-    } finally {
       setIsSaving(false);
+      setSaveSuccess(false);
     }
   };
 
@@ -155,7 +197,7 @@ export default function ProfileModal({
                 onClick={handleSave}
                 disabled={disableSave || isSaving}
               >
-                {isSaving ? "Saving..." : "Save"}
+                {isSaving ? "Saving..." : saveSuccess ? "Saved!" : "Save"}
               </Button>
             </div>
           </div>
