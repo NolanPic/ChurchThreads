@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import UserAvatarMenu from "./UserAvatarMenu";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
@@ -31,11 +32,13 @@ export default function OrganizationLayout({
   const isSignedIn = auth !== null;
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
-  const historyRouter = useHistoryRouter((path) => {
+  const handleHistoryChange = useCallback((path: string) => {
     const segments = (path ?? "").split("/").filter(Boolean);
     const isProfilePath = segments[0] === "profile";
     setIsProfileModalOpen(isProfilePath);
-  });
+  }, []);
+
+  const historyRouter = useHistoryRouter(handleHistoryChange);
 
   const [isNotificationsSidebarOpen, setIsNotificationsSidebarOpen] =
     useState(false);
