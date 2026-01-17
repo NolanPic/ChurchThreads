@@ -1,8 +1,7 @@
 import UserAvatar from "./UserAvatar";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 import styles from "./UserAvatarMenu.module.css";
-import { useState } from "react";
-import Backdrop from "./common/Backdrop";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface UserAvatarMenuProps {
@@ -11,10 +10,28 @@ interface UserAvatarMenuProps {
 const UserAvatarMenu = ({ openProfileModal }: UserAvatarMenuProps) => {
   const [, { user, signOut }] = useUserAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLElement>(null);
 
   if (!user) {
     return null;
   }
+
+  // Handle click outside to close menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
     <div className={styles.userAvatarMenu}>
@@ -31,6 +48,7 @@ const UserAvatarMenu = ({ openProfileModal }: UserAvatarMenuProps) => {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.1 }}
+              ref={menuRef as React.RefObject<HTMLUListElement>}
             >
               <li className={styles.userAvatarMenuItem}>
                 <button
@@ -56,7 +74,6 @@ const UserAvatarMenu = ({ openProfileModal }: UserAvatarMenuProps) => {
                 </button>
               </li>
             </motion.ul>
-            <Backdrop onClick={() => setIsOpen(false)} />
           </>
         )}
       </AnimatePresence>
