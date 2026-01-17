@@ -12,10 +12,6 @@ const UserAvatarMenu = ({ openProfileModal }: UserAvatarMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLElement>(null);
 
-  if (!user) {
-    return null;
-  }
-
   // Handle click outside to close menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -32,6 +28,10 @@ const UserAvatarMenu = ({ openProfileModal }: UserAvatarMenuProps) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className={styles.userAvatarMenu}>
