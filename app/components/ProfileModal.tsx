@@ -129,7 +129,7 @@ export default function ProfileModal({
             icon="save"
             variant="primary"
             onClick={handleSave}
-            disabled={disableSave || isSaving}
+            disabled={disableSave}
           />
         </div>
       )}
