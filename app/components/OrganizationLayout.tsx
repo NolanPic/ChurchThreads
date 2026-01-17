@@ -1,10 +1,11 @@
 "use client";
 
+import { useCallback } from "react";
 import UserAvatarMenu from "./UserAvatarMenu";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { useOrganization } from "../context/OrganizationProvider";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 import styles from "./OrganizationLayout.module.css";
 import { useState, useEffect, useRef } from "react";
@@ -18,6 +19,7 @@ import Icon from "./common/Icon";
 import InstallPrompt from "./InstallPrompt";
 import PushNotificationPrompt from "./PushNotificationPrompt";
 import NotificationMarkAsRead from "./NotificationMarkAsRead";
+import useHistoryRouter from "../hooks/useHistoryRouter";
 
 export default function OrganizationLayout({
   children,
@@ -26,17 +28,18 @@ export default function OrganizationLayout({
 }) {
   const org = useOrganization();
   const pathname = usePathname();
-  const router = useRouter();
   const [auth] = useUserAuth();
   const isSignedIn = auth !== null;
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
-  useEffect(() => {
-    const segments = (pathname ?? "").split("/").filter(Boolean);
-    const isProfilePath =
-      segments[0] === "profile" || segments.includes("profile");
+  const handleHistoryChange = useCallback((path: string) => {
+    const segments = (path ?? "").split("/").filter(Boolean);
+    const isProfilePath = segments[0] === "profile";
     setIsProfileModalOpen(isProfilePath);
-  }, [pathname]);
+  }, []);
+
+  const historyRouter = useHistoryRouter(handleHistoryChange);
+
   const [isNotificationsSidebarOpen, setIsNotificationsSidebarOpen] =
     useState(false);
 
@@ -114,7 +117,7 @@ export default function OrganizationLayout({
               </button>
               <div className={styles.userAvatarMenu}>
                 <UserAvatarMenu
-                  openProfileModal={() => setIsProfileModalOpen(true)}
+                  openProfileModal={() => historyRouter.push("/profile")}
                 />
               </div>
             </>
@@ -156,10 +159,7 @@ export default function OrganizationLayout({
       )}
       <ProfileModal
         isOpen={isProfileModalOpen}
-        onClose={() => {
-          setIsProfileModalOpen(false);
-          router.back();
-        }}
+        onClose={() => historyRouter.push("/")}
       />
       <AnimatePresence>
         {isNotificationsSidebarOpen && (

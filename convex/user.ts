@@ -1,8 +1,9 @@
 import { Id, Doc } from "./_generated/dataModel";
 import { UserIdentity } from "convex/server";
-import { query, QueryCtx, MutationCtx } from "./_generated/server";
+import { query, QueryCtx, MutationCtx, internalMutation, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getStorageUrl } from "./uploads";
+import { getUserAuth } from "@/auth/convex";
 
 /**
  * @deprecated Use getUserAuth from @/auth/convex instead
@@ -113,3 +114,47 @@ export const requireAuth = async (
   }
   return { clerkUser: result.clerkUser, user: result.user };
 };
+
+/**
+ * Update user's avatar
+ */
+export const updateUserAvatar = internalMutation({
+  args: {
+    userId: v.id("users"),
+    imageId: v.id("uploads"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.userId, {
+      image: args.imageId,
+    });
+  },
+});
+
+/**
+ * Updates the authenticated user's profile
+ * Only updates the currently authenticated user (cannot update other users)
+ */
+export const updateUser = mutation({
+  args: {
+    orgId: v.id("organizations"),
+    name: v.string(),
+    notifications: v.array(v.union(v.literal("push"), v.literal("email"))),
+  },
+  handler: async (ctx, args) => {
+    const auth = await getUserAuth(ctx, args.orgId);
+    const user = auth.getUserOrThrow();
+
+    if (!args.name.trim()) {
+      throw new Error("Name cannot be empty");
+    }
+
+    await ctx.db.patch(user._id, {
+      name: args.name.trim(),
+      settings: {
+        notifications: args.notifications,
+      },
+    });
+
+    return { success: true };
+  },
+});

@@ -23,6 +23,27 @@
     gap: var(--spacing7);
 }
 
+.notificationsSection h3 {
+    margin: var(--spacing6) 0;
+    font-family: var(--font-gentium-plus);
+    font-size: var(--text-lg);
+    font-weight: 600;
+}
+
+.notificationToggles {
+    display: grid;
+    gap: var(--spacing6);
+}
+
+.notificationToggle {
+    display: flex;
+    justify-content: space-between;
+}
+
+.changeAvatarLabel {
+    cursor: pointer;
+}
+
 .actionsDesktop {
     display: none;
 }
@@ -55,7 +76,7 @@
         justify-content: space-between;
         align-items: flex-start;
         width: 100%;
-        margin-top: var(--spacing22);
+        margin-top: var(--spacing9);
         
     }
 
@@ -65,6 +86,7 @@
         order: 2;
         margin-right: var(--spacing13);
         margin-top: 0;
+        cursor: pointer;
     }
 
     .content{
