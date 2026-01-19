@@ -12,6 +12,7 @@ import styles from "./Modal.module.css";
 import Icon from "./Icon";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import { useLockBodyScroll } from "@/app/hooks/useLockBodyScroll";
+import { useKeyboardAwarePosition } from "@/app/hooks/useKeyboardAwarePosition";
 
 interface ModalToolbarProps {
   onClose: () => void;
@@ -56,6 +57,11 @@ export default function Modal({
   const isTabletOrUp = useMediaQuery("(min-width: 34.375rem)");
   const doAnimateDragToCloseOnPhone = !isTabletOrUp && dragToClose;
   const tabListRef = useRef<HTMLDivElement>(null);
+
+  // Estimated toolbar height: IconButton (48px) + padding (24px)
+  const toolbarHeight = 72;
+  const padding = 16;
+  const toolbarTop = useKeyboardAwarePosition(toolbarHeight) - padding;
 
   useLockBodyScroll(isOpen);
 
@@ -237,7 +243,18 @@ export default function Modal({
         </div>
       </motion.div>
       {toolbar && (
-        <div className={styles.toolbar}>
+        <div
+          className={styles.toolbar}
+          style={
+            !isTabletOrUp
+              ? {
+                  position: "absolute",
+                  top: 0,
+                  transform: `translateY(${toolbarTop}px)`,
+                }
+              : undefined
+          }
+        >
           {toolbar({ onClose: handleClose })}
         </div>
       )}
