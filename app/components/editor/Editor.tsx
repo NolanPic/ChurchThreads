@@ -1,6 +1,6 @@
 "use client";
 
-import userContentStyles from "../shared-styles/user-content.module.css";
+import userContentStyles from "@/app/shared/styles/user-content.module.css";
 import classNames from "classnames";
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
@@ -13,7 +13,7 @@ import { useRegisterEditorCommands } from "../../context/EditorCommands";
 import { Focus } from "@tiptap/extensions";
 import { useEditorImageUpload } from "./hooks/useEditorImageUpload";
 import { Id } from "@/convex/_generated/dataModel";
-import Hint from "@/app/components/common/Hint";
+import Hint from "@/app/components/ui/Hint";
 
 export interface EditorHandle {
   getJSON: () => JSONContent | null;

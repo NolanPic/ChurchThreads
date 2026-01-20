@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import Select, { SelectOption } from "../app/components/common/Select";
+import Select, { SelectOption } from "../app/components/ui/Select";
 
 const sampleOptions: SelectOption[] = [
   { value: "option1", label: "Option 1" },

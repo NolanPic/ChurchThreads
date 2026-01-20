@@ -8,7 +8,7 @@ import { CurrentFeedAndThreadProvider } from "./context/CurrentFeedAndThreadProv
 import { api } from "../convex/_generated/api";
 import { preloadQuery } from "convex/nextjs";
 import { headers } from "next/headers";
-import OrganizationLayout from "./components/OrganizationLayout";
+import OrganizationLayout from "./components/layout/OrganizationLayout";
 import Script from "next/script";
 
 export const metadata: Metadata = {

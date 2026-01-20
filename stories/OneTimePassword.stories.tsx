@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { OneTimePassword } from "../app/components/common/OneTimePassword";
+import { OneTimePassword } from "../app/components/ui/OneTimePassword";
 import { useState } from "react";
 
 const meta: Meta<typeof OneTimePassword> = {

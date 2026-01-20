@@ -2,7 +2,7 @@ import React from "react";
 import { render, RenderOptions } from "@testing-library/react";
 import { ConvexReactClient, ConvexProvider, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import Feed from "../Feed";
+import Feed from "../feeds/Feed";
 import { config } from "dotenv";
 
 config({ path: ".env.local" });

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import UserSelect, { UserOption } from "../app/components/common/UserSelect";
+import UserSelect, { UserOption } from "../app/components/users/UserSelect";
 
 // Sample user data
 const sampleUsers: UserOption[] = [

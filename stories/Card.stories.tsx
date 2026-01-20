@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
-import { Card, CardHeader, CardBody } from "../app/components/common/Card";
-import Button from "../app/components/common/Button";
+import { Card, CardHeader, CardBody } from "../app/components/ui/Card";
+import Button from "../app/components/ui/Button";
 
 type CardProps = React.ComponentProps<typeof Card>;
 

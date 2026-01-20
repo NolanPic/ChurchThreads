@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
-import Button from "../app/components/common/Button";
+import Button from "../app/components/ui/Button";
 
 type ButtonProps = React.ComponentProps<typeof Button>;
 

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
-import StackedUsers from "../app/components/common/StackedUsers";
+import StackedUsers from "../app/components/users/StackedUsers";
 import { Id } from "@/convex/_generated/dataModel";
 
 type StackedUsersProps = React.ComponentProps<typeof StackedUsers>;

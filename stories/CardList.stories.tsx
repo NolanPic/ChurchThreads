@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
-import { CardList } from "../app/components/common/CardList";
-import Button from "../app/components/common/Button";
+import { CardList } from "../app/components/ui/CardList";
+import Button from "../app/components/ui/Button";
 
 type CardListProps = React.ComponentProps<typeof CardList<MockUser>>;
 

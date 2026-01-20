@@ -4,8 +4,8 @@ import { useCallback, useEffect, useRef, useContext } from "react";
 import type { Editor } from "@tiptap/react";
 import type { EditorView } from "prosemirror-view";
 import { Selection } from "prosemirror-state";
-import { useImageUpload } from "./useImageUpload";
-import { CurrentFeedAndThreadContext } from "../../../context/CurrentFeedAndThreadProvider";
+import { useImageUpload } from "@/app/shared/hooks/useImageUpload";
+import { CurrentFeedAndThreadContext } from "@/app/context/CurrentFeedAndThreadProvider";
 import { Id } from "@/convex/_generated/dataModel";
 
 export interface UseEditorImageUploadReturn {
