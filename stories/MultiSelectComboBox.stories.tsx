@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import MultiSelectComboBox, {
   MultiSelectOption,
-} from "../app/components/common/MultiSelectComboBox";
+} from "../app/components/ui/MultiSelectComboBox";
 
 const sampleOptions: MultiSelectOption[] = [
   { value: "option1", text: "Apple" },

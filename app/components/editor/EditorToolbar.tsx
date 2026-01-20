@@ -1,8 +1,8 @@
 "use client";
 
 // TODO: ThreadEditorToolbar should be removed
-import styles from "./ThreadEditorToolbar.module.css";
-import Button from "../common/Button";
+import styles from "../content/threads/ThreadEditorToolbar.module.css";
+import Button from "../ui/Button";
 import classNames from "classnames";
 import { useEditorCommands } from "@/app/context/EditorCommands";
 

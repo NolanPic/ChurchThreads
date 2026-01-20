@@ -1,5 +1,5 @@
 import { Id } from "@/convex/_generated/dataModel";
-import Feed from "../components/Feed";
+import Feed from "../components/feeds/Feed";
 
 export default async function App({
   params,

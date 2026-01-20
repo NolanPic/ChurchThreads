@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
-import Modal, { ModalTab } from "../app/components/common/Modal";
-import Button from "../app/components/common/Button";
+import Modal, { ModalTab } from "../app/components/ui/Modal";
+import Button from "../app/components/ui/Button";
 
 type ModalProps = React.ComponentProps<typeof Modal>;
 

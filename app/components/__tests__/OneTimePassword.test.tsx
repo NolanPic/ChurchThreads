@@ -1,6 +1,6 @@
 import { describe, test, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { OneTimePassword } from "../common/OneTimePassword";
+import { OneTimePassword } from "../ui/OneTimePassword";
 
 describe("OneTimePassword", () => {
   test("renders the correct number of slots", () => {

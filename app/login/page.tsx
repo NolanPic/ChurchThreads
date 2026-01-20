@@ -1,7 +1,7 @@
 "use client";
 
-import Button from "@/app/components/common/Button";
-import { Input } from "@/app/components/common/Input";
+import Button from "@/app/components/ui/Button";
+import { Input } from "@/app/components/ui/Input";
 import styles from "./page.module.css";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -9,7 +9,7 @@ import { useRef, useState } from "react";
 import { useOrganization } from "@/app/context/OrganizationProvider";
 import { Id } from "@/convex/_generated/dataModel";
 import { useSignIn } from "@clerk/clerk-react";
-import { OneTimePassword } from "../components/common/OneTimePassword";
+import { OneTimePassword } from "../components/ui/OneTimePassword";
 import { useRouter } from "next/navigation";
 
 export default function SignIn() {
