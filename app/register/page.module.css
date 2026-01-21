@@ -1,0 +1,40 @@
+.registrationCard {
+    margin: 0 var(--spacing4);
+
+    form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing6);
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        font-weight: 400;
+        font-family: var(--font-gentium-plus);
+        text-align: center;
+        margin-bottom: var(--spacing6);
+    }
+
+    .submitButton {
+        margin-top: var(--spacing3);
+    }
+
+    .loadingMessage {
+        text-align: center;
+        font-style: italic;
+        color: var(--text-secondary);
+    }
+}
+
+@media (--tablet) {
+    .registrationCard {
+        background-color: var(--mid);
+        width: 400px;
+        max-width: initial;
+        border-radius: var(--border-radius-lg);
+        padding: var(--spacing9) var(--spacing14);
+        margin: 0 auto;
+    }
+}

@@ -19,13 +19,15 @@ export const notificationTypeValidator = v.union(
   v.literal("new_message_in_thread"),
   v.literal("new_feed_member"),
   v.literal("new_user_needs_approval"),
+  v.literal("user_registration"),
 );
 
 export type NotificationType =
   | "new_thread_in_member_feed"
   | "new_message_in_thread"
   | "new_feed_member"
-  | "new_user_needs_approval";
+  | "new_user_needs_approval"
+  | "user_registration";
 
 export const notificationDataValidator = v.union(
   // new_thread_in_member_feed
@@ -50,6 +52,11 @@ export const notificationDataValidator = v.union(
   v.object({
     userId: v.id("users"),
     organizationId: v.id("organizations"),
+  }),
+  // user_registration
+  v.object({
+    userId: v.id("users"),
+    inviteId: v.id("invites"),
   }),
 );
 
@@ -88,6 +95,11 @@ type CollectedNotificationData =
       type: "new_user_needs_approval";
       user: Doc<"users"> | null;
       organization: Doc<"organizations"> | null;
+    }
+  | {
+      type: "user_registration";
+      user: Doc<"users"> | null;
+      invite: Doc<"invites"> | null;
     };
 
 /**
@@ -168,6 +180,21 @@ export async function collectNotificationData(
           type: "new_user_needs_approval",
           user,
           organization,
+        };
+      }
+
+      case "user_registration": {
+        const typedData = data as {
+          userId: Id<"users">;
+          inviteId: Id<"invites">;
+        };
+        const user = await ctx.db.get(typedData.userId);
+        const invite = await ctx.db.get(typedData.inviteId);
+
+        return {
+          type: "user_registration",
+          user,
+          invite,
         };
       }
     }
@@ -265,6 +292,26 @@ export function generateNotificationText(
           body: `${user.name} is requesting to join ${organization.name}`,
           action: {
             url: `/admin/users?filter=needs_approval`,
+          },
+        };
+      }
+
+      case "user_registration": {
+        const { user } = collectedData as {
+          user: Doc<"users"> | null;
+          invite: Doc<"invites"> | null;
+        };
+
+        if (!user) {
+          return null;
+        }
+
+        return {
+          ...notification,
+          title: "New user joined",
+          body: `${user.name} just registered`,
+          action: {
+            url: `/`,
           },
         };
       }
@@ -502,7 +549,8 @@ type NotificationData =
       threadId: Id<"threads">;
     }
   | { userId: Id<"users">; feedId: Id<"feeds"> }
-  | { userId: Id<"users">; organizationId: Id<"organizations"> };
+  | { userId: Id<"users">; organizationId: Id<"organizations"> }
+  | { userId: Id<"users">; inviteId: Id<"invites"> };
 
 /**
  * Get all users who should receive a notification based on type and data
@@ -597,6 +645,14 @@ async function getNotificationRecipients(
           .filter((id) => id !== newMemberId);
 
         return await userIdsToRecipients(ctx, userIds);
+      }
+
+      case "user_registration": {
+        const { inviteId } = data as { inviteId: Id<"invites"> };
+        const invite = await ctx.db.get(inviteId);
+        if (!invite) return [];
+
+        return await userIdsToRecipients(ctx, [invite.createdBy]);
       }
 
       default:
@@ -709,8 +765,8 @@ export const scheduleNotifications = internalMutation({
         );
 
         await Promise.all(
-          alreadyScheduled.map(({ _id }) => {
-            ctx.scheduler.cancel(_id);
+          alreadyScheduled.map((scheduled: any) => {
+            ctx.scheduler.cancel(scheduled._id);
           }),
         );
 

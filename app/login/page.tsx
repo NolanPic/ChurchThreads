@@ -10,14 +10,16 @@ import { useOrganization } from "@/app/context/OrganizationProvider";
 import { Id } from "@/convex/_generated/dataModel";
 import { useSignIn } from "@clerk/clerk-react";
 import { OneTimePassword } from "../components/ui/OneTimePassword";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SignIn() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
 
-  const [email, setEmail] = useState("");
+  const emailParam = searchParams.get("email");
+  const [email, setEmail] = useState(emailParam || "");
   const [error, setError] = useState<string | undefined>(undefined);
   const [verifying, setVerifying] = useState(false);
   const [code, setCode] = useState("");
@@ -122,6 +124,7 @@ export default function SignIn() {
               type="email"
               placeholder="your@email.com"
               className={styles.signinEmail}
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <Button

@@ -4,6 +4,7 @@ import { render } from "@react-email/render";
 import { NewThread } from "@/email/notifications/NewThread";
 import { NewMessages } from "@/email/notifications/NewMessages";
 import { UserJoinedFeed } from "@/email/notifications/UserJoinedFeed";
+import { NewRegistration } from "@/email/notifications/NewRegistration";
 import type { ReactElement } from "react";
 import { EmailData } from "./types/notifications";
 
@@ -41,6 +42,15 @@ export default async function renderEmailTemplate(
         authorImageUrl: emailData.authorImageUrl,
         feed: emailData.feed,
         feedId: emailData.feedId,
+        notificationId: emailData.notificationId,
+        orgHost: emailData.orgHost,
+      }) as ReactElement;
+      break;
+
+    case "user_registration":
+      element = NewRegistration({
+        newUser: emailData.newUser,
+        newUserImageUrl: emailData.newUserImageUrl,
         notificationId: emailData.notificationId,
         orgHost: emailData.orgHost,
       }) as ReactElement;

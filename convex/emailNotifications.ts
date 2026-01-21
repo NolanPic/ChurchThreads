@@ -217,6 +217,18 @@ export const getNotificationDataForEmail = internalQuery({
             );
             break;
           }
+
+          case "user_registration": {
+            emailData = await getNewRegistrationEmailData(
+              ctx,
+              orgId,
+              data as { userId: Id<"users">; inviteId: Id<"invites"> },
+              recipient.userId,
+              recipient.notificationId,
+              org.host,
+            );
+            break;
+          }
         }
       } catch (error) {
         console.error("Error fetching email data:", error);
@@ -457,6 +469,35 @@ async function getNewFeedMemberEmailData(
   };
 }
 
+async function getNewRegistrationEmailData(
+  ctx: QueryCtx,
+  orgId: Id<"organizations">,
+  data: { userId: Id<"users">; inviteId: Id<"invites"> },
+  recipientUserId: Id<"users">,
+  notificationId: Id<"notifications">,
+  orgHost: string,
+): Promise<EmailData | null> {
+  const newUser = await ctx.db.get(data.userId);
+
+  if (!newUser) {
+    return null;
+  }
+
+  const newUserImageUrl = newUser.image
+    ? await ctx.runQuery(internal.uploads.getStorageUrlFromUploadId, {
+        uploadId: newUser.image,
+      })
+    : null;
+
+  return {
+    type: "user_registration" as const,
+    newUser,
+    newUserImageUrl,
+    notificationId,
+    orgHost,
+  };
+}
+
 function generateSubjectLine(emailData: EmailData): string {
   switch (emailData.type) {
     case "new_thread_in_member_feed":
@@ -473,6 +514,9 @@ function generateSubjectLine(emailData: EmailData): string {
 
     case "new_feed_member":
       return `${emailData.author.name} just joined ${emailData.feed.name}`;
+
+    case "user_registration":
+      return `${emailData.newUser.name} just registered`;
 
     default:
       return "New notification from churchthreads";
