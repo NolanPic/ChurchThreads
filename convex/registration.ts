@@ -9,6 +9,7 @@ import {
 import { Id, Doc } from "./_generated/dataModel";
 import { internal } from "./_generated/api";
 import { sendNotifications } from "./notifications";
+import { createClerkClient } from "@clerk/backend";
 
 const INVITE_INVALID_ERROR = "Invalid invite link";
 const INVITE_EXPIRED_ERROR = "This invite has expired. Please reach out to your church.";
@@ -67,7 +68,6 @@ export const createConvexUser = internalMutation({
       throw new Error("An account with this email already exists");
     }
 
-    // Create user
     const userId = await ctx.db.insert("users", {
       email: args.email,
       name: args.name,
@@ -155,7 +155,7 @@ export const updateInviteUsage = internalMutation({
 });
 
 /**
- * Internal action to handle the full registration process including Clerk user creation
+ * Internal action to handle the user creation (Convex + Clerk)
  */
 export const registerUser = internalAction({
   args: {
@@ -168,9 +168,6 @@ export const registerUser = internalAction({
     ctx,
     args
   ): Promise<{ success: boolean; email: string }> => {
-    // Import Clerk client
-    const { createClerkClient } = await import("@clerk/backend");
-
     if (!process.env.CLERK_SECRET_KEY) {
       throw new Error(
         "CLERK_SECRET_KEY environment variable is not set. "
@@ -179,7 +176,6 @@ export const registerUser = internalAction({
 
     const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
-    // Validate invite
     const invite = await ctx.runQuery(internal.registration.validateInvite, {
       token: args.token,
       email: args.email,
@@ -198,7 +194,6 @@ export const registerUser = internalAction({
       });
 
       // Step 2: Create Clerk user with external ID linking to Convex user
-      // Parse name into first and last name
       const nameParts = args.name.split(" ");
       const firstName = nameParts[0] || args.name;
       const lastName = nameParts.slice(1).join(" ") || "";
@@ -241,28 +236,14 @@ export const registerUser = internalAction({
 
       return { success: true, email: args.email };
     } catch (error) {
-      // Log the full error for debugging
       console.error("Registration error:", error);
-      if (error && typeof error === "object" && "errors" in error) {
-        console.error("Clerk error details:", JSON.stringify((error as any).errors, null, 2));
-      }
 
-      // Rollback: Clean up any created resources
       if (userId && !clerkUserId) {
-        // If we created Convex user but not Clerk user, delete Convex user
+        // Cleanup: If we created Convex user but not Clerk user, delete Convex user
         try {
           await ctx.runMutation(internal.registration.deleteUser, { userId });
         } catch (rollbackError) {
           console.error("Failed to rollback Convex user:", rollbackError);
-        }
-      }
-
-      if (clerkUserId && userId) {
-        // If both were created, try to delete Clerk user
-        try {
-          await clerk.users.deleteUser(clerkUserId);
-        } catch (rollbackError) {
-          console.error("Failed to rollback Clerk user:", rollbackError);
         }
       }
 
@@ -299,7 +280,6 @@ export const validateInvite = internalQuery({
       throw new Error(INVITE_EXPIRED_ERROR);
     }
 
-    // If invite has specific email, verify it matches
     if (invite.email && invite.email !== args.email) {
       throw new Error("This invite is for a different email address");
     }
@@ -340,7 +320,6 @@ export const register = action({
     ctx,
     args
   ): Promise<{ success: boolean; email: string }> => {
-    // Call the internal action to handle registration
     return await ctx.runAction(internal.registration.registerUser, {
       token: args.token,
       name: args.name,
