@@ -4,7 +4,6 @@ import {
   internalAction,
   internalMutation,
   internalQuery,
-  mutation,
   query,
 } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
@@ -31,18 +30,18 @@ export const lookupInviteByToken = query({
       return { error: "Invalid invite link" };
     }
 
+    const { useCount, maxUses, expiresAt } = invite;
+
     // Check if expired
-    if (invite.expiresAt && invite.expiresAt < Date.now()) {
+    if (expiresAt && expiresAt < Date.now()) {
       return { error: "This invite has expired. Please reach out to your church." };
     }
 
     // Check max uses
-    const maxUses = invite.maxUses ?? 1;
-    if (invite.useCount >= maxUses) {
+    if (maxUses && useCount >= maxUses) {
       return { error: "This invite has expired. Please reach out to your church." };
     }
 
-    // Return data for form pre-population
     return {
       email: invite.email,
       name: invite.name,
