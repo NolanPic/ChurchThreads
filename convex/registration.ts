@@ -6,9 +6,12 @@ import {
   internalQuery,
   query,
 } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
+import { Id, Doc } from "./_generated/dataModel";
 import { internal } from "./_generated/api";
 import { sendNotifications } from "./notifications";
+
+const INVITE_INVALID_ERROR = "Invalid invite link";
+const INVITE_EXPIRED_ERROR = "This invite has expired. Please reach out to your church.";
 
 /**
  * Look up an invite by token to get pre-population data for the registration form
@@ -27,19 +30,11 @@ export const lookupInviteByToken = query({
       .first();
 
     if (!invite) {
-      return { error: "Invalid invite link" };
+      return { error: INVITE_INVALID_ERROR };
     }
 
-    const { useCount, maxUses, expiresAt } = invite;
-
-    // Check if expired
-    if (expiresAt && expiresAt < Date.now()) {
-      return { error: "This invite has expired. Please reach out to your church." };
-    }
-
-    // Check max uses
-    if (maxUses && useCount >= maxUses) {
-      return { error: "This invite has expired. Please reach out to your church." };
+    if (hasInviteExpired(invite)) {
+      return { error: INVITE_EXPIRED_ERROR };
     }
 
     return {
@@ -178,8 +173,7 @@ export const registerUser = internalAction({
 
     if (!process.env.CLERK_SECRET_KEY) {
       throw new Error(
-        "CLERK_SECRET_KEY environment variable is not set. " +
-        "Please run: npx convex env set CLERK_SECRET_KEY <your-key>"
+        "CLERK_SECRET_KEY environment variable is not set. "
       );
     }
 
@@ -298,18 +292,11 @@ export const validateInvite = internalQuery({
       .first();
 
     if (!invite) {
-      throw new Error("Invalid or expired invite link");
+      throw new Error(INVITE_INVALID_ERROR);
     }
 
-    // Check if expired
-    if (invite.expiresAt && invite.expiresAt < Date.now()) {
-      throw new Error("This invite has expired. Please reach out to your church.");
-    }
-
-    // Check max uses
-    const maxUses = invite.maxUses ?? 1;
-    if (invite.useCount >= maxUses) {
-      throw new Error("This invite has expired. Please reach out to your church.");
+    if (hasInviteExpired(invite)) {
+      throw new Error(INVITE_EXPIRED_ERROR);
     }
 
     // If invite has specific email, verify it matches
@@ -362,3 +349,15 @@ export const register = action({
     });
   },
 });
+
+const hasInviteExpired = (invite: Doc<"invites">) => {
+  const { useCount, maxUses, expiresAt } = invite;
+
+  const inviteHasExpired = expiresAt && expiresAt < Date.now();
+  const inviteHasReachedMaxUses = maxUses && useCount >= maxUses;
+
+  if (inviteHasExpired || inviteHasReachedMaxUses) {
+    return true;
+  }
+  return false;
+}
