@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@auth/core": "^0.37.0",
+    "@clerk/backend": "^2.29.3",
     "@clerk/nextjs": "^6.36.7",
     "@floating-ui/react-dom": "^2.1.6",
     "@re-dev/react-truncate": "^0.5.2",

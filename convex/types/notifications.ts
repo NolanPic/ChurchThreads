@@ -35,4 +35,11 @@ export type EmailData =
       feedId: Id<"feeds">;
       notificationId: Id<"notifications">;
       orgHost: string;
+    }
+  | {
+      type: "user_registration";
+      newUser: Doc<"users">;
+      newUserImageUrl: string | null;
+      notificationId: Id<"notifications">;
+      orgHost: string;
     };

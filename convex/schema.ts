@@ -71,14 +71,17 @@ export default defineSchema({
   }).index("by_orgId_threadId", ["orgId", "threadId"]),
   invites: defineTable({
     orgId: v.id("organizations"),
-    email: v.string(),
-    name: v.string(),
-    token: v.optional(v.string()),
+    email: v.optional(v.string()),
+    name: v.optional(v.string()),
+    token: v.string(),
     type: v.union(v.literal("email"), v.literal("link")),
     expiresAt: v.number(),
-    usedAt: v.optional(v.number()),
+    lastUsed: v.optional(v.number()),
+    maxUses: v.optional(v.number()),
+    useCount: v.number(),
+    createdBy: v.id("users"),
     feeds: v.array(v.id("feeds")),
-  }),
+  }).index("by_token_and_org", ["token", "orgId"]),
   uploads: defineTable({
     ...defaultColumns,
     storageId: v.id("_storage"),
@@ -104,6 +107,7 @@ export default defineSchema({
       v.literal("new_message_in_thread"),
       v.literal("new_feed_member"),
       v.literal("new_user_needs_approval"),
+      v.literal("user_registration"),
     ),
     data: v.union(
       // new_thread_in_member_feed
@@ -128,6 +132,11 @@ export default defineSchema({
       v.object({
         userId: v.id("users"),
         organizationId: v.id("organizations"),
+      }),
+      // user_registration
+      v.object({
+        userId: v.id("users"),
+        inviteId: v.id("invites"),
       }),
     ),
     readAt: v.optional(v.number()),

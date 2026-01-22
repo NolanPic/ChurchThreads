@@ -5,19 +5,21 @@ import { Input } from "@/app/components/ui/Input";
 import styles from "./page.module.css";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import { useOrganization } from "@/app/context/OrganizationProvider";
 import { Id } from "@/convex/_generated/dataModel";
 import { useSignIn } from "@clerk/clerk-react";
 import { OneTimePassword } from "../components/ui/OneTimePassword";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function SignIn() {
+function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
-
-  const [email, setEmail] = useState("");
+  const emailParam = searchParams.get("email");
+  
+  const [email, setEmail] = useState(emailParam || "");
   const [error, setError] = useState<string | undefined>(undefined);
   const [verifying, setVerifying] = useState(false);
   const [code, setCode] = useState("");
@@ -110,52 +112,59 @@ export default function SignIn() {
     }
   };
 
+  return !verifying ? (
+    <form onSubmit={handleSubmitEmail}>
+      <Input
+        label="Email"
+        error={error}
+        type="email"
+        placeholder="your@email.com"
+        className={styles.signinEmail}
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <Button
+        className={styles.continueButton}
+        icon="send"
+        type="submit"
+        disabled={!isLoaded}
+        variant="primary"
+      >
+        Continue
+      </Button>
+    </form>
+  ) : (
+    <form onSubmit={handleVerifyOTP} ref={formRef}>
+      <p className={styles.otpMessage}>
+        Please check your email and enter the code below
+      </p>
+      <OneTimePassword
+        className={styles.otpInput}
+        slots={6}
+        onChange={setCode}
+        error={error}
+        onComplete={handleSubmitOnCodeComplete}
+      />
+      <Button
+        className={styles.signinButton}
+        type="submit"
+        disabled={!isLoaded}
+        variant="primary"
+      >
+        Sign in
+      </Button>
+    </form>
+  );
+}
+
+export default function SignIn() {
   return (
     <main>
       <div className={styles.signinCard}>
         <h1>Sign in</h1>
-        {!verifying ? (
-          <form onSubmit={handleSubmitEmail}>
-            <Input
-              label="Email"
-              error={error}
-              type="email"
-              placeholder="your@email.com"
-              className={styles.signinEmail}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <Button
-              className={styles.continueButton}
-              icon="send"
-              type="submit"
-              disabled={!isLoaded}
-              variant="primary"
-            >
-              Continue
-            </Button>
-          </form>
-        ) : (
-          <form onSubmit={handleVerifyOTP} ref={formRef}>
-            <p className={styles.otpMessage}>
-              Please check your email and enter the code below
-            </p>
-            <OneTimePassword
-              className={styles.otpInput}
-              slots={6}
-              onChange={setCode}
-              error={error}
-              onComplete={handleSubmitOnCodeComplete}
-            />
-            <Button
-              className={styles.signinButton}
-              type="submit"
-              disabled={!isLoaded}
-              variant="primary"
-            >
-              Sign in
-            </Button>
-          </form>
-        )}
+        <Suspense fallback={<p className={styles.otpMessage}>Loading...</p>}>
+          <SignInForm />
+        </Suspense>
       </div>
     </main>
   );

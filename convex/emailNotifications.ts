@@ -209,9 +209,17 @@ export const getNotificationDataForEmail = internalQuery({
           case "new_feed_member": {
             emailData = await getNewFeedMemberEmailData(
               ctx,
-              orgId,
               data as { userId: Id<"users">; feedId: Id<"feeds"> },
-              recipient.userId,
+              recipient.notificationId,
+              org.host
+            );
+            break;
+          }
+
+          case "user_registration": {
+            emailData = await getNewRegistrationEmailData(
+              ctx,
+              data as { userId: Id<"users">; inviteId: Id<"invites"> },
               recipient.notificationId,
               org.host,
             );
@@ -331,8 +339,8 @@ async function getNewThreadEmailData(
 
   const authorImageUrl = author.image
     ? await ctx.runQuery(internal.uploads.getStorageUrlFromUploadId, {
-        uploadId: author.image,
-      })
+      uploadId: author.image,
+    })
     : null;
   const threadHtml = fromJSONToHTML(thread.content);
 
@@ -392,8 +400,8 @@ async function getNewMessageEmailData(
       const authorImageUrl =
         author && author.image
           ? await ctx.runQuery(internal.uploads.getStorageUrlFromUploadId, {
-              uploadId: author.image,
-            })
+            uploadId: author.image,
+          })
           : null;
       const messageHtml = fromJSONToHTML(msg.content);
 
@@ -427,9 +435,7 @@ async function getNewMessageEmailData(
 
 async function getNewFeedMemberEmailData(
   ctx: QueryCtx,
-  orgId: Id<"organizations">,
   data: { userId: Id<"users">; feedId: Id<"feeds"> },
-  recipientUserId: Id<"users">,
   notificationId: Id<"notifications">,
   orgHost: string,
 ): Promise<EmailData | null> {
@@ -442,8 +448,8 @@ async function getNewFeedMemberEmailData(
 
   const authorImageUrl = author.image
     ? await ctx.runQuery(internal.uploads.getStorageUrlFromUploadId, {
-        uploadId: author.image,
-      })
+      uploadId: author.image,
+    })
     : null;
 
   return {
@@ -452,6 +458,33 @@ async function getNewFeedMemberEmailData(
     authorImageUrl,
     feed,
     feedId: data.feedId,
+    notificationId,
+    orgHost,
+  };
+}
+
+async function getNewRegistrationEmailData(
+  ctx: QueryCtx,
+  data: { userId: Id<"users">; inviteId: Id<"invites"> },
+  notificationId: Id<"notifications">,
+  orgHost: string,
+): Promise<EmailData | null> {
+  const newUser = await ctx.db.get(data.userId);
+
+  if (!newUser) {
+    return null;
+  }
+
+  const newUserImageUrl = newUser.image
+    ? await ctx.runQuery(internal.uploads.getStorageUrlFromUploadId, {
+      uploadId: newUser.image,
+    })
+    : null;
+
+  return {
+    type: "user_registration" as const,
+    newUser,
+    newUserImageUrl,
     notificationId,
     orgHost,
   };
@@ -473,6 +506,9 @@ function generateSubjectLine(emailData: EmailData): string {
 
     case "new_feed_member":
       return `${emailData.author.name} just joined ${emailData.feed.name}`;
+
+    case "user_registration":
+      return `${emailData.newUser.name} just registered`;
 
     default:
       return "New notification from churchthreads";
