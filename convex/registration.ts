@@ -340,7 +340,7 @@ export const register = action({
 const hasInviteExpired = (invite: Doc<"invites">) => {
   const { useCount, maxUses, expiresAt } = invite;
 
-  const inviteHasExpired = expiresAt && expiresAt < Date.now();
+  const inviteHasExpired = expiresAt < Date.now();
   const inviteHasReachedMaxUses = maxUses && useCount >= maxUses;
 
   if (inviteHasExpired || inviteHasReachedMaxUses) {
