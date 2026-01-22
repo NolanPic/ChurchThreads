@@ -209,11 +209,9 @@ export const getNotificationDataForEmail = internalQuery({
           case "new_feed_member": {
             emailData = await getNewFeedMemberEmailData(
               ctx,
-              orgId,
               data as { userId: Id<"users">; feedId: Id<"feeds"> },
-              recipient.userId,
               recipient.notificationId,
-              org.host,
+              org.host
             );
             break;
           }
@@ -221,9 +219,7 @@ export const getNotificationDataForEmail = internalQuery({
           case "user_registration": {
             emailData = await getNewRegistrationEmailData(
               ctx,
-              orgId,
               data as { userId: Id<"users">; inviteId: Id<"invites"> },
-              recipient.userId,
               recipient.notificationId,
               org.host,
             );
