@@ -343,8 +343,8 @@ async function getNewThreadEmailData(
 
   const authorImageUrl = author.image
     ? await ctx.runQuery(internal.uploads.getStorageUrlFromUploadId, {
-        uploadId: author.image,
-      })
+      uploadId: author.image,
+    })
     : null;
   const threadHtml = fromJSONToHTML(thread.content);
 
@@ -404,8 +404,8 @@ async function getNewMessageEmailData(
       const authorImageUrl =
         author && author.image
           ? await ctx.runQuery(internal.uploads.getStorageUrlFromUploadId, {
-              uploadId: author.image,
-            })
+            uploadId: author.image,
+          })
           : null;
       const messageHtml = fromJSONToHTML(msg.content);
 
@@ -439,9 +439,7 @@ async function getNewMessageEmailData(
 
 async function getNewFeedMemberEmailData(
   ctx: QueryCtx,
-  orgId: Id<"organizations">,
   data: { userId: Id<"users">; feedId: Id<"feeds"> },
-  recipientUserId: Id<"users">,
   notificationId: Id<"notifications">,
   orgHost: string,
 ): Promise<EmailData | null> {
@@ -454,8 +452,8 @@ async function getNewFeedMemberEmailData(
 
   const authorImageUrl = author.image
     ? await ctx.runQuery(internal.uploads.getStorageUrlFromUploadId, {
-        uploadId: author.image,
-      })
+      uploadId: author.image,
+    })
     : null;
 
   return {
@@ -471,9 +469,7 @@ async function getNewFeedMemberEmailData(
 
 async function getNewRegistrationEmailData(
   ctx: QueryCtx,
-  orgId: Id<"organizations">,
   data: { userId: Id<"users">; inviteId: Id<"invites"> },
-  recipientUserId: Id<"users">,
   notificationId: Id<"notifications">,
   orgHost: string,
 ): Promise<EmailData | null> {
@@ -485,8 +481,8 @@ async function getNewRegistrationEmailData(
 
   const newUserImageUrl = newUser.image
     ? await ctx.runQuery(internal.uploads.getStorageUrlFromUploadId, {
-        uploadId: newUser.image,
-      })
+      uploadId: newUser.image,
+    })
     : null;
 
   return {
