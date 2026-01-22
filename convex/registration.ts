@@ -10,6 +10,7 @@ import { Id, Doc } from "./_generated/dataModel";
 import { internal } from "./_generated/api";
 import { sendNotifications } from "./notifications";
 import { createClerkClient } from "@clerk/backend";
+import { validateEmailField, validateTextField, ValidationError } from "@/validation";
 
 const INVITE_INVALID_ERROR = "Invalid invite link";
 const INVITE_EXPIRED_ERROR = "This invite has expired. Please reach out to your church.";
@@ -56,6 +57,7 @@ export const createConvexUser = internalMutation({
     clerkId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+
     // Check if user already exists
     const existingUser = await ctx.db
       .query("users")
@@ -172,6 +174,12 @@ export const registerUser = internalAction({
       throw new Error(
         "CLERK_SECRET_KEY environment variable is not set. "
       );
+    }
+
+    const { success, errors } = validateFields(args.name, args.email);
+
+    if (!success) {
+      throw new Error(errors[0].message);
     }
 
     const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
@@ -339,4 +347,37 @@ const hasInviteExpired = (invite: Doc<"invites">) => {
     return true;
   }
   return false;
+}
+
+const validateFields = (name: string, email: string) => {
+  const nameValidation = validateTextField(
+    name,
+    {
+      required: true,
+      minLength: 4,
+      maxLength: 25,
+    },
+    "Name"
+  );
+
+  let errors: ValidationError[] = [];
+
+  if (!nameValidation.valid) {
+    errors = errors.concat(nameValidation.errors);
+  }
+
+  const emailValidation = validateEmailField(
+    email,
+    {
+      required: true,
+    },
+    "Email"
+  );
+
+  if (!emailValidation.valid) {
+    errors = errors.concat(emailValidation.errors);
+  }
+
+  return { success: errors.length === 0, errors }
+
 }

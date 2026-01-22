@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useOrganization } from "@/app/context/OrganizationProvider";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAction } from "convex/react";
+import { validateTextField, validateEmailField } from "@/validation";
 
 export default function Register() {
   const router = useRouter();
@@ -42,14 +43,42 @@ export default function Register() {
   // Form handler
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(undefined);
 
     if (!token || !org?._id) {
       setError("Invalid registration link");
       return;
     }
 
+    const nameValidation = validateTextField(
+      name,
+      {
+        required: true,
+        minLength: 4,
+        maxLength: 25,
+      },
+      "Name"
+    );
+
+    const emailValidation = validateEmailField(
+      email,
+      {
+        required: true,
+      },
+      "Email"
+    );
+
+
+    let validationErrors = '';
+
+    [ ...nameValidation.errors, ...emailValidation.errors].forEach(err => validationErrors += `${err.message}. `);
+
+    if(validationErrors) {
+      setError(validationErrors);
+      return;
+    }
+
     setIsSubmitting(true);
-    setError(undefined);
 
     try {
       await registerAction({
