@@ -35,6 +35,19 @@ export const createInvitationInternal = internalMutation({
       if (existingUser) {
         throw new Error("A user with this email already exists in the organization");
       }
+
+      // Check for existing pending invites for this email
+      const existingInvite = await ctx.db
+        .query("invites")
+        .withIndex("by_org_and_email", (q) =>
+          q.eq("orgId", orgId).eq("email", email)
+        )
+        .filter((q) => q.gt(q.field("expiresAt"), Date.now()))
+        .first();
+
+      if (existingInvite) {
+        throw new Error("An active invite for this email already exists in the organization");
+      }
     }
 
     // Validate feeds

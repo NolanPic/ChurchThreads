@@ -75,12 +75,18 @@ export const createAndSendEmailInvitations = action({
       throw new Error("Not authenticated");
     }
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    const apiKey = process.env.RESEND_API_KEY;
     const fromEmail = process.env.RESEND_FROM_EMAIL;
+
+    if (!apiKey) {
+      throw new Error("RESEND_API_KEY environment variable not set");
+    }
 
     if (!fromEmail) {
       throw new Error("RESEND_FROM_EMAIL environment variable not set");
     }
+
+    const resend = new Resend(apiKey);
 
     const results: InviteResult[] = [];
 
