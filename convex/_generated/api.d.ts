@@ -12,6 +12,8 @@ import type * as auth_actionAuth from "../auth/actionAuth.js";
 import type * as emailNotifications from "../emailNotifications.js";
 import type * as feeds from "../feeds.js";
 import type * as http from "../http.js";
+import type * as invites from "../invites.js";
+import type * as invitesActions from "../invitesActions.js";
 import type * as messages from "../messages.js";
 import type * as notifications from "../notifications.js";
 import type * as organizations from "../organizations.js";
@@ -40,6 +42,8 @@ declare const fullApi: ApiFromModules<{
   emailNotifications: typeof emailNotifications;
   feeds: typeof feeds;
   http: typeof http;
+  invites: typeof invites;
+  invitesActions: typeof invitesActions;
   messages: typeof messages;
   notifications: typeof notifications;
   organizations: typeof organizations;

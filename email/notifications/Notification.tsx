@@ -14,12 +14,14 @@ interface NotificationProps {
   title: string;
   children: React.ReactNode;
   orgHost: string;
+  showFooter?: boolean;
 }
 
 export const Notification: React.FC<NotificationProps> = ({
   title,
   children,
   orgHost,
+  showFooter = true,
 }) => {
   return (
     <Html>
@@ -134,25 +136,27 @@ export const Notification: React.FC<NotificationProps> = ({
           </Section>
 
           {/* Footer */}
-          <Section style={{ textAlign: "center" }}>
-            <Text
-              style={{
-                fontSize: "14px",
-                color: "#E0E0E0",
-                margin: 0,
-              }}
-            >
-              <Link
-                href={`https://${orgHost}/profile`}
+          {showFooter && (
+            <Section style={{ textAlign: "center" }}>
+              <Text
                 style={{
-                  color: "#F6B17A",
-                  textDecoration: "none",
+                  fontSize: "14px",
+                  color: "#E0E0E0",
+                  margin: 0,
                 }}
               >
-                Manage notification settings
-              </Link>
-            </Text>
-          </Section>
+                <Link
+                  href={`https://${orgHost}/profile`}
+                  style={{
+                    color: "#F6B17A",
+                    textDecoration: "none",
+                  }}
+                >
+                  Manage notification settings
+                </Link>
+              </Text>
+            </Section>
+          )}
         </Container>
       </Body>
     </Html>
