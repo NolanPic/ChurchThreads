@@ -20,6 +20,10 @@
   align-self: stretch;
 }
 
+.inviteNewUserButton {
+  align-self: flex-start;
+}
+
 .memberHeader {
   display: flex;
   align-items: center;

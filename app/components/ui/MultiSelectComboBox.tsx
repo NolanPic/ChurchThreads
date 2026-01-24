@@ -38,6 +38,12 @@ export interface MultiSelectComboBoxProps<T extends MultiSelectOption = MultiSel
   error?: string;
   helperText?: string;
   className?: string;
+  // Custom value support for free-form input (e.g., email addresses)
+  allowCustomValues?: boolean;
+  validateCustomValue?: (value: string) => boolean;
+  onCustomValuesAdded?: (values: string[]) => void;
+  // Custom selections for display (used with allowCustomValues when there are no predefined options)
+  customSelections?: string[];
 }
 
 function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOption>(
@@ -55,6 +61,10 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
     error,
     helperText,
     className,
+    allowCustomValues = false,
+    validateCustomValue,
+    onCustomValuesAdded,
+    customSelections = [],
     ...props
   }: MultiSelectComboBoxProps<T>,
   ref: React.ForwardedRef<HTMLInputElement>
@@ -179,6 +189,10 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
           event.preventDefault();
           if (isOpen && focusedIndex >= 0 && filteredOptions[focusedIndex]) {
             handleOptionSelect(filteredOptions[focusedIndex]);
+          } else if (allowCustomValues && searchTerm.trim()) {
+            // Add current input as custom value
+            processCustomValues(searchTerm);
+            setSearchTerm("");
           }
           break;
         case "Escape":
@@ -208,10 +222,18 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
           break;
         case "Backspace":
           // Remove last selected item if input is empty
-          if (searchTerm === "" && selectedValues.length > 0) {
-            event.preventDefault();
-            const lastValue = selectedValues[selectedValues.length - 1];
-            handleRemove(lastValue);
+          if (searchTerm === "") {
+            // First check custom selections, then regular selections
+            if (customSelections.length > 0) {
+              event.preventDefault();
+              const lastCustomValue = customSelections[customSelections.length - 1];
+              onCustomValuesAdded?.(customSelections.slice(0, -1).concat([])); // Remove last via callback pattern
+              handleRemove(lastCustomValue);
+            } else if (selectedValues.length > 0) {
+              event.preventDefault();
+              const lastValue = selectedValues[selectedValues.length - 1];
+              handleRemove(lastValue);
+            }
           }
           break;
       }
@@ -239,11 +261,30 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
+
+      // When custom values are allowed, detect comma to add values
+      if (allowCustomValues && value.includes(",")) {
+        processCustomValues(value);
+        setSearchTerm("");
+        return;
+      }
+
       setSearchTerm(value);
-      if (!isOpen && value) {
+      if (!isOpen && value && filteredOptions.length > 0) {
         setIsOpen(true);
       }
       setFocusedIndex(-1);
+    };
+
+    const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+      if (!allowCustomValues) return;
+
+      const pastedText = event.clipboardData.getData("text");
+      // If pasted text contains separators, process it
+      if (pastedText.includes(",") || pastedText.includes("\n") || pastedText.includes(" ")) {
+        event.preventDefault();
+        processCustomValues(pastedText);
+      }
     };
 
     const handleInputFocus = () => {
@@ -263,6 +304,34 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
 
     const defaultRenderOption = (option: T) => option.text;
     const defaultRenderSelection = (option: T) => option.text;
+
+    // Helper to process and add custom values (e.g., email addresses)
+    const processCustomValues = (input: string) => {
+      if (!allowCustomValues) return;
+
+      // Split by comma, newline, or space, then filter and trim
+      const rawValues = input.split(/[,\n\s]+/).map(v => v.trim()).filter(v => v.length > 0);
+
+      // Validate and filter values
+      const validValues = rawValues.filter(value => {
+        // Skip if already selected
+        if (selectedValues.includes(value) || customSelections.includes(value)) {
+          return false;
+        }
+        // If no validator provided, accept all non-empty values
+        if (!validateCustomValue) {
+          return true;
+        }
+        return validateCustomValue(value);
+      });
+
+      if (validValues.length > 0) {
+        onCustomValuesAdded?.(validValues);
+      }
+    };
+
+    // Determine if we should show the dropdown toggle
+    const showDropdownToggle = !allowCustomValues || options.length > 0;
 
     return (
       <div className={`${styles.wrapper} ${className || ""}`}>
@@ -298,6 +367,22 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
                 </span>
               </button>
             ))}
+            {customSelections.map((value) => (
+              <button
+                key={value}
+                type="button"
+                className={styles.tag}
+                onClick={() => handleRemove(value)}
+                disabled={disabled}
+                aria-label={`Remove ${value}`}
+                title={value}
+              >
+                <span className={styles.tagText}>{value}</span>
+                <span className={styles.removeIcon} aria-hidden="true">
+                  ×
+                </span>
+              </button>
+            ))}
             <input
               ref={mergeRefs(inputRef, ref)}
               id={comboboxId}
@@ -320,21 +405,24 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               onFocus={handleInputFocus}
+              onPaste={handlePaste}
               disabled={disabled}
-              placeholder={selectedValues.length === 0 ? placeholder : ""}
+              placeholder={selectedValues.length === 0 && customSelections.length === 0 ? placeholder : ""}
               {...props}
             />
           </div>
-          <button
-            type="button"
-            className={styles.toggleButton}
-            onClick={toggleDropdown}
-            disabled={disabled}
-            aria-label="Toggle options"
-            tabIndex={-1}
-          >
-            <Icon name="dropdown-arrow" size={10} />
-          </button>
+          {showDropdownToggle && (
+            <button
+              type="button"
+              className={styles.toggleButton}
+              onClick={toggleDropdown}
+              disabled={disabled}
+              aria-label="Toggle options"
+              tabIndex={-1}
+            >
+              <Icon name="dropdown-arrow" size={10} />
+            </button>
+          )}
 
           {isOpen &&
             !disabled &&

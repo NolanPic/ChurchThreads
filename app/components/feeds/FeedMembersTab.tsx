@@ -12,6 +12,7 @@ import { CardList } from "../ui/CardList";
 import Select from "../ui/Select";
 import UserAvatar from "../users/UserAvatar";
 import Hint from "../ui/Hint";
+import InviteModal from "../invites/InviteModal";
 import styles from "./FeedMembersTab.module.css";
 
 interface FeedMembersTabProps {
@@ -54,6 +55,7 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
   const [isInviting, setIsInviting] = useState(false);
   const [showInvited, setShowInvited] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   // Error state for general errors (role change, remove)
   const [generalError, setGeneralError] = useState<string | null>(null);
@@ -183,35 +185,50 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
       )}
 
       {isFeedOwner && (
-        <div className={styles.inviteSection}>
-          <UserSelect
-            users={userOptions}
-            placeholder={
-              userOptions?.length
-                ? "Select users to invite..."
-                : "No more users to invite"
-            }
-            values={selectedUserIds}
-            onChange={(value, isDeselecting) => {
-              setInviteError(null);
-              if (isDeselecting) {
-                setSelectedUserIds((prev) => prev.filter((id) => id !== value));
-              } else {
-                setSelectedUserIds((prev) => [...prev, value]);
-              }
-            }}
-            error={inviteError || undefined}
-            disabled={isInviting || !userOptions || !userOptions.length}
-          />
+        <>
           <Button
-            onClick={handleInvite}
-            disabled={isInviteButtonDisabled}
-            variant="primary"
-            className={styles.inviteButton}
+            onClick={() => setIsInviteModalOpen(true)}
+            className={styles.inviteNewUserButton}
           >
-            {inviteButtonText}
+            Invite new user
           </Button>
-        </div>
+
+          <div className={styles.inviteSection}>
+            <UserSelect
+              users={userOptions}
+              placeholder={
+                userOptions?.length
+                  ? "Select users to invite..."
+                  : "No more users to invite"
+              }
+              values={selectedUserIds}
+              onChange={(value, isDeselecting) => {
+                setInviteError(null);
+                if (isDeselecting) {
+                  setSelectedUserIds((prev) => prev.filter((id) => id !== value));
+                } else {
+                  setSelectedUserIds((prev) => [...prev, value]);
+                }
+              }}
+              error={inviteError || undefined}
+              disabled={isInviting || !userOptions || !userOptions.length}
+            />
+            <Button
+              onClick={handleInvite}
+              disabled={isInviteButtonDisabled}
+              variant="primary"
+              className={styles.inviteButton}
+            >
+              {inviteButtonText}
+            </Button>
+          </div>
+
+          <InviteModal
+            isOpen={isInviteModalOpen}
+            onClose={() => setIsInviteModalOpen(false)}
+            feed={feed ?? undefined}
+          />
+        </>
       )}
 
       <CardList

@@ -1,0 +1,52 @@
+/* InviteMethodStep styles */
+
+.methodGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing4);
+  width: 100%;
+}
+
+.card {
+  background-color: var(--mid2);
+  border: 2px solid var(--light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing6);
+  width: 100%;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  text-align: left;
+}
+
+.card:hover {
+  border-color: var(--accent);
+}
+
+.card:active {
+  transform: scale(0.98);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing3);
+  margin-bottom: var(--spacing2);
+}
+
+.cardTitle {
+  font-family: var(--font-gentium-plus);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--white);
+  margin: 0;
+}
+
+.cardDescription {
+  color: var(--light2);
+  font-size: var(--text-base);
+  line-height: 1.5;
+}
+
+.cardIcon {
+  color: var(--accent);
+}
