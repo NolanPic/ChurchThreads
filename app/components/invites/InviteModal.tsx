@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useInviteSteps, InviteStep } from "./hooks/useInviteSteps";
 import Modal from "../ui/Modal";
-import IconButton from "../ui/IconButton";
 import InviteMethodStep from "./steps/InviteMethodStep";
 import SelectFeedsStep from "./steps/SelectFeedsStep";
 import QRCodeStep from "./steps/QRCodeStep";
@@ -150,11 +149,6 @@ export default function InviteModal({
       onClose={onClose}
       ariaLabel="Invite new users"
       dragToClose
-      toolbar={({ onClose }) => (
-        <div className={styles.toolbar}>
-          <IconButton icon="close" onClick={onClose} />
-        </div>
-      )}
     >
       <div className={styles.content}>
         <AnimatePresence initial={false} custom={direction} mode="wait">

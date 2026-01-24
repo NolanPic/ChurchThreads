@@ -1,5 +1,3 @@
-/* InviteModal - Modal-specific styles */
-
 .content {
   padding: 0 var(--spacing7);
   overflow: hidden;
@@ -7,9 +5,4 @@
 
 .stepWrapper {
   width: 100%;
-}
-
-.toolbar {
-  display: flex;
-  justify-content: center;
 }
