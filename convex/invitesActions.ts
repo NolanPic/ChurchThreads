@@ -54,7 +54,7 @@ export const createAndSendEmailInvitations = action({
     usersToInvite: v.array(
       v.object({
         email: v.string(),
-        name: v.string(),
+        name: v.optional(v.string()),
       })
     ),
   },

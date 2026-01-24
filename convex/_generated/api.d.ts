@@ -30,6 +30,7 @@ import type * as uploads from "../uploads.js";
 import type * as user from "../user.js";
 import type * as userMemberships from "../userMemberships.js";
 import type * as utils_threadContentConverter from "../utils/threadContentConverter.js";
+import type * as utils_tokenGenerator from "../utils/tokenGenerator.js";
 
 import type {
   ApiFromModules,
@@ -60,6 +61,7 @@ declare const fullApi: ApiFromModules<{
   user: typeof user;
   userMemberships: typeof userMemberships;
   "utils/threadContentConverter": typeof utils_threadContentConverter;
+  "utils/tokenGenerator": typeof utils_tokenGenerator;
 }>;
 
 /**

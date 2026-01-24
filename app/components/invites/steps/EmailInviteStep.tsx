@@ -60,7 +60,6 @@ export default function EmailInviteStep({
     try {
       const usersToInvite = emailAddresses.map((email) => ({
         email: email.trim(),
-        name: email.split("@")[0], // Use email prefix as name
       }));
 
       const results = await createAndSendEmailInvitations({

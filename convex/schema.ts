@@ -81,7 +81,9 @@ export default defineSchema({
     useCount: v.number(),
     createdBy: v.id("users"),
     feeds: v.array(v.id("feeds")),
-  }).index("by_token_and_org", ["token", "orgId"]),
+  })
+    .index("by_token_and_org", ["token", "orgId"])
+    .index("by_org_and_email", ["orgId", "email"]),
   uploads: defineTable({
     ...defaultColumns,
     storageId: v.id("_storage"),
