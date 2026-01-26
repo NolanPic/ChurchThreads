@@ -19,7 +19,7 @@ export default function InviteMethodStep({
         onClick={() => onSelectMethod("email")}
       >
         <Card className={styles.methodCard}>
-          <Icon name="send" size={24} className={styles.icon} />
+          <Icon name="send-alt" size={24} className={styles.icon} />
           <h2 className={styles.title}>By email</h2>
           <p className={styles.description}>
             Send invitation emails to one or more people
@@ -33,7 +33,7 @@ export default function InviteMethodStep({
         onClick={() => onSelectMethod("qr")}
       >
         <Card className={styles.methodCard}>
-          <Icon name="share" size={24} className={styles.icon} />
+          <Icon name="qr-code" size={24} className={styles.icon} />
           <h2 className={styles.title}>By QR Code</h2>
           <p className={styles.description}>
             Show a QR code for someone to scan

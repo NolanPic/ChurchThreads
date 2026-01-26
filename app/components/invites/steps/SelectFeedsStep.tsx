@@ -6,7 +6,9 @@ import { api } from "@/convex/_generated/api";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useOrganization } from "@/app/context/OrganizationProvider";
 import Card from "../../ui/Card";
-import MultiSelectComboBox, { MultiSelectOption } from "../../ui/MultiSelectComboBox";
+import MultiSelectComboBox, {
+  MultiSelectOption,
+} from "../../ui/MultiSelectComboBox";
 import Button from "../../ui/Button";
 import Icon from "../../ui/Icon";
 import styles from "./SelectFeedsStep.module.css";
@@ -45,7 +47,7 @@ export default function SelectFeedsStep({
   // Filter to feeds where user is owner
   const ownedFeeds = useMemo(() => {
     const ownerFeedIds = new Set(
-      userFeeds.filter((uf) => uf.owner).map((uf) => uf.feedId)
+      userFeeds.filter((uf) => uf.owner).map((uf) => uf.feedId),
     );
     return feeds.filter((f) => ownerFeedIds.has(f._id));
   }, [userFeeds, feeds]);
@@ -88,7 +90,9 @@ export default function SelectFeedsStep({
       });
       return result.token;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create invitation");
+      setError(
+        err instanceof Error ? err.message : "Failed to create invitation",
+      );
       return null;
     } finally {
       setIsCreating(false);
@@ -96,7 +100,8 @@ export default function SelectFeedsStep({
   };
 
   const handleContinue = async () => {
-    const feedIds = selectedFeedIds.length > 0 ? selectedFeedIds : (feed ? [feed._id] : []);
+    const feedIds =
+      selectedFeedIds.length > 0 ? selectedFeedIds : feed ? [feed._id] : [];
     const token = await handleCreateInvitation(feedIds);
     if (token) {
       onComplete(feedIds, token);
@@ -145,11 +150,7 @@ export default function SelectFeedsStep({
           </p>
         )}
 
-        {error && (
-          <p className={styles.errorText}>
-            {error}
-          </p>
-        )}
+        {error && <p className={styles.errorText}>{error}</p>}
 
         <Button
           variant="primary"
@@ -170,7 +171,7 @@ export default function SelectFeedsStep({
         >
           <Card className={styles.skipCard}>
             <span className={styles.skipText}>Skip</span>
-            <Icon name="chevron-down" size={16} className={styles.icon} />
+            <Icon name="arrow-right" size={16} className={styles.icon} />
           </Card>
         </button>
       )}

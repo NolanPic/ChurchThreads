@@ -99,7 +99,7 @@ export default function EmailInviteStep({
   if (showSuccess && emailAddresses.length === 0) {
     return (
       <Card className={styles.successCard}>
-        <Icon name="send" size={48} className={styles.icon} />
+        <Icon name="send-alt" size={48} className={styles.icon} />
         <h2 className={styles.successTitle}>Invites sent!</h2>
         <p className={styles.description}>
           Your invitation emails have been sent successfully.
@@ -111,12 +111,12 @@ export default function EmailInviteStep({
   return (
     <Card className={styles.card}>
       <div className={styles.header}>
-        <Icon name="send" size={24} className={styles.icon} />
+        <Icon name="send-alt" size={24} className={styles.icon} />
         <h2 className={styles.title}>Send invites</h2>
       </div>
       <p className={styles.instructions}>
-        Enter email addresses separated by commas, spaces, or press Enter
-        after each one.
+        Enter email addresses separated by commas, spaces, or press Enter after
+        each one.
       </p>
 
       <MultiSelectComboBox
@@ -133,11 +133,7 @@ export default function EmailInviteStep({
         disabled={isSending}
       />
 
-      {error && (
-        <p className={styles.errorText}>
-          {error}
-        </p>
-      )}
+      {error && <p className={styles.errorText}>{error}</p>}
 
       <Button
         variant="primary"
