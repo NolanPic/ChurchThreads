@@ -5,12 +5,11 @@ import { useQuery, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useOrganization } from "@/app/context/OrganizationProvider";
-import Card from "../../ui/Card";
+import ActionCard from "../ActionCard";
 import MultiSelectComboBox, {
   MultiSelectOption,
 } from "../../ui/MultiSelectComboBox";
 import Button from "../../ui/Button";
-import Icon from "../../ui/Icon";
 import styles from "./SelectFeedsStep.module.css";
 
 interface FeedOption extends MultiSelectOption {
@@ -116,7 +115,6 @@ export default function SelectFeedsStep({
     }
   };
 
-  const isLoading = !feedsData;
   const hasOtherFeeds = feedOptions.length > 0;
 
   const message = feed
@@ -124,25 +122,16 @@ export default function SelectFeedsStep({
     : "Select feeds to add the invited user(s) to.";
 
   return (
-    <div className={styles.container}>
-      <Card className={styles.card}>
-        <div className={styles.header}>
-          <Icon name="plus" size={24} className={styles.icon} />
-          <h2 className={styles.title}>Add to feeds</h2>
-        </div>
-        <p className={styles.description}>{message}</p>
-
-        {isLoading ? (
-          <div className={styles.loading}>
-            <div className={styles.spinner} />
-          </div>
-        ) : hasOtherFeeds ? (
+    <div className={styles.options}>
+      <ActionCard title="Add to feeds" titleIcon="plus" description={message}>
+        {hasOtherFeeds ? (
           <MultiSelectComboBox
             options={feedOptions}
             values={additionalSelectedIds}
             onChange={handleFeedChange}
             placeholder="Select feeds..."
             disabled={isCreating}
+            className={styles.feedSelect}
           />
         ) : (
           <p className={styles.description}>
@@ -154,26 +143,20 @@ export default function SelectFeedsStep({
 
         <Button
           variant="primary"
-          className={styles.primaryButton}
+          className={styles.continueWithSelectedFeedsBtn}
           onClick={handleContinue}
-          disabled={isCreating || isLoading}
-        >
-          {isCreating ? "Creating..." : "Continue"}
-        </Button>
-      </Card>
-
-      {feed && (
-        <button
-          type="button"
-          className={styles.skipButton}
-          onClick={handleSkip}
           disabled={isCreating}
         >
-          <Card className={styles.skipCard}>
-            <span className={styles.skipText}>Skip</span>
-            <Icon name="arrow-right" size={16} className={styles.icon} />
-          </Card>
-        </button>
+          {isCreating ? "Preparing invite..." : "Continue"}
+        </Button>
+      </ActionCard>
+
+      {feed && (
+        <ActionCard
+          title="Skip"
+          titleIcon="arrow-right"
+          onClick={handleSkip}
+        ></ActionCard>
       )}
     </div>
   );

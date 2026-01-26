@@ -1,7 +1,6 @@
 "use client";
 
-import Card from "../../ui/Card";
-import Icon from "../../ui/Icon";
+import ActionCard from "../ActionCard";
 import styles from "./InviteMethodStep.module.css";
 
 interface InviteMethodStepProps {
@@ -12,34 +11,20 @@ export default function InviteMethodStep({
   onSelectMethod,
 }: InviteMethodStepProps) {
   return (
-    <div className={styles.methodGrid}>
-      <button
-        type="button"
-        className={styles.methodButton}
+    <div className={styles.methods}>
+      <ActionCard
+        title="By email"
+        titleIcon="send-alt"
+        description="Invite one or more users by their email address."
         onClick={() => onSelectMethod("email")}
-      >
-        <Card className={styles.methodCard}>
-          <Icon name="send-alt" size={24} className={styles.icon} />
-          <h2 className={styles.title}>By email</h2>
-          <p className={styles.description}>
-            Send invitation emails to one or more people
-          </p>
-        </Card>
-      </button>
+      ></ActionCard>
 
-      <button
-        type="button"
-        className={styles.methodButton}
+      <ActionCard
+        title="By QR Code"
+        titleIcon="qr-code"
+        description="Let users join by scanning a QR code on your phone."
         onClick={() => onSelectMethod("qr")}
-      >
-        <Card className={styles.methodCard}>
-          <Icon name="qr-code" size={24} className={styles.icon} />
-          <h2 className={styles.title}>By QR Code</h2>
-          <p className={styles.description}>
-            Show a QR code for someone to scan
-          </p>
-        </Card>
-      </button>
+      ></ActionCard>
     </div>
   );
 }

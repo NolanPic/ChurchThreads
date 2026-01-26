@@ -1,104 +1,27 @@
-/* SelectFeedsStep styles */
-
-.container {
+.options {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing4);
+  gap: var(--spacing8);
   width: 100%;
-}
-
-.card {
-  padding: var(--spacing6);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing4);
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing3);
-}
-
-.icon {
-  color: var(--accent);
-}
-
-.title {
-  font-family: var(--font-gentium-plus);
-  font-size: var(--text-lg);
-  font-weight: 700;
-  color: var(--white);
-  margin: 0;
 }
 
 .description {
-  color: var(--light2);
+  color: var(--white);
   font-size: var(--text-base);
   line-height: 1.5;
-  margin: 0;
 }
 
-.skipButton {
-  background: none;
-  border: none;
-  padding: 0;
+.feedSelect {
+  margin: var(--spacing5) 0;
+  background-color: var(--mid);
+}
+
+.continueWithSelectedFeedsBtn {
   width: 100%;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.skipButton:active {
-  transform: scale(0.98);
-}
-
-.skipButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.skipCard {
-  padding: var(--spacing4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing2);
-}
-
-.skipText {
-  font-size: var(--text-base);
-  color: var(--white);
-}
-
-.primaryButton {
-  width: 100%;
-}
-
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing8);
-}
-
-.spinner {
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--light);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 .errorText {
   color: var(--error);
   font-size: var(--text-base);
   line-height: 1.5;
-  margin: 0;
 }

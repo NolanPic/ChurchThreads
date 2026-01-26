@@ -5,10 +5,9 @@ import { useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useOrganization } from "@/app/context/OrganizationProvider";
-import Card from "../../ui/Card";
+import ActionCard from "../ActionCard";
 import MultiSelectComboBox from "../../ui/MultiSelectComboBox";
 import Button from "../../ui/Button";
-import Icon from "../../ui/Icon";
 import styles from "./EmailInviteStep.module.css";
 
 interface EmailInviteStepProps {
@@ -98,27 +97,21 @@ export default function EmailInviteStep({
 
   if (showSuccess && emailAddresses.length === 0) {
     return (
-      <Card className={styles.successCard}>
-        <Icon name="send-alt" size={48} className={styles.icon} />
-        <h2 className={styles.successTitle}>Invites sent!</h2>
-        <p className={styles.description}>
-          Your invitation emails have been sent successfully.
-        </p>
-      </Card>
+      <ActionCard
+        title="Invites sent!"
+        titleIcon="send-alt"
+        description="Your invitation emails have been sent successfully."
+      ></ActionCard>
     );
   }
 
   return (
-    <Card className={styles.card}>
-      <div className={styles.header}>
-        <Icon name="send-alt" size={24} className={styles.icon} />
-        <h2 className={styles.title}>Send invites</h2>
-      </div>
-      <p className={styles.instructions}>
-        Enter email addresses separated by commas, spaces, or press Enter after
-        each one.
-      </p>
-
+    <ActionCard
+      title="Send invites"
+      titleIcon="send-alt"
+      description="Enter email addresses separated by commas, spaces, or press Enter after
+        each one."
+    >
       <MultiSelectComboBox
         allowCustomValues
         validateCustomValue={validateEmail}
@@ -131,6 +124,7 @@ export default function EmailInviteStep({
         }}
         placeholder="Enter email addresses..."
         disabled={isSending}
+        className={styles.feedSelect}
       />
 
       {error && <p className={styles.errorText}>{error}</p>}
@@ -143,6 +137,6 @@ export default function EmailInviteStep({
       >
         {isSending ? "Sending..." : "Send"}
       </Button>
-    </Card>
+    </ActionCard>
   );
 }
