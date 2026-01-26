@@ -109,8 +109,7 @@ export default function EmailInviteStep({
     <ActionCard
       title="Send invites"
       titleIcon="send-alt"
-      description="Enter email addresses separated by commas, spaces, or press Enter after
-        each one."
+      description="Type email addresses, then press Enter after each one (or separate by comma)."
     >
       <MultiSelectComboBox
         allowCustomValues
