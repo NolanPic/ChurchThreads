@@ -17,7 +17,6 @@ interface EmailInviteStepProps {
   onSent: () => void;
 }
 
-// Simple email validation regex
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function validateEmail(email: string): boolean {
@@ -42,7 +41,6 @@ export default function EmailInviteStep({
   );
 
   const handleCustomValuesAdded = (values: string[]) => {
-    // Add only valid emails
     const validEmails = values.filter(validateEmail);
     onEmailAddressesChange([...emailAddresses, ...validEmails]);
   };
@@ -68,7 +66,6 @@ export default function EmailInviteStep({
         usersToInvite,
       });
 
-      // Check for any failures
       const failures = results.filter((r) => !r.success);
       if (failures.length > 0) {
         const failedEmails = failures.map((f) => f.email).join(", ");
