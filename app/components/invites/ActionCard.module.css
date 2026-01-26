@@ -1,0 +1,47 @@
+.actionButton {
+    background: none;
+    border: none;
+    padding: 0;
+    width: 100%;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .actionButton:active {
+    transform: scale(0.98);
+  }
+  
+  .card {
+    padding: var(--spacing6);
+    text-align: left;
+    display: grid;
+    grid-template-rows: 50px 1fr;
+    place-items: center;
+    min-height: 174px;
+    border: 1px solid var(--accent);
+  }
+
+  .shortCard {
+    min-height: 100px;
+  }
+  
+  .title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing2);
+    
+    & h2 {
+      font-family: var(--font-gentium-plus);
+      font-size: var(--text-lg);
+      font-weight: 400;
+      color: var(--white);
+    }
+  }
+  
+  .description {
+    color: var(--white);
+    font-size: var(--text-base);
+    line-height: 1.5;
+    padding: 0 var(--spacing6);
+    text-align: center;
+  }
