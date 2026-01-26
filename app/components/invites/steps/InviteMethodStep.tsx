@@ -1,5 +1,6 @@
 "use client";
 
+import Card from "../../ui/Card";
 import Icon from "../../ui/Icon";
 import styles from "./InviteMethodStep.module.css";
 
@@ -7,35 +8,37 @@ interface InviteMethodStepProps {
   onSelectMethod: (method: "email" | "qr") => void;
 }
 
-export default function InviteMethodStep({ onSelectMethod }: InviteMethodStepProps) {
+export default function InviteMethodStep({
+  onSelectMethod,
+}: InviteMethodStepProps) {
   return (
     <div className={styles.methodGrid}>
       <button
         type="button"
-        className={styles.card}
+        className={styles.methodButton}
         onClick={() => onSelectMethod("email")}
       >
-        <div className={styles.cardHeader}>
-          <Icon name="send" size={24} className={styles.cardIcon} />
-          <h2 className={styles.cardTitle}>By email</h2>
-        </div>
-        <p className={styles.cardDescription}>
-          Send invitation emails to one or more people
-        </p>
+        <Card className={styles.methodCard}>
+          <Icon name="send" size={24} className={styles.icon} />
+          <h2 className={styles.title}>By email</h2>
+          <p className={styles.description}>
+            Send invitation emails to one or more people
+          </p>
+        </Card>
       </button>
 
       <button
         type="button"
-        className={styles.card}
+        className={styles.methodButton}
         onClick={() => onSelectMethod("qr")}
       >
-        <div className={styles.cardHeader}>
-          <Icon name="share" size={24} className={styles.cardIcon} />
-          <h2 className={styles.cardTitle}>By QR Code</h2>
-        </div>
-        <p className={styles.cardDescription}>
-          Show a QR code for someone to scan
-        </p>
+        <Card className={styles.methodCard}>
+          <Icon name="share" size={24} className={styles.icon} />
+          <h2 className={styles.title}>By QR Code</h2>
+          <p className={styles.description}>
+            Show a QR code for someone to scan
+          </p>
+        </Card>
       </button>
     </div>
   );

@@ -1,18 +1,13 @@
-/* QRCodeStep styles */
-
 .card {
-  background-color: var(--mid2);
-  border: 2px solid var(--light);
-  border-radius: var(--border-radius-lg);
   padding: var(--spacing8);
-  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: var(--spacing4);
 }
 
 .logo {
-  margin-bottom: var(--spacing6);
+  margin-bottom: var(--spacing2);
 }
 
 .qrCode {
@@ -22,10 +17,10 @@
 }
 
 .instructions {
-  margin-top: var(--spacing4);
   color: var(--light2);
   font-size: var(--text-sm);
   text-align: center;
+  margin: 0;
 }
 
 .loading {

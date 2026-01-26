@@ -5,6 +5,7 @@ import { useQuery, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useOrganization } from "@/app/context/OrganizationProvider";
+import Card from "../../ui/Card";
 import MultiSelectComboBox, { MultiSelectOption } from "../../ui/MultiSelectComboBox";
 import Button from "../../ui/Button";
 import Icon from "../../ui/Icon";
@@ -119,58 +120,58 @@ export default function SelectFeedsStep({
 
   return (
     <div className={styles.container}>
-      <div className={styles.card}>
-        <div className={styles.cardHeader}>
-          <Icon name="plus" size={24} className={styles.cardIcon} />
-          <h2 className={styles.cardTitle}>Add to feeds</h2>
+      <Card className={styles.card}>
+        <div className={styles.header}>
+          <Icon name="plus" size={24} className={styles.icon} />
+          <h2 className={styles.title}>Add to feeds</h2>
         </div>
-        <div className={styles.feedsContent}>
-          <p className={styles.cardDescription}>{message}</p>
+        <p className={styles.description}>{message}</p>
 
-          {isLoading ? (
-            <div className={styles.loading}>
-              <div className={styles.spinner} />
-            </div>
-          ) : hasOtherFeeds ? (
-            <MultiSelectComboBox
-              options={feedOptions}
-              values={additionalSelectedIds}
-              onChange={handleFeedChange}
-              placeholder="Select feeds..."
-              disabled={isCreating}
-            />
-          ) : (
-            <p className={styles.cardDescription}>
-              You don&apos;t have any other feeds to add to.
-            </p>
-          )}
+        {isLoading ? (
+          <div className={styles.loading}>
+            <div className={styles.spinner} />
+          </div>
+        ) : hasOtherFeeds ? (
+          <MultiSelectComboBox
+            options={feedOptions}
+            values={additionalSelectedIds}
+            onChange={handleFeedChange}
+            placeholder="Select feeds..."
+            disabled={isCreating}
+          />
+        ) : (
+          <p className={styles.description}>
+            You don&apos;t have any other feeds to add to.
+          </p>
+        )}
 
-          {error && (
-            <p className={`${styles.cardDescription} ${styles.errorText}`}>
-              {error}
-            </p>
-          )}
+        {error && (
+          <p className={styles.errorText}>
+            {error}
+          </p>
+        )}
 
-          <Button
-            variant="primary"
-            className={styles.primaryButton}
-            onClick={handleContinue}
-            disabled={isCreating || isLoading}
-          >
-            {isCreating ? "Creating..." : "Continue"}
-          </Button>
-        </div>
-      </div>
+        <Button
+          variant="primary"
+          className={styles.primaryButton}
+          onClick={handleContinue}
+          disabled={isCreating || isLoading}
+        >
+          {isCreating ? "Creating..." : "Continue"}
+        </Button>
+      </Card>
 
       {feed && (
         <button
           type="button"
-          className={styles.skipCard}
+          className={styles.skipButton}
           onClick={handleSkip}
           disabled={isCreating}
         >
-          <span className={styles.skipText}>Skip</span>
-          <Icon name="chevron-down" size={16} className={styles.cardIcon} />
+          <Card className={styles.skipCard}>
+            <span className={styles.skipText}>Skip</span>
+            <Icon name="chevron-down" size={16} className={styles.icon} />
+          </Card>
         </button>
       )}
     </div>

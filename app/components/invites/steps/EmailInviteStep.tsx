@@ -5,6 +5,7 @@ import { useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useOrganization } from "@/app/context/OrganizationProvider";
+import Card from "../../ui/Card";
 import MultiSelectComboBox from "../../ui/MultiSelectComboBox";
 import Button from "../../ui/Button";
 import Icon from "../../ui/Icon";
@@ -97,57 +98,55 @@ export default function EmailInviteStep({
 
   if (showSuccess && emailAddresses.length === 0) {
     return (
-      <div className={styles.successCard}>
-        <Icon name="send" size={48} className={styles.cardIcon} />
+      <Card className={styles.successCard}>
+        <Icon name="send" size={48} className={styles.icon} />
         <h2 className={styles.successTitle}>Invites sent!</h2>
-        <p className={styles.cardDescription}>
+        <p className={styles.description}>
           Your invitation emails have been sent successfully.
         </p>
-      </div>
+      </Card>
     );
   }
 
   return (
-    <div className={styles.card}>
-      <div className={styles.cardHeader}>
-        <Icon name="send" size={24} className={styles.cardIcon} />
-        <h2 className={styles.cardTitle}>Send invites</h2>
+    <Card className={styles.card}>
+      <div className={styles.header}>
+        <Icon name="send" size={24} className={styles.icon} />
+        <h2 className={styles.title}>Send invites</h2>
       </div>
-      <div className={styles.emailContent}>
-        <p className={styles.instructions}>
-          Enter email addresses separated by commas, spaces, or press Enter
-          after each one.
+      <p className={styles.instructions}>
+        Enter email addresses separated by commas, spaces, or press Enter
+        after each one.
+      </p>
+
+      <MultiSelectComboBox
+        allowCustomValues
+        validateCustomValue={validateEmail}
+        onCustomValuesAdded={handleCustomValuesAdded}
+        customSelections={emailAddresses}
+        onChange={(value, isDeselecting) => {
+          if (isDeselecting) {
+            handleRemoveEmail(value);
+          }
+        }}
+        placeholder="Enter email addresses..."
+        disabled={isSending}
+      />
+
+      {error && (
+        <p className={styles.errorText}>
+          {error}
         </p>
+      )}
 
-        <MultiSelectComboBox
-          allowCustomValues
-          validateCustomValue={validateEmail}
-          onCustomValuesAdded={handleCustomValuesAdded}
-          customSelections={emailAddresses}
-          onChange={(value, isDeselecting) => {
-            if (isDeselecting) {
-              handleRemoveEmail(value);
-            }
-          }}
-          placeholder="Enter email addresses..."
-          disabled={isSending}
-        />
-
-        {error && (
-          <p className={`${styles.cardDescription} ${styles.errorText}`}>
-            {error}
-          </p>
-        )}
-
-        <Button
-          variant="primary"
-          className={styles.primaryButton}
-          onClick={handleSend}
-          disabled={isSending || emailAddresses.length === 0}
-        >
-          {isSending ? "Sending..." : "Send"}
-        </Button>
-      </div>
-    </div>
+      <Button
+        variant="primary"
+        className={styles.primaryButton}
+        onClick={handleSend}
+        disabled={isSending || emailAddresses.length === 0}
+      >
+        {isSending ? "Sending..." : "Send"}
+      </Button>
+    </Card>
   );
 }
