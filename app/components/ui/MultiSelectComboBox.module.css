@@ -4,6 +4,7 @@
   gap: var(--spacing2);
   width: 100%;
   position: relative;
+  background-color: var(--mid2);
 }
 
 .label {
@@ -27,7 +28,6 @@
   border: 0;
   border-bottom: 2px solid var(--light);
   border-radius: 2px;
-  background-color: var(--mid2);
   transition: all 0.2s ease-in-out;
   position: relative;
   gap: var(--spacing2);
