@@ -3,7 +3,6 @@
 import { QRCodeSVG } from "qrcode.react";
 import Image from "next/image";
 import { useOrganization } from "@/app/context/OrganizationProvider";
-import Card from "../../ui/Card";
 import styles from "./QRCodeStep.module.css";
 
 interface QRCodeStepProps {
@@ -14,19 +13,13 @@ export default function QRCodeStep({ inviteToken }: QRCodeStepProps) {
   const org = useOrganization();
 
   if (!inviteToken || !org) {
-    return (
-      <Card className={styles.card}>
-        <div className={styles.loading}>
-          <div className={styles.spinner} />
-        </div>
-      </Card>
-    );
+    return;
   }
 
   const registerUrl = `https://${org.host}/register?token=${inviteToken}`;
 
   return (
-    <Card className={styles.card}>
+    <>
       <div className={styles.logo}>
         <Image
           src="/logo.svg"
@@ -35,6 +28,9 @@ export default function QRCodeStep({ inviteToken }: QRCodeStepProps) {
           height={40}
           priority
         />
+        <p>
+          church<span>threads</span>
+        </p>
       </div>
 
       <div className={styles.qrCode}>
@@ -43,12 +39,10 @@ export default function QRCodeStep({ inviteToken }: QRCodeStepProps) {
           size={200}
           level="M"
           marginSize={0}
+          bgColor="#E0E0E0"
+          fgColor="#4C5177"
         />
       </div>
-
-      <p className={styles.instructions}>
-        Scan this QR code to join {org.name}
-      </p>
-    </Card>
+    </>
   );
 }
