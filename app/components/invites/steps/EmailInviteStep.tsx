@@ -130,6 +130,7 @@ export default function EmailInviteStep({
         className={styles.primaryButton}
         onClick={handleSend}
         disabled={isSending || emailAddresses.length === 0}
+        icon="send"
       >
         {isSending ? "Sending..." : "Send"}
       </Button>

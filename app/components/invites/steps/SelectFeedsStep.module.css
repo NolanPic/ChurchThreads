@@ -25,3 +25,10 @@
   font-size: var(--text-base);
   line-height: 1.5;
 }
+
+@media(--tablet) {
+  .options {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}

@@ -4,3 +4,9 @@
   gap: var(--spacing8);
   width: 100%;
 }
+
+@media(--tablet) {
+  .methods {
+    flex-direction: row;
+  }
+}

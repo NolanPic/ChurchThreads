@@ -11,5 +11,10 @@
   color: var(--error);
   font-size: var(--text-base);
   line-height: 1.5;
-  margin: 0;
+}
+
+@media(--tablet) {
+  .primaryButton {
+    max-width: 42%;
+  }
 }
