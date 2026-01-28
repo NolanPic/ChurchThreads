@@ -47,7 +47,7 @@ export default function Feed({
   const [isNewThreadOpen, setIsNewThreadOpen] = useState(false);
   const [isSelectingFeedForThread, setIsSelectingFeedForThread] =
     useState(false);
-  const [settingsActiveTab, setSettingsActiveTab] = useState("settings");
+  const [settingsActiveTab, setSettingsActiveTab] = useState("members");
   const [isFeedOwner, setIsFeedOwner] = useState(false);
   const [, setIsFeedMember] = useState(false);
   const [auth] = useUserAuth();
@@ -70,7 +70,7 @@ export default function Feed({
   // Fix TS type mismatch: context setter expects undefined to clear, not null
   useEffect(
     () => setFeedId(feedIdSlug ?? undefined),
-    [org, feedIdSlug, setFeedId]
+    [org, feedIdSlug, setFeedId],
   );
 
   useEffect(() => {
@@ -102,14 +102,14 @@ export default function Feed({
     },
     {
       initialNumItems: itemsPerPage,
-    }
+    },
   );
 
   const feed = useQuery(
     api.feeds.getFeed,
     feedSettingsFeedIdSlug && org
       ? { orgId, feedId: feedSettingsFeedIdSlug }
-      : "skip"
+      : "skip",
   );
 
   const vh = useViewportHeight();
@@ -134,7 +134,7 @@ export default function Feed({
       },
       {
         rootMargin: `${vh * 0.5}px`,
-      }
+      },
     );
     if (endOfFeed.current) {
       observer.observe(endOfFeed.current);
@@ -174,7 +174,7 @@ export default function Feed({
 
     if (hasUnsavedChanges) {
       const confirmed = window.confirm(
-        "You have unsaved changes. Are you sure you want to leave?"
+        "You have unsaved changes. Are you sure you want to leave?",
       );
       if (!confirmed) {
         return;
@@ -250,7 +250,7 @@ export default function Feed({
     ) : null,
   };
 
-  const modalTabs = isFeedOwner ? [settingsTab, membersTab] : [membersTab];
+  const modalTabs = isFeedOwner ? [membersTab, settingsTab] : [membersTab];
 
   return (
     <>
