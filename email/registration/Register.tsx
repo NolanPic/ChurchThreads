@@ -33,7 +33,7 @@ export const Register: React.FC<RegisterProps> = ({
         </Text>
 
         <div style={{ textAlign: "center" }}>
-          <Button url={`https://${orgHost}/register?token=${inviteToken}`}>
+          <Button url={`https://${orgHost}/register?token=${encodeURIComponent(inviteToken)}`}>
             Register now
           </Button>
         </div>

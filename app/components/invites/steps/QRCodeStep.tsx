@@ -13,10 +13,10 @@ export default function QRCodeStep({ inviteToken }: QRCodeStepProps) {
   const org = useOrganization();
 
   if (!inviteToken || !org) {
-    return;
+    return null;
   }
 
-  const registerUrl = `https://${org.host}/register?token=${inviteToken}`;
+  const registerUrl = `https://${org.host}/register?token=${encodeURIComponent(inviteToken)}`;
 
   return (
     <>
