@@ -10,18 +10,19 @@
 }
 
 .inviteSection {
-  display: flex;
-  gap: var(--spacing3);
-  align-items: stretch;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing6);
+  overflow-y: scroll;
+}
+
+.action {
+  min-width: 300px;
 }
 
 .inviteButton {
-  height: auto;
+  margin-top: var(--spacing5);
   align-self: stretch;
-}
-
-.inviteNewUserButton {
-  align-self: flex-start;
 }
 
 .memberHeader {
@@ -64,4 +65,10 @@
   display: flex;
   align-items: center;
   font-size: var(--text-md);
+}
+
+@media(--tablet) {
+  .action {
+    min-width: initial;
+  }
 }
