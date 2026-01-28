@@ -9,6 +9,7 @@ interface ActionCardProps {
   description?: string;
   onClick?: () => void;
   disabled?: Boolean;
+  className?: string;
   children?: React.ReactNode;
 }
 
@@ -18,6 +19,7 @@ export default function ActionCard({
   description,
   onClick,
   disabled,
+  className,
   children,
 }: ActionCardProps) {
   const useShortCard = !description && !children;
@@ -26,7 +28,6 @@ export default function ActionCard({
     <Card
       className={classnames(styles.card, {
         [styles.isDisabled]: disabled,
-        [styles.shortCard]: useShortCard,
       })}
     >
       {title && (
@@ -40,11 +41,19 @@ export default function ActionCard({
     </Card>
   );
 
-  return onClick ? (
-    <button type="button" className={styles.actionButton} onClick={onClick}>
-      {card}
-    </button>
-  ) : (
-    card
+  return (
+    <div
+      className={classnames(styles.cardWrapper, className, {
+        [styles.shortCard]: useShortCard,
+      })}
+    >
+      {onClick ? (
+        <button type="button" className={styles.actionButton} onClick={onClick}>
+          {card}
+        </button>
+      ) : (
+        card
+      )}
+    </div>
   );
 }
