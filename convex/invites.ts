@@ -1,4 +1,4 @@
-import { internalMutation, internalQuery } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getUserAuth } from "@/auth/convex";
 
@@ -24,11 +24,13 @@ export const createInvitationInternal = internalMutation({
     const user = auth.getUserOrThrow();
 
     // If email provided, check no user exists with that email
-    if (email) {
+    let normalizedEmail = email ? email.toLowerCase() : undefined;
+    if (normalizedEmail) {
+
       const existingUser = await ctx.db
         .query("users")
         .withIndex("by_org_and_email", (q) =>
-          q.eq("orgId", orgId).eq("email", email)
+          q.eq("orgId", orgId).eq("email", normalizedEmail)
         )
         .first();
 
@@ -40,7 +42,7 @@ export const createInvitationInternal = internalMutation({
       const existingInvite = await ctx.db
         .query("invites")
         .withIndex("by_org_and_email", (q) =>
-          q.eq("orgId", orgId).eq("email", email)
+          q.eq("orgId", orgId).eq("email", normalizedEmail)
         )
         .filter((q) => q.gt(q.field("expiresAt"), Date.now()))
         .first();
@@ -74,7 +76,7 @@ export const createInvitationInternal = internalMutation({
       orgId,
       type,
       name,
-      email,
+      email: normalizedEmail,
       feeds,
       token,
       createdBy: user._id,

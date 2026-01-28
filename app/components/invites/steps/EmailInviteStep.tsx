@@ -41,7 +41,7 @@ export default function EmailInviteStep({
   );
 
   const handleCustomValuesAdded = (values: string[]) => {
-    const validEmails = values.filter(validateEmail);
+    const validEmails = values.filter(validateEmail).map(email => email.toLowerCase());
     onEmailAddressesChange([...emailAddresses, ...validEmails]);
   };
 
@@ -57,7 +57,7 @@ export default function EmailInviteStep({
 
     try {
       const usersToInvite = emailAddresses.map((email) => ({
-        email: email.trim(),
+        email: email.trim().toLowerCase(),
       }));
 
       const results = await createAndSendEmailInvitations({

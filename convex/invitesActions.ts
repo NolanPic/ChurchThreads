@@ -100,7 +100,7 @@ export const createAndSendEmailInvitations = action({
             orgId,
             type: "email",
             name: userToInvite.name,
-            email: userToInvite.email,
+            email: userToInvite.email.toLowerCase(),
             feeds,
             token,
           }
