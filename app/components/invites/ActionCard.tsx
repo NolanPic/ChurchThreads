@@ -25,11 +25,7 @@ export default function ActionCard({
   const useShortCard = !description && !children;
 
   const card = (
-    <Card
-      className={classnames(styles.card, {
-        [styles.isDisabled]: disabled,
-      })}
-    >
+    <Card className={styles.card}>
       {title && (
         <div className={styles.title}>
           <h2>{title}</h2>
@@ -48,7 +44,12 @@ export default function ActionCard({
       })}
     >
       {onClick ? (
-        <button type="button" className={styles.actionButton} onClick={onClick}>
+        <button
+          type="button"
+          className={styles.actionButton}
+          onClick={onClick}
+          disabled={!!disabled}
+        >
           {card}
         </button>
       ) : (
