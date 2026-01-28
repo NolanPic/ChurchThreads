@@ -205,7 +205,6 @@ export default function Feed({
     if (!auth || !feedSettingsFeedIdSlug) {
       setIsFeedOwner(false);
       setIsFeedMember(false);
-      setSettingsActiveTab("settings");
       return;
     }
 
@@ -215,10 +214,6 @@ export default function Feed({
       .hasRole("owner")
       .then((result) => {
         setIsFeedOwner(result.allowed);
-        // If user is not an owner, switch to members tab
-        if (!result.allowed) {
-          setSettingsActiveTab("members");
-        }
       });
 
     // Check if user is a member (includes owners)
