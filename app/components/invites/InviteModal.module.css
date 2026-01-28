@@ -1,0 +1,8 @@
+.content {
+  padding: 0 var(--spacing7);
+  overflow: hidden;
+}
+
+.stepWrapper {
+  width: 100%;
+}

@@ -9,9 +9,11 @@ import { useUserAuth } from "@/auth/client/useUserAuth";
 import UserSelect, { UserOption } from "../users/UserSelect";
 import Button from "../ui/Button";
 import { CardList } from "../ui/CardList";
+import ActionCard from "../invites/ActionCard";
 import Select from "../ui/Select";
 import UserAvatar from "../users/UserAvatar";
 import Hint from "../ui/Hint";
+import InviteModal from "../invites/InviteModal";
 import styles from "./FeedMembersTab.module.css";
 
 interface FeedMembersTabProps {
@@ -35,17 +37,17 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
   } = usePaginatedQuery(
     api.userMemberships.getFeedMembers,
     { orgId, feedId },
-    { initialNumItems: MEMBERS_PER_PAGE }
+    { initialNumItems: MEMBERS_PER_PAGE },
   );
   // Only fetch users not in feed if user is an owner
   const usersNotInFeed = useQuery(
     api.userMemberships.getUsersNotInFeed,
-    isFeedOwner ? { orgId, feedId } : "skip"
+    isFeedOwner ? { orgId, feedId } : "skip",
   );
 
   const inviteUsersToFeed = useMutation(api.userMemberships.inviteUsersToFeed);
   const removeMemberFromFeed = useMutation(
-    api.userMemberships.removeMemberFromFeed
+    api.userMemberships.removeMemberFromFeed,
   );
   const changeMemberRole = useMutation(api.userMemberships.changeMemberRole);
 
@@ -54,6 +56,7 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
   const [isInviting, setIsInviting] = useState(false);
   const [showInvited, setShowInvited] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   // Error state for general errors (role change, remove)
   const [generalError, setGeneralError] = useState<string | null>(null);
@@ -65,9 +68,9 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
 
   const currentUserIsOnlyOwner = Boolean(
     members &&
-      currentUser &&
-      members.filter((m) => m.isOwner).length === 1 &&
-      members.find((m) => m._id === currentUser._id)?.isOwner
+    currentUser &&
+    members.filter((m) => m.isOwner).length === 1 &&
+    members.find((m) => m._id === currentUser._id)?.isOwner,
   );
 
   const handleInvite = async () => {
@@ -90,7 +93,7 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
       setTimeout(() => setShowInvited(false), 2000);
     } catch (error) {
       setInviteError(
-        error instanceof Error ? error.message : "Failed to invite users"
+        error instanceof Error ? error.message : "Failed to invite users",
       );
     } finally {
       setIsInviting(false);
@@ -107,7 +110,7 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
       await changeMemberRole({ orgId, feedId, userId, isOwner });
     } catch (error) {
       setGeneralError(
-        error instanceof Error ? error.message : "Failed to change member role"
+        error instanceof Error ? error.message : "Failed to change member role",
       );
       // Role will revert automatically since we're not tracking local state
     } finally {
@@ -135,7 +138,7 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
       await removeMemberFromFeed({ orgId, feedId, userId });
     } catch (error) {
       setGeneralError(
-        error instanceof Error ? error.message : "Failed to remove member"
+        error instanceof Error ? error.message : "Failed to remove member",
       );
     }
   };
@@ -166,10 +169,10 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
     })) || [];
 
   const inviteButtonText = showInvited
-    ? "Invited!"
+    ? "Added!"
     : isInviting
-      ? "Inviting..."
-      : "Invite";
+      ? "Adding..."
+      : "Add";
 
   const isInviteButtonDisabled =
     selectedUserIds.length === 0 || isInviting || showInvited;
@@ -183,35 +186,58 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
       )}
 
       {isFeedOwner && (
-        <div className={styles.inviteSection}>
-          <UserSelect
-            users={userOptions}
-            placeholder={
-              userOptions?.length
-                ? "Select users to invite..."
-                : "No more users to invite"
-            }
-            values={selectedUserIds}
-            onChange={(value, isDeselecting) => {
-              setInviteError(null);
-              if (isDeselecting) {
-                setSelectedUserIds((prev) => prev.filter((id) => id !== value));
-              } else {
-                setSelectedUserIds((prev) => [...prev, value]);
-              }
-            }}
-            error={inviteError || undefined}
-            disabled={isInviting || !userOptions || !userOptions.length}
+        <>
+          <div className={styles.inviteSection}>
+            <ActionCard
+              title="Add existing user"
+              titleIcon="plus"
+              className={styles.action}
+            >
+              <UserSelect
+                users={userOptions}
+                placeholder={
+                  userOptions?.length
+                    ? "Select users to invite..."
+                    : "No more users to invite"
+                }
+                values={selectedUserIds}
+                onChange={(value, isDeselecting) => {
+                  setInviteError(null);
+                  if (isDeselecting) {
+                    setSelectedUserIds((prev) =>
+                      prev.filter((id) => id !== value),
+                    );
+                  } else {
+                    setSelectedUserIds((prev) => [...prev, value]);
+                  }
+                }}
+                error={inviteError || undefined}
+                disabled={isInviting || !userOptions || !userOptions.length}
+              />
+              <Button
+                onClick={handleInvite}
+                disabled={isInviteButtonDisabled}
+                variant="primary"
+                className={styles.inviteButton}
+              >
+                {inviteButtonText}
+              </Button>
+            </ActionCard>
+            <ActionCard
+              title="Invite user"
+              titleIcon="send-alt"
+              description="Invite someone who isn't a user of ChurchThreads to join your feed."
+              onClick={() => setIsInviteModalOpen(true)}
+              className={styles.action}
+            ></ActionCard>
+          </div>
+
+          <InviteModal
+            isOpen={isInviteModalOpen}
+            onClose={() => setIsInviteModalOpen(false)}
+            feed={feed ?? undefined}
           />
-          <Button
-            onClick={handleInvite}
-            disabled={isInviteButtonDisabled}
-            variant="primary"
-            className={styles.inviteButton}
-          >
-            {inviteButtonText}
-          </Button>
-        </div>
+        </>
       )}
 
       <CardList

@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useCallback, useId, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   motion,
   useAnimate,
@@ -244,9 +245,18 @@ export default function Modal({
     </motion.div>
   ) : null;
 
-  return doAnimateDragToCloseOnPhone ? (
+  const modalContent = doAnimateDragToCloseOnPhone ? (
     modal
   ) : (
     <AnimatePresence>{modal}</AnimatePresence>
   );
+
+  // Use portal on client, render in place during SSR
+  if (typeof document === 'undefined') {
+    // SSR: render modal in place so it appears in initial HTML
+    return modalContent;
+  }
+
+  // Client: render through portal to document.body
+  return createPortal(modalContent, document.body);
 }

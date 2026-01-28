@@ -1,0 +1,22 @@
+.logo {
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  margin-bottom: var(--spacing16);
+
+  & p {
+      font-size: var(--text-lg);
+      font-family: var(--font-gentium-plus);
+  }
+  
+  & span {
+      color: var(--accent);
+  }
+}
+
+.qrCode {
+  background: var(--white);
+  padding: var(--spacing4);
+  width: fit-content;
+  margin: 0 auto;
+}
