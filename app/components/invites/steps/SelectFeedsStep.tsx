@@ -156,6 +156,7 @@ export default function SelectFeedsStep({
           title="Skip"
           titleIcon="arrow-right"
           onClick={handleSkip}
+          className={styles.skipAction}
         ></ActionCard>
       )}
     </div>
