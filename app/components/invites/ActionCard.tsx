@@ -8,7 +8,7 @@ interface ActionCardProps {
   titleIcon?: string;
   description?: string;
   onClick?: () => void;
-  disabled?: Boolean;
+  disabled?: boolean;
   className?: string;
   children?: React.ReactNode;
 }
