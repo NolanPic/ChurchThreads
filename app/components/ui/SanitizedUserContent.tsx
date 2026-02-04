@@ -22,6 +22,8 @@ const SanitizedUserContent: React.FC<SanitizedUserContentProps> = ({
     if (!options) {
       options = {
         FORBID_TAGS: ["script", "style"],
+        ADD_TAGS: ["iframe"],
+        ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "src", "width", "height", "data-youtube-video"],
       };
     }
 

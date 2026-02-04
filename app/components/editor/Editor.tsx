@@ -11,6 +11,7 @@ import type { JSONContent } from "@tiptap/core";
 import { Image } from "@tiptap/extension-image";
 import { useRegisterEditorCommands } from "../../context/EditorCommands";
 import { Focus } from "@tiptap/extensions";
+import Youtube from "@tiptap/extension-youtube";
 import { useEditorImageUpload } from "./hooks/useEditorImageUpload";
 import { Id } from "@/convex/_generated/dataModel";
 import Hint from "@/app/components/ui/Hint";
@@ -62,6 +63,10 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
       Placeholder.configure({ placeholder }),
       Image,
       Focus,
+      Youtube.configure({
+        controls: true,
+        nocookie: true,
+      }),
     ],
     autofocus,
     immediatelyRender: false,
