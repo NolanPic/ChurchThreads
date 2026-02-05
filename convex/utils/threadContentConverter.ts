@@ -1,6 +1,24 @@
 import { renderToHTMLString } from '@tiptap/static-renderer'
 import StarterKit from "@tiptap/starter-kit";
 import { Image } from "@tiptap/extension-image";
+import Youtube from "@tiptap/extension-youtube";
+
+const EXTENSIONS = [
+    StarterKit.configure({
+        bulletList: false,
+        code: false,
+        codeBlock: false,
+        heading: false,
+        horizontalRule: false,
+        strike: false,
+        underline: false,
+    }),
+    Image,
+    Youtube.configure({
+        controls: true,
+        nocookie: true,
+    }),
+];
 
 export function fromJSONToHTML(content: string) {
 
@@ -22,18 +40,7 @@ export function fromJSONToHTML(content: string) {
 
     try {
         html = renderToHTMLString({
-            extensions: [
-                StarterKit.configure({
-                    bulletList: false,
-                    code: false,
-                    codeBlock: false,
-                    heading: false,
-                    horizontalRule: false,
-                    strike: false,
-                    underline: false,
-                }),
-                Image,
-            ],
+            extensions: EXTENSIONS,
             content: parsedContent,
         });
     } catch(error) {
@@ -69,6 +76,11 @@ export function fromJSONToPlainText(content: string, maxLength?: number): string
         }
 
         let text = '';
+
+        // Handle YouTube embeds
+        if (node.type === 'youtube') {
+            return '[Video] ';
+        }
 
         // Handle text nodes
         if (node.text) {
