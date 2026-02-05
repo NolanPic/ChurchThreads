@@ -2,31 +2,34 @@
 
 import { useMemo } from "react";
 import { getDOMPurify } from "@/app/utils/dompurify";
-import { type Config } from "dompurify";
-
 export interface SanitizedUserContentProps {
   html: string;
   className?: string;
-  sanitizeOptions?: Config;
 }
 
 const SanitizedUserContent: React.FC<SanitizedUserContentProps> = ({
   html,
   className,
-  sanitizeOptions,
 }) => {
   const DOMPurify = getDOMPurify();
 
   const sanitizedHtml = useMemo(() => {
-    let options = sanitizeOptions;
-    if (!options) {
-      options = {
-        FORBID_TAGS: ["script", "style"],
-      };
-    }
+    let options = {
+      FORBID_TAGS: ["script", "style"],
+      ADD_TAGS: ["iframe"],
+      ADD_ATTR: [
+        "allow",
+        "allowfullscreen",
+        "frameborder",
+        "src",
+        "width",
+        "height",
+        "data-youtube-video",
+      ],
+    };
 
     return html ? DOMPurify.sanitize(html, options) : "";
-  }, [html, sanitizeOptions, DOMPurify]);
+  }, [html, DOMPurify]);
 
   return (
     <div
