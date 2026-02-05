@@ -2,7 +2,7 @@
 
 import styles from "./Feed.module.css";
 import { useQuery, usePaginatedQuery } from "convex/react";
-import { useState, useRef, useEffect, useContext } from "react";
+import { useState, useRef, useEffect, useContext, useCallback } from "react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import Thread from "../content/threads/Thread";
@@ -117,15 +117,15 @@ export default function Feed({
 
   const intersectionCb = useRef<IntersectionObserverCallback | null>(null);
 
-  const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+  const handleIntersection = useCallback((entries: IntersectionObserverEntry[]) => {
     if (entries[0].isIntersecting && status === "CanLoadMore") {
       loadMore(itemsPerPage);
     }
-  };
+  }, [status, loadMore, itemsPerPage]);
 
   useEffect(() => {
     intersectionCb.current = handleIntersection;
-  });
+  }, [handleIntersection]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -144,10 +144,10 @@ export default function Feed({
 
   const isTabletOrUp = useMediaQuery("(min-width: 34.375rem)");
 
-  const handleOpenThread = (threadId: Id<"threads">) => {
+  const handleOpenThread = useCallback((threadId: Id<"threads">) => {
     setOpenThreadId(threadId);
     historyRouter.push(`/thread/${threadId}`);
-  };
+  }, [setOpenThreadId, historyRouter]);
 
   const handleCloseThread = () => {
     setOpenThreadId(undefined);

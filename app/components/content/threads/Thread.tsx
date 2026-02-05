@@ -7,7 +7,7 @@ import { getTimeAgoLabel } from "@/app/utils/ui-utils";
 import UserAvatar from "../../users/UserAvatar";
 import SanitizedUserContent from "../../ui/SanitizedUserContent";
 import classNames from "classnames";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -28,7 +28,7 @@ interface ThreadProps {
   onThreadDeleted?: () => void;
 }
 
-export default function Thread({
+export default memo(function Thread({
   thread,
   variant,
   showSourceFeed,
@@ -286,4 +286,4 @@ export default function Thread({
       )}
     </article>
   );
-}
+});
