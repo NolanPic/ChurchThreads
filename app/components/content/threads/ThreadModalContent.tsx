@@ -9,6 +9,7 @@ import styles from "./ThreadModalContent.module.css";
 import { useOrganization } from "@/app/context/OrganizationProvider";
 import MessageThread from "../messages/MessageThread";
 import Thread from "./Thread";
+import { useUserAuth } from "@/auth/client/useUserAuth";
 
 export default function ThreadModalContent({
   threadId,
@@ -18,10 +19,11 @@ export default function ThreadModalContent({
   onClose: () => void;
 }) {
   const org = useOrganization();
+  const [, { isLoading: isAuthLoading }] = useUserAuth();
   const { setFeedIdOfCurrentThread } = useContext(CurrentFeedAndThreadContext);
   const thread = useQuery(
     api.threads.getById,
-    org?._id ? { orgId: org._id, threadId } : "skip"
+    !isAuthLoading && org?._id ? { orgId: org._id, threadId } : "skip"
   );
 
   const feedId = thread?.feedId;

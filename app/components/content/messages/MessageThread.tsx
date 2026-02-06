@@ -15,15 +15,19 @@ import Link from "next/link";
 import { motion, useMotionValue, animate } from "motion/react";
 import { useState, useEffect } from "react";
 
-export default function MessageThread({ threadId }: { threadId: Id<"threads"> }) {
+export default function MessageThread({
+  threadId,
+}: {
+  threadId: Id<"threads">;
+}) {
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
-  const thread = useQuery(api.threads.getById, {
-    orgId,
-    threadId,
-  });
-  const messages = useQuery(api.messages.getForThread, { orgId, threadId });
   const [auth, { isLoading: isUserLoading, user }] = useUserAuth();
+
+  const queryArgs = !isUserLoading && org?._id ? { orgId, threadId } : "skip";
+  const thread = useQuery(api.threads.getById, queryArgs);
+  const messages = useQuery(api.messages.getForThread, queryArgs);
+
   const [canSendMessage, setCanSendMessage] = useState(false);
 
   const isSignedIn = auth !== null;
