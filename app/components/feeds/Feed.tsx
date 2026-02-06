@@ -94,14 +94,16 @@ export default function Feed({
     return () => window.removeEventListener("popstate", onPopState);
   }, [setOpenThreadId]);
 
-  const selectedFeedIdForQuery = isAuthLoading ? undefined : feedId;
+  const threadsQueryArgs = isAuthLoading
+    ? "skip"
+    : {
+        orgId,
+        selectedFeedId: feedId,
+      };
 
   const { results, status, loadMore } = usePaginatedQuery(
     api.threads.getThreadsForUserFeed,
-    {
-      orgId,
-      selectedFeedId: selectedFeedIdForQuery,
-    },
+    threadsQueryArgs,
     {
       initialNumItems: itemsPerPage,
     },
