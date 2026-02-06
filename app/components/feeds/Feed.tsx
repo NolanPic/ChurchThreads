@@ -50,7 +50,7 @@ export default function Feed({
   const [settingsActiveTab, setSettingsActiveTab] = useState("members");
   const [isFeedOwner, setIsFeedOwner] = useState(false);
   const [, setIsFeedMember] = useState(false);
-  const [auth] = useUserAuth();
+  const [auth, { isLoading: isAuthLoading }] = useUserAuth();
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
   const searchParams = useSearchParams();
@@ -94,12 +94,16 @@ export default function Feed({
     return () => window.removeEventListener("popstate", onPopState);
   }, [setOpenThreadId]);
 
+  const threadsQueryArgs = isAuthLoading
+    ? "skip"
+    : {
+        orgId,
+        selectedFeedId: feedId,
+      };
+
   const { results, status, loadMore } = usePaginatedQuery(
     api.threads.getThreadsForUserFeed,
-    {
-      orgId,
-      selectedFeedId: feedId === null ? undefined : feedId,
-    },
+    threadsQueryArgs,
     {
       initialNumItems: itemsPerPage,
     },
@@ -107,7 +111,7 @@ export default function Feed({
 
   const feed = useQuery(
     api.feeds.getFeed,
-    feedSettingsFeedIdSlug && org
+    !isAuthLoading && feedSettingsFeedIdSlug && org
       ? { orgId, feedId: feedSettingsFeedIdSlug }
       : "skip",
   );
