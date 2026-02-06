@@ -26,7 +26,7 @@
 
   display: grid;
   grid-template-columns: repeat(2, fit-content(14ch)) 1fr fit-content(var(--threadMenuButtonWidth)) fit-content(var(--messageThreadButtonWidth));
-  grid-template-rows: repeat(2, fit-content);
+  grid-template-rows: repeat(2, auto);
   grid-template-areas:
     "authorAvatar authorName metadata threadMenu messageThread"
     "content content content content content";
