@@ -1,8 +1,11 @@
+/* Mobile-first base styles */
 .skeletonPostWrapper {
-  /* Matches FeedPost spacing */
-  padding: 0 var(--spacing17) var(--spacing8) var(--spacing17);
+  /* Match Feed.module.css mobile padding */
+  padding: var(--spacing7);
+  border-bottom: 1px solid #494E6C;
 }
 
+/* Keep existing skeleton animation */
 .skeleton {
   background-color: var(--light);
   background-image: linear-gradient(
@@ -16,57 +19,73 @@
   opacity: 0.4;
 }
 
-.skeletonFeedPost {
-  display: flex;
-  gap: var(--spacing4);
-  align-items: flex-start;
-}
+/* Match Thread.module.css grid structure */
+.skeletonThread {
+  --messageThreadButtonWidth: 32px;
+  --threadMenuButtonWidth: 40px;
 
-.skeletonAvatar {
-  border-radius: 50%;
-  width: 34px;
-  height: 34px;
   display: grid;
-  place-items: center;
-  flex-shrink: 0;
+  grid-template-columns: repeat(2, fit-content(14ch)) 1fr fit-content(var(--threadMenuButtonWidth)) fit-content(var(--messageThreadButtonWidth));
+  grid-template-rows: repeat(2, auto);
+  grid-template-areas:
+    "authorAvatar authorName metadata threadMenu messageThread"
+    "content content content content content";
+  gap: var(--spacing3); /* 12px on mobile */
 }
 
-.skeletonPostRight {
-  width: 100%;
+/* Avatar - 24px on mobile */
+.skeletonAvatar {
+  grid-area: authorAvatar;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
 }
 
-.skeletonPostInfo {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing3);
-}
-
+/* Author name */
 .skeletonAuthorName {
+  grid-area: authorName;
   width: 90px;
   height: 16px;
   border-radius: 4px;
-  margin-bottom: 4px;
 }
 
-.skeletonTimestamp {
+/* Metadata (timestamp) */
+.skeletonMetadata {
+  grid-area: metadata;
   width: 60px;
   height: 12px;
   border-radius: 4px;
 }
 
+/* Thread menu placeholder - invisible but takes up space */
+.skeletonThreadMenu {
+  grid-area: threadMenu;
+  width: var(--threadMenuButtonWidth);
+  /* No skeleton effect, just spacing */
+}
+
+/* Message thread button */
 .skeletonMessageThread {
+  grid-area: messageThread;
   width: 20px;
   height: 20px;
   border-radius: 4px;
-  margin-left: auto;
+  justify-self: end;
+}
+
+/* Content wrapper */
+.skeletonContent {
+  grid-area: content;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 0;
 }
 
 .skeletonContentLine1 {
   width: 80%;
   height: 16px;
   border-radius: 4px;
-  margin-top: var(--spacing2);
-  margin-bottom: 8px;
 }
 
 .skeletonContentLine2 {
@@ -82,4 +101,34 @@
   100% {
     background-position: -200% 0;
   }
-} 
+}
+
+/* Tablet+ responsive styles */
+@media (--tablet) {
+  .skeletonPostWrapper {
+    /* Match Feed.module.css tablet padding */
+    padding: var(--spacing11) var(--spacing17);
+  }
+
+  .skeletonThread {
+    /* Content indented from avatar on desktop */
+    grid-template-areas:
+      "authorAvatar authorName metadata threadMenu messageThread"
+      ". content content content content";
+    gap: var(--spacing4); /* 16px on tablet+ */
+  }
+
+  /* Larger avatar on tablet+ */
+  .skeletonAvatar {
+    width: 34px;
+    height: 34px;
+  }
+
+  /* Center align with avatar */
+  .skeletonAuthorName,
+  .skeletonMetadata,
+  .skeletonThreadMenu,
+  .skeletonMessageThread {
+    align-self: center;
+  }
+}

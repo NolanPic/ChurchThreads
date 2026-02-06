@@ -5,6 +5,7 @@ import type { UserResource } from "@clerk/types";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useOrganization } from "@/app/context/OrganizationProvider";
+import { useMemo } from "react";
 import { Id, Doc } from "@/convex/_generated/dataModel";
 import {
   UserRole,
@@ -278,6 +279,13 @@ export function useUserAuth(): [
 
   const { userFeeds = [], feeds = [] } = feedsData || {};
 
+  // Memoize auth instance before any early returns to satisfy Rules of Hooks.
+  // Returns null when user/clerkUser aren't available yet.
+  const auth = useMemo(
+    () => user && clerkUser ? new UserAuthClient(user, clerkUser, userFeeds, feeds) : null,
+    [user, clerkUser, userFeeds, feeds]
+  );
+
   // Handle loading state
   if (!isLoaded || user === undefined || feedsData === undefined) {
     return [
@@ -287,15 +295,13 @@ export function useUserAuth(): [
   }
 
   // Handle unauthenticated or user not found
-  if (!user || !clerkUser) {
+  if (!auth) {
     return [
       null,
       { isLoading: false, error: null, user: null, clerkUser: null, userFeeds: [], signOut },
     ];
   }
 
-  // Create and return auth instance
-  const auth = new UserAuthClient(user, clerkUser, userFeeds, feeds);
   return [
     auth,
     { isLoading: false, error: null, user, clerkUser, userFeeds, signOut },
