@@ -10,7 +10,9 @@ export default function FeedSkeleton() {
             <div className={`${styles.skeletonAvatar} ${styles.skeleton}`} />
 
             {/* Author Name */}
-            <div className={`${styles.skeletonAuthorName} ${styles.skeleton}`} />
+            <div
+              className={`${styles.skeletonAuthorName} ${styles.skeleton}`}
+            />
 
             {/* Metadata (timestamp) */}
             <div className={`${styles.skeletonMetadata} ${styles.skeleton}`} />
@@ -19,12 +21,18 @@ export default function FeedSkeleton() {
             <div className={styles.skeletonThreadMenu} />
 
             {/* Message Thread button */}
-            <div className={`${styles.skeletonMessageThread} ${styles.skeleton}`} />
+            <div
+              className={`${styles.skeletonMessageThread} ${styles.skeleton}`}
+            />
 
             {/* Content lines */}
             <div className={styles.skeletonContent}>
-              <div className={`${styles.skeletonContentLine1} ${styles.skeleton}`} />
-              <div className={`${styles.skeletonContentLine2} ${styles.skeleton}`} />
+              <div
+                className={`${styles.skeletonContentLine1} ${styles.skeleton}`}
+              />
+              <div
+                className={`${styles.skeletonContentLine2} ${styles.skeleton}`}
+              />
             </div>
           </div>
         </article>
