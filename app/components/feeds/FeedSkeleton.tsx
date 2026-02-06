@@ -5,26 +5,26 @@ export default function FeedSkeleton() {
     <>
       {[...Array(6)].map((_, i) => (
         <article key={i} className={styles.skeletonPostWrapper}>
-          <div className={styles.skeletonFeedPost}>
+          <div className={styles.skeletonThread}>
+            {/* Avatar */}
             <div className={`${styles.skeletonAvatar} ${styles.skeleton}`} />
-            <div className={styles.skeletonPostRight}>
-              <div className={styles.skeletonPostInfo}>
-                <div
-                  className={`${styles.skeletonAuthorName} ${styles.skeleton}`}
-                />
-                <div
-                  className={`${styles.skeletonTimestamp} ${styles.skeleton}`}
-                />
-                <div
-                  className={`${styles.skeletonMessageThread} ${styles.skeleton}`}
-                />
-              </div>
-              <div
-                className={`${styles.skeletonContentLine1} ${styles.skeleton}`}
-              />
-              <div
-                className={`${styles.skeletonContentLine2} ${styles.skeleton}`}
-              />
+
+            {/* Author Name */}
+            <div className={`${styles.skeletonAuthorName} ${styles.skeleton}`} />
+
+            {/* Metadata (timestamp) */}
+            <div className={`${styles.skeletonMetadata} ${styles.skeleton}`} />
+
+            {/* Thread Menu placeholder */}
+            <div className={styles.skeletonThreadMenu} />
+
+            {/* Message Thread button */}
+            <div className={`${styles.skeletonMessageThread} ${styles.skeleton}`} />
+
+            {/* Content lines */}
+            <div className={styles.skeletonContent}>
+              <div className={`${styles.skeletonContentLine1} ${styles.skeleton}`} />
+              <div className={`${styles.skeletonContentLine2} ${styles.skeleton}`} />
             </div>
           </div>
         </article>
