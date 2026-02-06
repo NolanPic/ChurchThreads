@@ -34,7 +34,10 @@ const SanitizedUserContent: React.FC<SanitizedUserContentProps> = ({
   return (
     <div
       className={className}
-      dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+      dangerouslySetInnerHTML={useMemo(
+        () => ({ __html: sanitizedHtml }),
+        [sanitizedHtml],
+      )}
     />
   );
 };
