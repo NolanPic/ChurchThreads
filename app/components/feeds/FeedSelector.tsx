@@ -40,7 +40,7 @@ export default function FeedSelector({
     useState(false);
   const scrollToTop = useScrollToTop();
   const router = useRouter();
-  const [auth] = useUserAuth();
+  const [auth, { isLoading: isAuthLoading }] = useUserAuth();
 
   const feeds =
     useQuery(
@@ -59,19 +59,23 @@ export default function FeedSelector({
   // previewing a feed.
   const previewFeed = useQuery(
     api.feeds.getFeed,
-    selectedFeedId && org ? { orgId: org._id, feedId: selectedFeedId } : "skip"
+    !isAuthLoading && selectedFeedId && org
+      ? { orgId: org._id, feedId: selectedFeedId }
+      : "skip"
   );
 
   useEffect(() => {
-    if (selectedFeedId) {
+    if (!isAuthLoading && selectedFeedId && auth) {
       auth
-        ?.feed(selectedFeedId)
+        .feed(selectedFeedId)
         .hasRole("member")
         .then((result) => {
           setIsUserPreviewingOpenFeed(!result.allowed);
         });
+    } else {
+      setIsUserPreviewingOpenFeed(false);
     }
-  }, [auth, selectedFeedId]);
+  }, [auth, isAuthLoading, selectedFeedId]);
 
   if (!org) return null;
 
