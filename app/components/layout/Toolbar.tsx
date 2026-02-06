@@ -3,7 +3,7 @@ import IconButton from "../ui/IconButton";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 import OverflowMenu from "./OverflowMenu";
 import FeedSelector from "../feeds/FeedSelector";
-import { useContext, RefObject, useState, useEffect } from "react";
+import { useContext, RefObject, useState, useEffect, memo } from "react";
 import { CurrentFeedAndThreadContext } from "@/app/context/CurrentFeedAndThreadProvider";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,7 +21,7 @@ interface ToolbarProps {
   feedWrapperRef: RefObject<HTMLDivElement | null>;
 }
 
-export default function Toolbar({
+export default memo(function Toolbar({
   onNewThread,
   isNewThreadOpen,
   setIsNewThreadOpen,
@@ -44,7 +44,7 @@ export default function Toolbar({
 
   const unreadCount = useQuery(
     api.notifications.getUnreadCount,
-    isSignedIn && orgId ? { orgId } : "skip"
+    isSignedIn && orgId ? { orgId } : "skip",
   );
 
   // Check feed ownership and membership asynchronously
@@ -191,7 +191,7 @@ export default function Toolbar({
               </motion.div>
             )}
           </AnimatePresence>,
-          document.body
+          document.body,
         )}
 
       <AnimatePresence>
@@ -204,4 +204,4 @@ export default function Toolbar({
       </AnimatePresence>
     </>
   );
-}
+});
