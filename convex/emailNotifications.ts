@@ -1,8 +1,8 @@
 import { internalAction, internalQuery, QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
-import { internal } from "./_generated/api";
-import { Resend } from "resend";
+import { components, internal } from "./_generated/api";
+import { Resend } from "@convex-dev/resend";
 import {
   notificationTypeValidator,
   notificationDataValidator,
@@ -30,7 +30,7 @@ export const sendEmailNotifications = internalAction({
   handler: async (ctx, args) => {
     const { orgId, type, data, recipients } = args;
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    const resend = new Resend(components.resend, { testMode: false });
     const fromEmail = process.env.RESEND_FROM_EMAIL;
 
     if (!fromEmail) {
@@ -108,7 +108,7 @@ export const sendEmailNotifications = internalAction({
           continue;
         }
 
-        await resend.emails.send({
+        await resend.sendEmail(ctx, {
           from: fromEmail,
           to: recipientData.recipientEmail,
           subject,

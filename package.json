@@ -23,6 +23,7 @@
     "@auth/core": "^0.37.0",
     "@clerk/backend": "^2.29.3",
     "@clerk/nextjs": "^6.36.7",
+    "@convex-dev/resend": "^0.2.3",
     "@floating-ui/react-dom": "^2.1.6",
     "@re-dev/react-truncate": "^0.5.2",
     "@react-email/components": "^1.0.4",
@@ -46,7 +47,6 @@
     "qrcode.react": "^4.2.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "resend": "^6.7.0",
     "usehooks-ts": "^3.1.1",
     "web-push": "^3.6.7"
   },
