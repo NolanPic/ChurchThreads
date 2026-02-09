@@ -1,8 +1,8 @@
 import { internalAction, internalQuery, QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
-import { internal } from "./_generated/api";
-import { Resend } from "resend";
+import { components, internal } from "./_generated/api";
+import { Resend } from "@convex-dev/resend";
 import {
   notificationTypeValidator,
   notificationDataValidator,
@@ -30,7 +30,7 @@ export const sendEmailNotifications = internalAction({
   handler: async (ctx, args) => {
     const { orgId, type, data, recipients } = args;
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    const resend = new Resend(components.resend, { testMode: false });
     const fromEmail = process.env.RESEND_FROM_EMAIL;
 
     if (!fromEmail) {
@@ -108,7 +108,7 @@ export const sendEmailNotifications = internalAction({
           continue;
         }
 
-        await resend.emails.send({
+        await resend.sendEmail(ctx, {
           from: fromEmail,
           to: recipientData.recipientEmail,
           subject,
@@ -306,9 +306,9 @@ export const getScheduledMessageNotifications = internalQuery({
         return false;
       }
 
-      // message should belong to this thread
-      const postIdOfMessage = sf.args?.[0].data?.postId;
-      if (!postIdOfMessage || postIdOfMessage !== args.threadId) {
+      // message notification should belong to this thread
+      const threadIdOfMessage = sf.args?.[0]?.data?.threadId;
+      if (!threadIdOfMessage || threadIdOfMessage !== args.threadId) {
         return false;
       }
 
@@ -418,11 +418,17 @@ async function getNewMessageEmailData(
   const thread = await ctx.db.get(message.threadId);
   const userOwnsThread = thread?.posterId === recipientUserId;
 
-  // Get most recent message author for subject line
-  const mostRecentAuthor = await ctx.db.get(messages[0].senderId);
+  // Use the latest sender other than the recipient as the actor.
+  // If all recent messages are from the recipient, fall back to the latest message.
+  const messagesInDescendingOrder = [...messagesWithAuthors].sort((a, b) => b.message._creationTime - a.message._creationTime);
+
+  const mostRecentMessageFromActorWhoIsNotTheRecipient =
+  messagesInDescendingOrder.find((rec) => rec.message.senderId !== recipientUserId) ?? messagesInDescendingOrder[0];
+
+  const mostRecentAuthor = mostRecentMessageFromActorWhoIsNotTheRecipient.author;
 
   return {
-    type: "new_message_in_thread" as const,
+    type: "new_message_in_thread",
     messages: messagesWithAuthors,
     threadId: message.threadId,
     threadTitle: "a thread",
@@ -500,7 +506,7 @@ function generateSubjectLine(emailData: EmailData): string {
 
     case "new_message_in_thread":
       if (emailData.userOwnsThread) {
-        return `${emailData.actorName} messaged in your post`;
+        return `${emailData.actorName} messaged in your thread`;
       }
       return `${emailData.actorName} responded in a thread`;
 

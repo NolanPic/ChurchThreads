@@ -1,8 +1,11 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
+import { components } from "./_generated/api";
+import { Resend } from "@convex-dev/resend";
 import { uploadFile } from "./uploadAction";
 
 const http = httpRouter();
+const resend = new Resend(components.resend, { testMode: false });
 
 // Handle preflight OPTIONS request
 http.route({
@@ -34,6 +37,14 @@ http.route({
   path: "/upload",
   method: "POST",
   handler: uploadFile,
+});
+
+http.route({
+  path: "/resend-webhook",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    return await resend.handleResendEventWebhook(ctx, req);
+  }),
 });
 
 export default http;

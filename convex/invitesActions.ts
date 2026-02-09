@@ -2,9 +2,9 @@
 
 import { action } from "./_generated/server";
 import { v } from "convex/values";
-import { internal } from "./_generated/api";
+import { components, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
-import { Resend } from "resend";
+import { Resend } from "@convex-dev/resend";
 import { render } from "@react-email/render";
 import { Register } from "@/email/registration/Register";
 import { generateInviteToken } from "./utils/tokenGenerator";
@@ -75,18 +75,13 @@ export const createAndSendEmailInvitations = action({
       throw new Error("Not authenticated");
     }
 
-    const apiKey = process.env.RESEND_API_KEY;
     const fromEmail = process.env.RESEND_FROM_EMAIL;
-
-    if (!apiKey) {
-      throw new Error("RESEND_API_KEY environment variable not set");
-    }
 
     if (!fromEmail) {
       throw new Error("RESEND_FROM_EMAIL environment variable not set");
     }
 
-    const resend = new Resend(apiKey);
+    const resend = new Resend(components.resend, { testMode: false });
 
     const results: InviteResult[] = [];
 
@@ -115,7 +110,7 @@ export const createAndSendEmailInvitations = action({
           }) as ReactElement
         );
 
-        await resend.emails.send({
+        await resend.sendEmail(ctx, {
           from: fromEmail,
           to: userToInvite.email,
           subject: `${inviter.name} invited you to join ${org.name} on ChurchThreads`,
