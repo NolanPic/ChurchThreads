@@ -423,7 +423,7 @@ async function getNewMessageEmailData(
   const messagesInDescendingOrder = [...messagesWithAuthors].sort((a, b) => b.message._creationTime - a.message._creationTime);
 
   const mostRecentMessageFromActorWhoIsNotTheRecipient =
-  messagesInDescendingOrder.find((rec) => rec.message.senderId !== recipientUserId) ?? messagesWithAuthors[0];
+  messagesInDescendingOrder.find((rec) => rec.message.senderId !== recipientUserId) ?? messagesInDescendingOrder[0];
 
   const mostRecentAuthor = mostRecentMessageFromActorWhoIsNotTheRecipient.author;
 
