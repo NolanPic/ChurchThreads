@@ -418,11 +418,17 @@ async function getNewMessageEmailData(
   const thread = await ctx.db.get(message.threadId);
   const userOwnsThread = thread?.posterId === recipientUserId;
 
-  // Get most recent message author for subject line
-  const mostRecentAuthor = await ctx.db.get(messages[0].senderId);
+  // Use the latest sender other than the recipient as the actor.
+  // If all recent messages are from the recipient, fall back to the latest message.
+  const messagesInDescendingOrder = [...messagesWithAuthors].sort((a, b) => b.message._creationTime - a.message._creationTime);
+
+  const mostRecentMessageFromActorWhoIsNotTheRecipient =
+  messagesInDescendingOrder.find((rec) => rec.message.senderId !== recipientUserId) ?? messagesWithAuthors[0];
+
+  const mostRecentAuthor = mostRecentMessageFromActorWhoIsNotTheRecipient.author;
 
   return {
-    type: "new_message_in_thread" as const,
+    type: "new_message_in_thread",
     messages: messagesWithAuthors,
     threadId: message.threadId,
     threadTitle: "a thread",
@@ -500,7 +506,7 @@ function generateSubjectLine(emailData: EmailData): string {
 
     case "new_message_in_thread":
       if (emailData.userOwnsThread) {
-        return `${emailData.actorName} messaged in your post`;
+        return `${emailData.actorName} messaged in your thread`;
       }
       return `${emailData.actorName} responded in a thread`;
 
