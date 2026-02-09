@@ -306,9 +306,9 @@ export const getScheduledMessageNotifications = internalQuery({
         return false;
       }
 
-      // message should belong to this thread
-      const postIdOfMessage = sf.args?.[0].data?.postId;
-      if (!postIdOfMessage || postIdOfMessage !== args.threadId) {
+      // message notification should belong to this thread
+      const threadIdOfMessage = sf.args?.[0]?.data?.threadId;
+      if (!threadIdOfMessage || threadIdOfMessage !== args.threadId) {
         return false;
       }
 

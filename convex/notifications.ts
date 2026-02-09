@@ -765,8 +765,8 @@ export const scheduleNotifications = internalMutation({
         );
 
         await Promise.all(
-          alreadyScheduled.map((scheduled: any) => {
-            ctx.scheduler.cancel(scheduled._id);
+          alreadyScheduled.map(async (scheduled: any) => {
+            await ctx.scheduler.cancel(scheduled._id);
           }),
         );
 

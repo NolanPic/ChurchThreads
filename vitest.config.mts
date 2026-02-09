@@ -13,6 +13,11 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
+    server: {
+      deps: {
+        inline: ['convex-test'],
+      },
+    },
     projects: [{
       extends: true,
       plugins: [
