@@ -39,6 +39,11 @@ const meta: Meta<ModalProps> = {
       control: "boolean",
       description: "Enable drag-to-close on mobile devices",
     },
+    fullScreen: {
+      control: "boolean",
+      description:
+        "When true, the modal uses a full-screen layout on all breakpoints",
+    },
   },
 };
 
@@ -118,14 +123,30 @@ export const DragToClose: Story = {
   },
 };
 
+export const FullScreen: Story = {
+  render: () => (
+    <ModalWrapper title="Full Screen Modal" fullScreen>
+      <div style={{ padding: "0 var(--spacing7)" }}>
+        <p>This modal uses a full-screen layout across all breakpoints.</p>
+        <p>
+          On tablet and desktop, the close button remains visible in the top
+          right.
+        </p>
+      </div>
+    </ModalWrapper>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Modal with fullScreen enabled. It fills the viewport on mobile, tablet, and desktop while keeping the tablet/desktop close button visible.",
+      },
+    },
+  },
+};
+
 // Tab Stories
-const TabsWrapper = ({
-  tabs,
-  title,
-}: {
-  tabs: ModalTab[];
-  title: string;
-}) => {
+const TabsWrapper = ({ tabs, title }: { tabs: ModalTab[]; title: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTabId, setActiveTabId] = useState(tabs[0]?.id || "");
 
@@ -284,4 +305,3 @@ export const WithManyTabs: Story = {
     },
   },
 };
-

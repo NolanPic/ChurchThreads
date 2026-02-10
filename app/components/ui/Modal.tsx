@@ -32,6 +32,7 @@ interface ModalProps {
   children?: ReactNode;
   ariaLabel?: string;
   dragToClose?: boolean;
+  fullScreen?: boolean;
   toolbar?: (props: ModalToolbarProps) => React.ReactNode;
   tabs?: ModalTab[];
   activeTabId?: string;
@@ -46,6 +47,7 @@ export default function Modal({
   children,
   ariaLabel,
   dragToClose = false,
+  fullScreen = false,
   toolbar,
   tabs,
   activeTabId,
@@ -154,7 +156,7 @@ export default function Modal({
     >
       <motion.div
         id="modal"
-        className={styles.modal}
+        className={`${styles.modal} ${fullScreen ? styles.fullScreen : ""}`.trim()}
         style={{ y }}
         drag="y"
         dragControls={dragControls}
