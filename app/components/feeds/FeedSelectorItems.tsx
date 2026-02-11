@@ -9,6 +9,7 @@ import { CardList } from "../ui/CardList";
 import FeedCard from "./FeedCard";
 import JoinFeedCard from "./discovery/JoinFeedCard";
 import { FeedSelectorScreen } from "./FeedSelector.types";
+import styles from "./FeedSelectorItems.module.css";
 
 type CardListStatus =
   | "LoadingFirstPage"
@@ -18,6 +19,7 @@ type CardListStatus =
 
 interface FeedSelectorItemsProps {
   currentScreen: FeedSelectorScreen;
+  selectedFeedId?: Id<"feeds">;
   onSelectFeed: (feedId: Id<"feeds"> | undefined) => void;
 }
 
@@ -25,6 +27,7 @@ const FEEDS_PER_PAGE = 20;
 
 export default function FeedSelectorItems({
   currentScreen,
+  selectedFeedId,
   onSelectFeed,
 }: FeedSelectorItemsProps) {
   const org = useOrganization();
@@ -42,7 +45,9 @@ export default function FeedSelectorItems({
   const feeds = queriedFeeds ?? [];
 
   const userFeedIds = new Set(userFeeds.map((membership) => membership.feedId));
-  const memberFeeds = feeds.filter((feed) => userFeedIds.has(feed._id));
+  const memberFeeds = feeds.filter(
+    (feed) => userFeedIds.has(feed._id) && feed._id !== selectedFeedId,
+  );
 
   const {
     results: openFeeds,
@@ -54,7 +59,12 @@ export default function FeedSelectorItems({
     { initialNumItems: FEEDS_PER_PAGE },
   );
 
-  const visibleFeeds = currentScreen === "openFeeds" ? openFeeds : memberFeeds;
+  const openFeedsFiltered = openFeeds.filter(
+    (feed) => feed._id !== selectedFeedId,
+  );
+
+  const visibleFeeds =
+    currentScreen === "openFeeds" ? openFeedsFiltered : memberFeeds;
   const visibleFeedIds = visibleFeeds.map((feed) => feed._id);
 
   const feedMemberPreviews = useQuery(
@@ -69,11 +79,12 @@ export default function FeedSelectorItems({
   if (currentScreen === "openFeeds") {
     return (
       <CardList
-        data={openFeeds}
+        data={openFeedsFiltered}
         status={openFeedsStatus}
         loadMore={loadMoreOpenFeeds}
         itemsPerPage={FEEDS_PER_PAGE}
         emptyMessage="No open feeds available"
+        className={styles.cardList}
         renderCard={(feed) => (
           <JoinFeedCard
             feed={feed}
@@ -95,6 +106,7 @@ export default function FeedSelectorItems({
       status={memberFeedsStatus}
       itemsPerPage={queriedFeeds?.length} // spoof since queriedFeeds isn't paginated
       emptyMessage="No feeds available."
+      className={styles.cardList}
       renderCard={(feed) => (
         <FeedCard
           feed={feed}
