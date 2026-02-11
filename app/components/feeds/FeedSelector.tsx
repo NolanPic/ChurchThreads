@@ -1,68 +1,113 @@
 import Button from "../ui/Button";
+import Modal from "../ui/Modal";
+import { Card, CardBody } from "../ui/Card";
+import { CardList } from "../ui/CardList";
+import FeedCard from "./FeedCard";
 import styles from "./FeedSelector.module.css";
 import { CurrentFeedAndThreadContext } from "@/app/context/CurrentFeedAndThreadProvider";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react";
+import { usePaginatedQuery, useQuery } from "convex/react";
 import { useOrganization } from "@/app/context/OrganizationProvider";
-import { useState } from "react";
-import Backdrop from "../ui/Backdrop";
-import { Id } from "@/convex/_generated/dataModel";
-import { AnimatePresence, motion } from "framer-motion";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useScrollToTop } from "@/app/shared/hooks/useScrollToTop";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 import PreviewingFeedCard from "./discovery/PreviewingFeedCard";
-import PreviewFeedsSelector from "./discovery/PreviewFeedsSelector";
+import JoinFeedCard from "./discovery/JoinFeedCard";
+import { AnimatePresence, motion } from "framer-motion";
 
 type FeedSelectorVariant = "topOfFeed" | "inToolbar";
+type FeedSelectorScreen = "yourFeeds" | "openFeeds" | "selectForThread";
+type CardListStatus =
+  | "LoadingFirstPage"
+  | "CanLoadMore"
+  | "LoadingMore"
+  | "Exhausted";
+
 interface FeedSelectorProps {
   variant: FeedSelectorVariant;
-  chooseFeedForNewThread?: boolean;
+  activeScreen?: FeedSelectorScreen;
   onClose?: () => void;
+}
+
+interface FeedSelectorCardListConfig {
+  data: Doc<"feeds">[];
+  status: CardListStatus;
+  loadMore?: (numItems: number) => void;
+  itemsPerPage: number;
+  emptyMessage: string;
+  renderCard: (feed: Doc<"feeds">) => React.ReactNode;
 }
 
 export default function FeedSelector({
   variant,
-  chooseFeedForNewThread = false,
+  activeScreen = "yourFeeds",
   onClose,
 }: FeedSelectorProps) {
   const { feedId: selectedFeedId, setFeedId } = useContext(
     CurrentFeedAndThreadContext
   );
   const org = useOrganization();
-  const [isFeedSelectorOpen, setIsFeedSelectorOpen] = useState(
-    chooseFeedForNewThread
-  );
-  const [isBrowserOpen, setIsBrowserOpen] = useState(false);
+  const [auth, { isLoading: isAuthLoading, user, userFeeds }] = useUserAuth();
+  const [isOpen, setIsOpen] = useState(activeScreen !== "yourFeeds");
+  const [currentScreen, setCurrentScreen] =
+    useState<FeedSelectorScreen>(activeScreen);
   const [isUserPreviewingOpenFeed, setIsUserPreviewingOpenFeed] =
     useState(false);
   const scrollToTop = useScrollToTop();
   const router = useRouter();
-  const [auth, { isLoading: isAuthLoading }] = useUserAuth();
 
-  const feeds =
-    useQuery(
-      api.feeds.getUserFeeds,
-      org
-        ? {
-            orgId: org._id,
-            onlyIncludeFeedsUserCanPostIn: chooseFeedForNewThread,
-          }
-        : "skip"
-    ) || [];
+  const onlyIncludeFeedsUserCanPostIn = currentScreen === "selectForThread";
+  const isAdmin = user?.role === "admin";
+  const isOpenFeedsScreen = currentScreen === "openFeeds";
 
-  // Get current feed if viewing a non-member open feed.
-  // Note: this will always have a value if there's a feed selected,
-  // but it's only used for displaying a card when the user's
-  // previewing a feed.
+  const queriedFeeds = useQuery(
+    api.feeds.getUserFeeds,
+    org
+      ? {
+          orgId: org._id,
+          onlyIncludeFeedsUserCanPostIn,
+        }
+      : "skip"
+  );
+  const feeds = queriedFeeds ?? [];
+  const userFeedIds = new Set(userFeeds.map((membership) => membership.feedId));
+  const memberFeeds = feeds.filter((feed) => userFeedIds.has(feed._id));
+
+  const FEEDS_PER_PAGE = 20;
+  const {
+    results: openFeeds,
+    status: openFeedsStatus,
+    loadMore: loadMoreOpenFeeds,
+  } = usePaginatedQuery(
+    api.feeds.getAllOpenFeeds,
+    org && isOpen && isOpenFeedsScreen ? { orgId: org._id } : "skip",
+    { initialNumItems: FEEDS_PER_PAGE }
+  );
+
+  const visibleFeeds = isOpenFeedsScreen ? openFeeds : memberFeeds;
+
+  const memberFeedIds = visibleFeeds.map((feed) => feed._id);
+  const memberPreviews = useQuery(
+    api.userMemberships.getFeedMemberPreviews,
+    org && memberFeedIds.length > 0
+      ? { orgId: org._id, feedIds: memberFeedIds }
+      : "skip"
+  );
+
   const previewFeed = useQuery(
     api.feeds.getFeed,
     !isAuthLoading && selectedFeedId && org
       ? { orgId: org._id, feedId: selectedFeedId }
       : "skip"
   );
+
+  useEffect(() => {
+    setCurrentScreen(activeScreen);
+    setIsOpen(activeScreen !== "yourFeeds");
+  }, [activeScreen]);
 
   useEffect(() => {
     if (!isAuthLoading && selectedFeedId && auth) {
@@ -84,34 +129,70 @@ export default function FeedSelector({
     previewFeed?.name ||
     "All feeds";
 
+  const handleClose = () => {
+    setIsOpen(false);
+    onClose?.();
+  };
+
   const onSelectFeed = (feedId: Id<"feeds"> | undefined) => {
-    setIsFeedSelectorOpen(false);
+    setIsOpen(false);
     setFeedId(feedId);
     scrollToTop();
 
     const targetPath = feedId ? `/feed/${feedId}` : `/`;
-    const pathWithQuery = chooseFeedForNewThread
-      ? `${targetPath}?openEditor=true`
-      : targetPath;
+    const pathWithQuery =
+      currentScreen === "selectForThread"
+        ? `${targetPath}?openEditor=true`
+        : targetPath;
 
     router.push(pathWithQuery);
   };
 
-  const handleClose = (e: React.MouseEvent<HTMLElement>) => {
-    // check to make sure the click wasn't caused by selecting a feed
-    const element = e.target as HTMLElement;
-    const doClose = !["LABEL", "INPUT"].includes(element.tagName);
-    if (doClose) {
-      setIsFeedSelectorOpen(false);
-      if (onClose) {
-        onClose();
-      }
+  const cardListConfig: FeedSelectorCardListConfig = (() => {
+    if (isOpenFeedsScreen) {
+      return {
+        data: openFeeds as Doc<"feeds">[],
+        status: openFeedsStatus,
+        loadMore: loadMoreOpenFeeds,
+        itemsPerPage: FEEDS_PER_PAGE,
+        emptyMessage: "No open feeds available",
+        renderCard: (feed: Doc<"feeds">) => (
+          <JoinFeedCard
+            feed={feed}
+            isUserMember={userFeedIds.has(feed._id)}
+            users={memberPreviews?.[feed._id] || []}
+          />
+        ),
+      };
     }
-  };
+
+    return {
+      data: memberFeeds as Doc<"feeds">[],
+      status: queriedFeeds === undefined ? "LoadingFirstPage" : "Exhausted",
+      loadMore: undefined,
+      itemsPerPage: FEEDS_PER_PAGE,
+      emptyMessage: "No feeds available.",
+      renderCard: (feed: Doc<"feeds">) => (
+        <FeedCard
+          key={feed._id}
+          feed={feed}
+          users={(memberPreviews?.[feed._id] || []).map((member) => ({
+            _id: member._id,
+            name: member.name,
+            image: member.image,
+          }))}
+          primaryActionLabel={
+            currentScreen === "selectForThread" ? "New thread" : "View threads"
+          }
+          onPrimaryAction={() => onSelectFeed(feed._id)}
+        />
+      ),
+    };
+  })();
 
   return (
     <>
-      {!chooseFeedForNewThread && (
+      {activeScreen !== "selectForThread" && (
         <>
           <div className={classNames(styles.selectedFeed, styles[variant])}>
             <h2 className={styles.feedSelectorTitle}>
@@ -121,7 +202,10 @@ export default function FeedSelector({
               icon="dropdown-arrow"
               iconSize={10}
               className={styles.feedSelector}
-              onClick={() => setIsFeedSelectorOpen(true)}
+              onClick={() => {
+                setCurrentScreen("yourFeeds");
+                setIsOpen(true);
+              }}
             >
               {selectedFeed}
             </Button>
@@ -132,94 +216,108 @@ export default function FeedSelector({
           />
         </>
       )}
-      <AnimatePresence>
-        {isFeedSelectorOpen && !isBrowserOpen && (
+
+      <Modal
+        isOpen={isOpen}
+        onClose={handleClose}
+        dragToClose
+        fullScreen
+        ariaLabel="Feed selector"
+      >
+        <AnimatePresence mode="wait">
           <motion.div
-            key="feed-selector"
+            key={currentScreen}
             className={styles.feedList}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
-            onClick={handleClose}
+            initial={{
+              opacity: 0,
+              x: currentScreen === "openFeeds" ? "100%" : "-100%",
+            }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{
+              opacity: 0,
+              x: currentScreen === "openFeeds" ? "100%" : "-100%",
+            }}
+            transition={{ duration: 0.2 }}
           >
-            {!chooseFeedForNewThread &&
-              isUserPreviewingOpenFeed &&
-              previewFeed && (
-                <div className={styles.previewingFeedCard}>
-                  <PreviewingFeedCard
-                    feedTitle={previewFeed.name}
-                    feedId={selectedFeedId!}
-                  />
-                </div>
-              )}
-            <ol>
-              {chooseFeedForNewThread && (
-                <li>
+            {currentScreen === "openFeeds" ? (
+              <>
+                <Card>
+                  <CardBody>
+                    <p>Back to your feeds</p>
+                    <Button
+                      variant="primary"
+                      onClick={() => setCurrentScreen("yourFeeds")}
+                      ariaLabel="Back to your feeds"
+                    >
+                      Go
+                    </Button>
+                  </CardBody>
+                </Card>
+                <h1 className={styles.chooseFeedHeading}>Open feeds</h1>
+              </>
+            ) : (
+              <>
+                {currentScreen === "yourFeeds" &&
+                  isUserPreviewingOpenFeed &&
+                  previewFeed &&
+                  selectedFeedId && (
+                    <div className={styles.previewingFeedCard}>
+                      <PreviewingFeedCard
+                        feedTitle={previewFeed.name}
+                        feedId={selectedFeedId}
+                        onViewAllFeeds={() => setCurrentScreen("openFeeds")}
+                      />
+                    </div>
+                  )}
+
+                {currentScreen === "yourFeeds" && selectedFeedId && (
+                  <Card>
+                    <CardBody>
+                      <p>Back to all threads</p>
+                      <Button
+                        variant="primary"
+                        onClick={() => onSelectFeed(undefined)}
+                      >
+                        Go
+                      </Button>
+                    </CardBody>
+                  </Card>
+                )}
+
+                <div className={styles.headingRow}>
                   <h2 className={styles.chooseFeedHeading}>
-                    Select a feed to post in
+                    {currentScreen === "selectForThread"
+                      ? "Choose a feed"
+                      : "Your feeds"}
                   </h2>
-                </li>
-              )}
-              {!chooseFeedForNewThread && (
-                <li
-                  key="all"
-                  className={!selectedFeedId ? styles.selected : ""}
-                >
-                  <label>
-                    <input
-                      type="radio"
-                      checked={!selectedFeedId}
-                      onChange={() => onSelectFeed(undefined)}
-                    />
-                    All feeds
-                  </label>
-                </li>
-              )}
-              {feeds.map((feed) => (
-                <li
-                  key={feed._id}
-                  className={selectedFeedId === feed._id ? styles.selected : ""}
-                >
-                  <label>
-                    <input
-                      type="radio"
-                      checked={selectedFeedId === feed._id}
-                      onChange={() => onSelectFeed(feed._id)}
-                    />
-                    {feed.name}
-                  </label>
-                </li>
-              ))}
-            </ol>
-            {!chooseFeedForNewThread && auth && (
+                  {currentScreen === "yourFeeds" && isAdmin && (
+                    <Button icon="plus" ariaLabel="Create feed" />
+                  )}
+                </div>
+              </>
+            )}
+
+            <CardList
+              data={cardListConfig.data}
+              status={cardListConfig.status}
+              loadMore={cardListConfig.loadMore}
+              itemsPerPage={cardListConfig.itemsPerPage}
+              emptyMessage={cardListConfig.emptyMessage}
+              renderCard={cardListConfig.renderCard}
+            />
+
+            {currentScreen === "yourFeeds" && auth && (
               <Button
                 className={styles.browseOpenFeedsButton}
-                onClick={() => {
-                  setIsFeedSelectorOpen(false);
-                  setIsBrowserOpen(true);
-                }}
+                onClick={() => setCurrentScreen("openFeeds")}
                 noBackground
               >
-                Browse open feeds
+                Browse more feeds
               </Button>
             )}
           </motion.div>
-        )}
-        {isBrowserOpen && (
-          <PreviewFeedsSelector
-            key="open-feeds-browser"
-            onClose={() => {
-              setIsBrowserOpen(false);
-              setIsFeedSelectorOpen(true);
-            }}
-          />
-        )}
-
-        {(isFeedSelectorOpen || isBrowserOpen) && (
-          <Backdrop key="backdrop" onClick={handleClose} />
-        )}
-      </AnimatePresence>
+        </AnimatePresence>
+      </Modal>
     </>
   );
 }

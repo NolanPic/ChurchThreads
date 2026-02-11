@@ -12,9 +12,14 @@ import styles from "./PreviewingFeedCard.module.css";
 interface PreviewingFeedCardProps {
   feedTitle: string;
   feedId: Id<"feeds">;
+  onViewAllFeeds?: () => void;
 }
 
-const PreviewingFeedCard = ({ feedTitle, feedId }: PreviewingFeedCardProps) => {
+const PreviewingFeedCard = ({
+  feedTitle,
+  feedId,
+  onViewAllFeeds,
+}: PreviewingFeedCardProps) => {
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
   const joinOpenFeed = useMutation(api.userMemberships.joinOpenFeed);
@@ -61,6 +66,9 @@ const PreviewingFeedCard = ({ feedTitle, feedId }: PreviewingFeedCardProps) => {
           >
             {getJoinButtonText()}
           </Button>
+          {onViewAllFeeds && (
+            <Button onClick={onViewAllFeeds}>View all feeds</Button>
+          )}
           {joinError && <p className={styles.error}>{joinError}</p>}
         </div>
       </CardBody>
