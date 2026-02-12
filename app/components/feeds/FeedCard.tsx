@@ -33,7 +33,9 @@ export default function FeedCard({
 }: FeedCardProps) {
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
-  const removeMemberFromFeed = useMutation(api.userMemberships.removeMemberFromFeed);
+  const removeMemberFromFeed = useMutation(
+    api.userMemberships.removeMemberFromFeed,
+  );
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
@@ -58,7 +60,7 @@ export default function FeedCard({
 
   const handleLeaveFeed = async () => {
     const confirmed = window.confirm(
-      `Are you sure you want to leave ${feed.name}?`
+      `Are you sure you want to leave ${feed.name}?`,
     );
 
     if (!confirmed) {
@@ -75,68 +77,66 @@ export default function FeedCard({
       });
       setIsMenuOpen(false);
     } catch (error) {
-      setLeaveError(error instanceof Error ? error.message : "Failed to leave feed");
+      setLeaveError(
+        error instanceof Error ? error.message : "Failed to leave feed",
+      );
     } finally {
       setIsLeaving(false);
     }
   };
 
   return (
-    <Card className={styles.card}>
-      <CardHeader className={styles.cardHeader}>
-        <div className={styles.headerRow}>
-          <div className={styles.titleRow}>
-            <h3 className={styles.title}>{feed.name}</h3>
-            {feed.privacy === "public" && (
-              <Image
-                src="/icons/globe.svg"
-                alt="Public feed"
-                width={20}
-                height={20}
-              />
+    <Card>
+      <CardHeader className={styles.header}>
+        <h2 className={styles.title}>{feed.name}</h2>
+        {feed.privacy === "public" && (
+          <Image
+            src="/icons/globe.svg"
+            alt="Public feed"
+            width={20}
+            height={20}
+          />
+        )}
+        <div className={styles.menu} ref={menuRef} data-menu-open={isMenuOpen}>
+          <Button
+            icon="ellipsis"
+            ariaLabel="Feed options"
+            iconSize={24}
+            className={styles.menuButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMenuOpen((value) => !value);
+            }}
+            noBackground
+          />
+          <AnimatePresence>
+            {isMenuOpen && (
+              <motion.ul
+                className={styles.menuList}
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.1 }}
+              >
+                <li className={styles.menuItem}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleLeaveFeed();
+                    }}
+                    disabled={isLeaving}
+                  >
+                    {isLeaving ? "Leaving..." : "Leave feed"}
+                  </button>
+                </li>
+              </motion.ul>
             )}
-          </div>
-          <div className={styles.menu} ref={menuRef} data-menu-open={isMenuOpen}>
-            <Button
-              icon="ellipsis"
-              ariaLabel="Feed options"
-              iconSize={24}
-              className={styles.menuButton}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsMenuOpen((value) => !value);
-              }}
-              noBackground
-            />
-            <AnimatePresence>
-              {isMenuOpen && (
-                <motion.ul
-                  className={styles.menuList}
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.1 }}
-                >
-                  <li className={styles.menuItem}>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleLeaveFeed();
-                      }}
-                      disabled={isLeaving}
-                    >
-                      {isLeaving ? "Leaving..." : "Leave feed"}
-                    </button>
-                  </li>
-                </motion.ul>
-              )}
-            </AnimatePresence>
-          </div>
+          </AnimatePresence>
         </div>
       </CardHeader>
 
-      <CardBody className={styles.cardBody}>
+      <CardBody>
         <div className={styles.bodyRow}>
           <Button variant="primary" onClick={onPrimaryAction}>
             {primaryActionLabel}

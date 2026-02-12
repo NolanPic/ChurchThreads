@@ -8,18 +8,14 @@ import { Card, CardBody } from "../../ui/Card";
 import Button from "../../ui/Button";
 import { useOrganization } from "@/app/context/OrganizationProvider";
 import styles from "./PreviewingFeedCard.module.css";
+import { useRouter } from "next/navigation";
 
 interface PreviewingFeedCardProps {
   feedTitle: string;
   feedId: Id<"feeds">;
-  onViewAllFeeds?: () => void;
 }
 
-const PreviewingFeedCard = ({
-  feedTitle,
-  feedId,
-  onViewAllFeeds,
-}: PreviewingFeedCardProps) => {
+const PreviewingFeedCard = ({ feedTitle, feedId }: PreviewingFeedCardProps) => {
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
   const joinOpenFeed = useMutation(api.userMemberships.joinOpenFeed);
@@ -27,6 +23,8 @@ const PreviewingFeedCard = ({
   const [isJoining, setIsJoining] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const handleJoin = async () => {
     setIsJoining(true);
@@ -40,7 +38,7 @@ const PreviewingFeedCard = ({
       setHasJoined(true);
     } catch (error) {
       setJoinError(
-        error instanceof Error ? error.message : "Failed to join feed"
+        error instanceof Error ? error.message : "Failed to join feed",
       );
     } finally {
       setIsJoining(false);
@@ -57,18 +55,18 @@ const PreviewingFeedCard = ({
     <Card className={styles.currentlyViewingCard}>
       <CardBody>
         <div className={styles.content}>
-          <p className={styles.label}>You are viewing an open feed:</p>
+          <p className={styles.label}>You are viewing the feed:</p>
           <h3 className={styles.feedTitle}>{feedTitle}</h3>
-          <Button
-            variant="primary"
-            onClick={handleJoin}
-            disabled={isJoining || hasJoined}
-          >
-            {getJoinButtonText()}
-          </Button>
-          {onViewAllFeeds && (
-            <Button onClick={onViewAllFeeds}>View all feeds</Button>
-          )}
+          <div className={styles.actions}>
+            <Button
+              variant="primary"
+              onClick={handleJoin}
+              disabled={isJoining || hasJoined}
+            >
+              {getJoinButtonText()}
+            </Button>
+            <Button onClick={() => router.push("/")}>View all feeds</Button>
+          </div>
           {joinError && <p className={styles.error}>{joinError}</p>}
         </div>
       </CardBody>

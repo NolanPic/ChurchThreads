@@ -1,0 +1,55 @@
+.container {
+    padding: 0 var(--spacing8) var(--spacing16);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.headingRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing8);
+}
+
+.heading {
+    font-family: var(--font-gentium-plus);
+    font-weight: 400;
+    font-style: italic;
+}
+
+.backCard {
+    cursor: pointer;
+    margin-bottom: var(--spacing14)
+}
+
+.backCardBody {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing4);
+}
+
+.browseMoreFeeds {
+    padding: 0;
+    background: linear-gradient(
+        to top,
+        var(--mid) 0%,
+        rgb(from var(--mid) r g b / 0.25) 75%,
+        rgb(from var(--mid) r g b / 0.0) 100%
+    );
+    
+    padding: var(--spacing8);
+}
+
+.browseOpenFeedsButton {
+    font-family: var(--font-gentium-plus);
+    font-size: var(--text-lg);
+    font-weight: 400;
+    width: 100%;
+}
+
+@media(--tablet) {
+    .container {
+        padding-top: var(--spacing16);
+    }
+}

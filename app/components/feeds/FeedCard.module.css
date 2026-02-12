@@ -1,1 +1,62 @@
 
+.header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing2);
+}
+
+.title {
+    font-family: var(--font-gentium-plus);
+    font-size: var(--text-md);
+    font-weight: 400;
+}
+
+.menu {
+    margin-left: auto;
+    position: relative;
+    justify-self: end;
+    opacity: 1;
+}
+
+.menuButton {
+    background-color: transparent !important;
+    cursor: pointer;
+}
+
+.menuList {
+    background-color: var(--mid);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    list-style: none;
+    padding: var(--spacing2) 0;
+    margin: 0;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 174px;
+    text-align: center;
+    color: var(--white);
+    font-family: var(--font-gentium-plus);
+    font-size: var(--text-base);
+    overflow: hidden;
+    z-index: 1;
+}
+
+.menuItem > button {
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: inherit;
+    width: 100%;
+    padding: var(--spacing1) 0;
+}
+
+.menuItem > button:hover {
+    background-color: var(--mid2);
+}
+
+.bodyRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

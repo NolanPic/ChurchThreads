@@ -14,6 +14,7 @@ import PreviewingFeedCard from "./discovery/PreviewingFeedCard";
 import FeedSelectorItems from "./FeedSelectorItems";
 import { FeedSelectorScreen } from "./FeedSelector.types";
 import styles from "./FeedSelectorModal.module.css";
+import IconButton from "../ui/IconButton";
 
 interface FeedSelectorModalProps {
   isOpen: boolean;
@@ -47,7 +48,7 @@ export default function FeedSelectorModal({
       selectedFeedId &&
       org
       ? { orgId: org._id, feedId: selectedFeedId }
-      : "skip"
+      : "skip",
   );
 
   useEffect(() => {
@@ -70,6 +71,41 @@ export default function FeedSelectorModal({
     setIsUserPreviewingOpenFeed(false);
   }, [auth, currentScreen, isAuthLoading, isOpen, selectedFeedId]);
 
+  // Card display logic - determines which navigation card should show
+  const shouldShowPreviewingCard =
+    currentScreen === "yourFeeds" &&
+    isUserPreviewingOpenFeed &&
+    previewFeed != null &&
+    selectedFeedId != null;
+
+  const shouldShowBackToAllThreads =
+    currentScreen === "yourFeeds" &&
+    selectedFeedId != null &&
+    !shouldShowPreviewingCard;
+
+  const shouldShowBackToYourFeeds = currentScreen === "openFeeds";
+
+  // Configure back navigation card (null if no card should show)
+  let backNavigation: {
+    label: string;
+    action: () => void;
+    ariaLabel: string;
+  } | null = null;
+
+  if (shouldShowBackToYourFeeds) {
+    backNavigation = {
+      label: "Back to your feeds",
+      action: () => onScreenChange("yourFeeds"),
+      ariaLabel: "Back to your feeds",
+    };
+  } else if (shouldShowBackToAllThreads) {
+    backNavigation = {
+      label: "Back to all threads",
+      action: () => onSelectFeed(undefined),
+      ariaLabel: "Back to all threads",
+    };
+  }
+
   return (
     <Modal
       isOpen={isOpen}
@@ -77,11 +113,24 @@ export default function FeedSelectorModal({
       dragToClose
       fullScreen
       ariaLabel="Feed selector"
+      toolbar={() =>
+        currentScreen === "yourFeeds" &&
+        auth && (
+          <Button
+            className={styles.browseOpenFeedsButton}
+            onClick={() => onScreenChange("openFeeds")}
+            noBackground
+          >
+            Browse more feeds
+          </Button>
+        )
+      }
+      toolbarClass={styles.browseMoreFeeds}
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={currentScreen}
-          className={styles.feedList}
+          className={styles.container}
           initial={{
             opacity: 0,
             x: currentScreen === "openFeeds" ? "100%" : "-100%",
@@ -93,78 +142,72 @@ export default function FeedSelectorModal({
           }}
           transition={{ duration: 0.2 }}
         >
-          {currentScreen === "openFeeds" ? (
-            <>
+          {/* User is previewing an open feed they're not a member of */}
+          {shouldShowPreviewingCard && (
+            <div className={styles.previewingFeedCard}>
+              <PreviewingFeedCard
+                feedTitle={previewFeed.name}
+                feedId={selectedFeedId}
+                onViewAllFeeds={() => onScreenChange("openFeeds")}
+              />
+            </div>
+          )}
+
+          {/* Shows "Back to your feeds" or "Back to all threads" */}
+          {backNavigation && (
+            <div
+              role="button"
+              tabIndex={0}
+              className={styles.backCard}
+              onClick={backNavigation.action}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  backNavigation.action();
+                }
+              }}
+              aria-label={backNavigation.ariaLabel}
+            >
               <Card>
-                <CardBody>
-                  <p>Back to your feeds</p>
+                <CardBody className={styles.backCardBody}>
+                  <p>{backNavigation.label}</p>
                   <Button
                     variant="primary"
-                    onClick={() => onScreenChange("yourFeeds")}
-                    ariaLabel="Back to your feeds"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      backNavigation.action();
+                    }}
+                    ariaLabel={backNavigation.ariaLabel}
                   >
                     Go
                   </Button>
                 </CardBody>
               </Card>
-              <h1 className={styles.chooseFeedHeading}>Open feeds</h1>
-            </>
-          ) : (
-            <>
-              {currentScreen === "yourFeeds" &&
-                isUserPreviewingOpenFeed &&
-                previewFeed &&
-                selectedFeedId && (
-                  <div className={styles.previewingFeedCard}>
-                    <PreviewingFeedCard
-                      feedTitle={previewFeed.name}
-                      feedId={selectedFeedId}
-                      onViewAllFeeds={() => onScreenChange("openFeeds")}
-                    />
-                  </div>
-                )}
-
-              {currentScreen === "yourFeeds" && selectedFeedId && (
-                <Card>
-                  <CardBody>
-                    <p>Back to all threads</p>
-                    <Button
-                      variant="primary"
-                      onClick={() => onSelectFeed(undefined)}
-                    >
-                      Go
-                    </Button>
-                  </CardBody>
-                </Card>
-              )}
-
-              <div className={styles.headingRow}>
-                <h2 className={styles.chooseFeedHeading}>
-                  {currentScreen === "selectForThread"
-                    ? "Choose a feed"
-                    : "Your feeds"}
-                </h2>
-                {currentScreen === "yourFeeds" && isAdmin && (
-                  <Button icon="plus" ariaLabel="Create feed" />
-                )}
-              </div>
-            </>
+            </div>
           )}
+
+          <div className={styles.headingRow}>
+            <h1 className={styles.heading}>
+              {currentScreen === "selectForThread"
+                ? "Choose a feed"
+                : currentScreen === "openFeeds"
+                  ? "Open feeds"
+                  : "Your feeds"}
+            </h1>
+            {currentScreen === "yourFeeds" && isAdmin && (
+              <IconButton
+                icon="plus-dark"
+                variant="primary"
+                ariaLabel="Create feed"
+              />
+            )}
+          </div>
 
           <FeedSelectorItems
             currentScreen={currentScreen}
+            selectedFeedId={selectedFeedId}
             onSelectFeed={onSelectFeed}
           />
-
-          {currentScreen === "yourFeeds" && auth && (
-            <Button
-              className={styles.browseOpenFeedsButton}
-              onClick={() => onScreenChange("openFeeds")}
-              noBackground
-            >
-              Browse more feeds
-            </Button>
-          )}
         </motion.div>
       </AnimatePresence>
     </Modal>
