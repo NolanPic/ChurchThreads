@@ -100,9 +100,9 @@ export default function FeedSelectorModal({
     };
   } else if (shouldShowBackToAllThreads) {
     backNavigation = {
-      label: "Back to all threads",
+      label: "Back to all feeds",
       action: () => onSelectFeed(undefined),
-      ariaLabel: "Back to all threads",
+      ariaLabel: "Back to all feeds",
     };
   }
 
@@ -152,7 +152,7 @@ export default function FeedSelectorModal({
             </div>
           )}
 
-          {/* Shows "Back to your feeds" or "Back to all threads" */}
+          {/* Shows "Back to your feeds" or "Back to all feeds" */}
           {backNavigation && (
             <div
               role="button"
