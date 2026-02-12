@@ -148,7 +148,6 @@ export default function FeedSelectorModal({
               <PreviewingFeedCard
                 feedTitle={previewFeed.name}
                 feedId={selectedFeedId}
-                onViewAllFeeds={() => onScreenChange("openFeeds")}
               />
             </div>
           )}
