@@ -140,7 +140,7 @@ export default function FeedSelectorModal({
             opacity: 0,
             x: currentScreen === "openFeeds" ? "100%" : "-100%",
           }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.1 }}
         >
           {/* User is previewing an open feed they're not a member of */}
           {shouldShowPreviewingCard && (

@@ -1,5 +1,5 @@
 .container {
-    padding: 0 var(--spacing8) var(--spacing16);
+    padding: 0 var(--spacing8) var(--spacing24);
     max-width: 500px;
     margin: 0 auto;
 }
@@ -30,7 +30,6 @@
 }
 
 .browseMoreFeeds {
-    padding: 0;
     background: linear-gradient(
         to top,
         var(--mid) 0%,
@@ -38,7 +37,7 @@
         rgb(from var(--mid) r g b / 0.0) 100%
     );
     
-    padding: var(--spacing8);
+    padding: var(--spacing16) 0 var(--spacing8);
 }
 
 .browseOpenFeedsButton {
