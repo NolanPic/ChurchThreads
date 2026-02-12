@@ -260,16 +260,36 @@ export const getAllOpenFeeds = query({
     const { orgId, paginationOpts } = args;
 
     const auth = await getUserAuth(ctx, orgId);
-    auth.getUserOrThrow();
+    const user = auth.getUserOrThrow();
 
-    // Get all feeds and filter for open or public
+    // Get user's current feed memberships
+    const { feeds: userFeeds } = await getUserFeedsWithMembershipsHelper(
+      ctx,
+      user._id
+    );
+    const userFeedIds = new Set(userFeeds.map((feed) => feed._id));
+
+    // Get all open/public feeds excluding ones user has already joined
     const allFeeds = await ctx.db
       .query("feeds")
       .withIndex("by_org", (q) => q.eq("orgId", orgId))
       .filter((q) =>
-        q.or(
-          q.eq(q.field("privacy"), "open"),
-          q.eq(q.field("privacy"), "public")
+        q.and(
+          // Privacy filter: open or public
+          q.or(
+            q.eq(q.field("privacy"), "open"),
+            q.eq(q.field("privacy"), "public")
+          ),
+          // Exclude feeds user has already joined
+          userFeedIds.size === 0
+            ? true
+            : q.not(
+                q.or(
+                  ...Array.from(userFeedIds).map((feedId) =>
+                    q.eq(q.field("_id"), feedId)
+                  )
+                )
+              )
         )
       )
       .paginate(paginationOpts);

@@ -83,7 +83,7 @@ export default function FeedSelectorItems({
         status={openFeedsStatus}
         loadMore={loadMoreOpenFeeds}
         itemsPerPage={FEEDS_PER_PAGE}
-        emptyMessage="No open feeds available"
+        emptyMessage="No other feeds available"
         className={styles.cardList}
         renderCard={(feed) => (
           <JoinFeedCard
