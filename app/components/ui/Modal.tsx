@@ -243,9 +243,12 @@ export default function Modal({
         </div>
       </motion.div>
       {toolbar && (
-        <div className={classnames(styles.toolbar, toolbarClass)}>
+        <motion.div
+          className={classnames(styles.toolbar, toolbarClass)}
+          style={{ y }}
+        >
           {toolbar({ onClose: handleClose })}
-        </div>
+        </motion.div>
       )}
     </motion.div>
   ) : null;
