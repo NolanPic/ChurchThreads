@@ -13,6 +13,7 @@ import styles from "./Modal.module.css";
 import Icon from "./Icon";
 import { useMediaQuery } from "@/app/shared/hooks/useMediaQuery";
 import { useLockBodyScroll } from "@/app/shared/hooks/useLockBodyScroll";
+import classnames from "classnames";
 
 interface ModalToolbarProps {
   onClose: () => void;
@@ -32,7 +33,9 @@ interface ModalProps {
   children?: ReactNode;
   ariaLabel?: string;
   dragToClose?: boolean;
+  fullScreen?: boolean;
   toolbar?: (props: ModalToolbarProps) => React.ReactNode;
+  toolbarClass?: string;
   tabs?: ModalTab[];
   activeTabId?: string;
   onTabChange?: (tabId: string) => void;
@@ -46,7 +49,9 @@ export default function Modal({
   children,
   ariaLabel,
   dragToClose = false,
+  fullScreen = false,
   toolbar,
+  toolbarClass,
   tabs,
   activeTabId,
   onTabChange,
@@ -127,13 +132,13 @@ export default function Modal({
         // Focus the new tab
         setTimeout(() => {
           const tabButton = tabListRef.current?.querySelector(
-            `[data-tab-id="${targetTab.id}"]`
+            `[data-tab-id="${targetTab.id}"]`,
           ) as HTMLButtonElement;
           tabButton?.focus();
         }, 0);
       }
     },
-    [tabs, onTabChange]
+    [tabs, onTabChange],
   );
 
   const activeTab = tabs?.find((tab) => tab.id === activeTabId);
@@ -154,7 +159,7 @@ export default function Modal({
     >
       <motion.div
         id="modal"
-        className={styles.modal}
+        className={`${styles.modal} ${fullScreen ? styles.fullScreen : ""}`.trim()}
         style={{ y }}
         drag="y"
         dragControls={dragControls}
@@ -238,9 +243,12 @@ export default function Modal({
         </div>
       </motion.div>
       {toolbar && (
-        <div className={styles.toolbar}>
+        <motion.div
+          className={classnames(styles.toolbar, toolbarClass)}
+          style={{ y }}
+        >
           {toolbar({ onClose: handleClose })}
-        </div>
+        </motion.div>
       )}
     </motion.div>
   ) : null;
@@ -252,7 +260,7 @@ export default function Modal({
   );
 
   // Use portal on client, render in place during SSR
-  if (typeof document === 'undefined') {
+  if (typeof document === "undefined") {
     // SSR: render modal in place so it appears in initial HTML
     return modalContent;
   }

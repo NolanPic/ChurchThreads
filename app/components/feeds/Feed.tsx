@@ -267,12 +267,12 @@ export default function Feed({
           feedWrapperRef={feedWrapperRef}
         />
         <div className={styles.feedSelectorTabletUp}>
-          <FeedSelector variant="topOfFeed" />
+          <FeedSelector variant="topOfFeed" activeScreen="yourFeeds" />
         </div>
         {isSelectingFeedForThread && (
           <FeedSelector
             variant="topOfFeed"
-            chooseFeedForNewThread
+            activeScreen="selectForThread"
             onClose={handleCloseFeedSelector}
           />
         )}

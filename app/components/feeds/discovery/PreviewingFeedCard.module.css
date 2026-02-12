@@ -1,5 +1,6 @@
 .currentlyViewingCard {
   width: 100%;
+  margin-bottom: var(--spacing15);
 }
 
 .content {
@@ -20,6 +21,11 @@
   font-size: var(--text-lg);
   font-family: var(--font-gentium-plus);
   font-weight: 400;
+}
+
+.actions {
+  display: flex;
+  gap: var(--spacing3);
 }
 
 .error {

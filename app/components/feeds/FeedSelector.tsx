@@ -1,117 +1,78 @@
-import Button from "../ui/Button";
-import styles from "./FeedSelector.module.css";
-import { CurrentFeedAndThreadContext } from "@/app/context/CurrentFeedAndThreadProvider";
-import React, { useContext, useEffect } from "react";
-import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react";
-import { useOrganization } from "@/app/context/OrganizationProvider";
-import { useState } from "react";
-import Backdrop from "../ui/Backdrop";
-import { Id } from "@/convex/_generated/dataModel";
-import { AnimatePresence, motion } from "framer-motion";
-import { useScrollToTop } from "@/app/shared/hooks/useScrollToTop";
+"use client";
+
+import { useContext, useEffect, useState } from "react";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
-import { useUserAuth } from "@/auth/client/useUserAuth";
-import PreviewingFeedCard from "./discovery/PreviewingFeedCard";
-import PreviewFeedsSelector from "./discovery/PreviewFeedsSelector";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { CurrentFeedAndThreadContext } from "@/app/context/CurrentFeedAndThreadProvider";
+import { useOrganization } from "@/app/context/OrganizationProvider";
+import { useScrollToTop } from "@/app/shared/hooks/useScrollToTop";
+import Button from "../ui/Button";
+import FeedSelectorModal from "./FeedSelectorModal";
+import { FeedSelectorScreen, FeedSelectorVariant } from "./FeedSelector.types";
+import styles from "./FeedSelector.module.css";
 
-type FeedSelectorVariant = "topOfFeed" | "inToolbar";
 interface FeedSelectorProps {
   variant: FeedSelectorVariant;
-  chooseFeedForNewThread?: boolean;
+  activeScreen?: FeedSelectorScreen;
   onClose?: () => void;
 }
 
 export default function FeedSelector({
   variant,
-  chooseFeedForNewThread = false,
+  activeScreen = "yourFeeds",
   onClose,
 }: FeedSelectorProps) {
   const { feedId: selectedFeedId, setFeedId } = useContext(
-    CurrentFeedAndThreadContext
+    CurrentFeedAndThreadContext,
   );
   const org = useOrganization();
-  const [isFeedSelectorOpen, setIsFeedSelectorOpen] = useState(
-    chooseFeedForNewThread
-  );
-  const [isBrowserOpen, setIsBrowserOpen] = useState(false);
-  const [isUserPreviewingOpenFeed, setIsUserPreviewingOpenFeed] =
-    useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(activeScreen !== "yourFeeds");
+  const [currentScreen, setCurrentScreen] =
+    useState<FeedSelectorScreen>(activeScreen);
   const scrollToTop = useScrollToTop();
   const router = useRouter();
-  const [auth, { isLoading: isAuthLoading }] = useUserAuth();
 
-  const feeds =
-    useQuery(
-      api.feeds.getUserFeeds,
-      org
-        ? {
-            orgId: org._id,
-            onlyIncludeFeedsUserCanPostIn: chooseFeedForNewThread,
-          }
-        : "skip"
-    ) || [];
-
-  // Get current feed if viewing a non-member open feed.
-  // Note: this will always have a value if there's a feed selected,
-  // but it's only used for displaying a card when the user's
-  // previewing a feed.
-  const previewFeed = useQuery(
+  const selectedFeedData = useQuery(
     api.feeds.getFeed,
-    !isAuthLoading && selectedFeedId && org
-      ? { orgId: org._id, feedId: selectedFeedId }
-      : "skip"
+    selectedFeedId && org ? { orgId: org._id, feedId: selectedFeedId } : "skip",
   );
 
   useEffect(() => {
-    if (!isAuthLoading && selectedFeedId && auth) {
-      auth
-        .feed(selectedFeedId)
-        .hasRole("member")
-        .then((result) => {
-          setIsUserPreviewingOpenFeed(!result.allowed);
-        });
-    } else {
-      setIsUserPreviewingOpenFeed(false);
-    }
-  }, [auth, isAuthLoading, selectedFeedId]);
+    setCurrentScreen(activeScreen);
+    setIsModalOpen(activeScreen !== "yourFeeds");
+  }, [activeScreen]);
 
-  if (!org) return null;
+  if (!org) {
+    return null;
+  }
 
-  const selectedFeed =
-    feeds.find((feed) => feed._id === selectedFeedId)?.name ||
-    previewFeed?.name ||
-    "All feeds";
+  const selectedFeed = selectedFeedData?.name || "All feeds";
 
-  const onSelectFeed = (feedId: Id<"feeds"> | undefined) => {
-    setIsFeedSelectorOpen(false);
+  const handleClose = () => {
+    setIsModalOpen(false);
+    onClose?.();
+  };
+
+  const handleSelectFeed = (feedId: Id<"feeds"> | undefined) => {
+    setIsModalOpen(false);
     setFeedId(feedId);
     scrollToTop();
 
-    const targetPath = feedId ? `/feed/${feedId}` : `/`;
-    const pathWithQuery = chooseFeedForNewThread
-      ? `${targetPath}?openEditor=true`
-      : targetPath;
+    const targetPath = feedId ? `/feed/${feedId}` : "/";
+    const pathWithQuery =
+      currentScreen === "selectForThread"
+        ? `${targetPath}?openEditor=true`
+        : targetPath;
 
     router.push(pathWithQuery);
   };
 
-  const handleClose = (e: React.MouseEvent<HTMLElement>) => {
-    // check to make sure the click wasn't caused by selecting a feed
-    const element = e.target as HTMLElement;
-    const doClose = !["LABEL", "INPUT"].includes(element.tagName);
-    if (doClose) {
-      setIsFeedSelectorOpen(false);
-      if (onClose) {
-        onClose();
-      }
-    }
-  };
-
   return (
     <>
-      {!chooseFeedForNewThread && (
+      {activeScreen !== "selectForThread" && (
         <>
           <div className={classNames(styles.selectedFeed, styles[variant])}>
             <h2 className={styles.feedSelectorTitle}>
@@ -121,7 +82,10 @@ export default function FeedSelector({
               icon="dropdown-arrow"
               iconSize={10}
               className={styles.feedSelector}
-              onClick={() => setIsFeedSelectorOpen(true)}
+              onClick={() => {
+                setCurrentScreen("yourFeeds");
+                setIsModalOpen(true);
+              }}
             >
               {selectedFeed}
             </Button>
@@ -132,94 +96,15 @@ export default function FeedSelector({
           />
         </>
       )}
-      <AnimatePresence>
-        {isFeedSelectorOpen && !isBrowserOpen && (
-          <motion.div
-            key="feed-selector"
-            className={styles.feedList}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
-            onClick={handleClose}
-          >
-            {!chooseFeedForNewThread &&
-              isUserPreviewingOpenFeed &&
-              previewFeed && (
-                <div className={styles.previewingFeedCard}>
-                  <PreviewingFeedCard
-                    feedTitle={previewFeed.name}
-                    feedId={selectedFeedId!}
-                  />
-                </div>
-              )}
-            <ol>
-              {chooseFeedForNewThread && (
-                <li>
-                  <h2 className={styles.chooseFeedHeading}>
-                    Select a feed to post in
-                  </h2>
-                </li>
-              )}
-              {!chooseFeedForNewThread && (
-                <li
-                  key="all"
-                  className={!selectedFeedId ? styles.selected : ""}
-                >
-                  <label>
-                    <input
-                      type="radio"
-                      checked={!selectedFeedId}
-                      onChange={() => onSelectFeed(undefined)}
-                    />
-                    All feeds
-                  </label>
-                </li>
-              )}
-              {feeds.map((feed) => (
-                <li
-                  key={feed._id}
-                  className={selectedFeedId === feed._id ? styles.selected : ""}
-                >
-                  <label>
-                    <input
-                      type="radio"
-                      checked={selectedFeedId === feed._id}
-                      onChange={() => onSelectFeed(feed._id)}
-                    />
-                    {feed.name}
-                  </label>
-                </li>
-              ))}
-            </ol>
-            {!chooseFeedForNewThread && auth && (
-              <Button
-                className={styles.browseOpenFeedsButton}
-                onClick={() => {
-                  setIsFeedSelectorOpen(false);
-                  setIsBrowserOpen(true);
-                }}
-                noBackground
-              >
-                Browse open feeds
-              </Button>
-            )}
-          </motion.div>
-        )}
-        {isBrowserOpen && (
-          <PreviewFeedsSelector
-            key="open-feeds-browser"
-            onClose={() => {
-              setIsBrowserOpen(false);
-              setIsFeedSelectorOpen(true);
-            }}
-          />
-        )}
 
-        {(isFeedSelectorOpen || isBrowserOpen) && (
-          <Backdrop key="backdrop" onClick={handleClose} />
-        )}
-      </AnimatePresence>
+      <FeedSelectorModal
+        isOpen={isModalOpen}
+        onClose={handleClose}
+        currentScreen={currentScreen}
+        onScreenChange={setCurrentScreen}
+        selectedFeedId={selectedFeedId}
+        onSelectFeed={handleSelectFeed}
+      />
     </>
   );
 }

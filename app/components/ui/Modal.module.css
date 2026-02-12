@@ -27,6 +27,14 @@
   overscroll-behavior: contain;
 }
 
+.modal.fullScreen {
+  width: 100vw;
+  max-width: none;
+  margin-top: 0;
+  border-radius: 0;
+  padding: var(--spacing7) 0;
+}
+
 .title,
 .subtitle {
   font-family: var(--font-gentium-plus);
@@ -205,5 +213,14 @@
   .tab {
     font-size: var(--text-md);
   }
-}
 
+  .modal.fullScreen {
+    padding: var(--spacing7) 0;
+    margin-top: 0;
+    border-radius: 0;
+  }
+
+  .modal.fullScreen .closeButton_TabletUp {
+    display: inline-flex;
+  }
+}

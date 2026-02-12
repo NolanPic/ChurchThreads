@@ -7,6 +7,19 @@ import { paginationOptsValidator } from "convex/server";
 import { sendNotifications } from "./notifications";
 import { getAll } from "convex-helpers/server/relationships";
 
+function canUserViewFeed(args: {
+  isAdmin: boolean;
+  isMember: boolean;
+  privacy: "public" | "private" | "open";
+}): boolean {
+  const { isAdmin, isMember, privacy } = args;
+  if (isAdmin) {
+    return true;
+  }
+
+  return isMember || privacy === "open" || privacy === "public";
+}
+
 /**
  * Helper function to check if a user is the last owner of a feed
  */
@@ -414,11 +427,16 @@ export const joinOpenFeed = mutation({
 });
 
 /**
- * Get members for multiple open/public feeds at once
- * Only authenticated users can call this query
- * Returns up to 50 members per feed
+ * Get member previews for multiple feeds at once.
+ * Only authenticated users can call this query.
+ * Standard users can view previews from:
+ * - Feeds they are members of
+ * - Open/public feeds in their organization
+ * Admins can view all organization feeds.
+ * Inaccessible/missing feeds are skipped and omitted from the result.
+ * Returns up to 50 members per feed.
  */
-export const getOpenFeedMembers = query({
+export const getFeedMemberPreviews = query({
   args: {
     orgId: v.id("organizations"),
     feedIds: v.array(v.id("feeds")),
@@ -427,10 +445,23 @@ export const getOpenFeedMembers = query({
     const { orgId, feedIds } = args;
 
     const auth = await getUserAuth(ctx, orgId);
-    auth.getUserOrThrow();
+    const user = auth.getUserOrThrow();
+    const isAdmin = auth.hasRole("admin").allowed;
 
     // Get all feeds and verify they belong to the organization
     const feeds = await getAll(ctx.db, feedIds);
+    const userMemberships = !isAdmin
+      ? await ctx.db
+          .query("userFeeds")
+          .withIndex("by_userId", (q) => q.eq("userId", user._id))
+          .collect()
+      : [];
+    const memberFeedIds = new Set(
+      userMemberships
+        .filter((membership) => membership.orgId === orgId)
+        .map((membership) => membership.feedId)
+    );
+
     const result: Record<
       Id<"feeds">,
       Array<{
@@ -450,13 +481,20 @@ export const getOpenFeedMembers = query({
         continue;
       }
 
-      // Verify feed belongs to the organization
+      // Skip feeds outside the requested org
       if (feed.orgId !== orgId) {
-        throw new Error(`Feed ${feedId} does not belong to organization ${orgId}`);
+        continue;
       }
 
-      // Only return members if feed is open or public
-      if (feed.privacy !== "open" && feed.privacy !== "public") {
+      const isMember = memberFeedIds.has(feedId);
+      const canView = canUserViewFeed({
+        isAdmin,
+        isMember,
+        privacy: feed.privacy,
+      });
+
+      // Skip feeds the user is not allowed to view
+      if (!canView) {
         continue;
       }
 
