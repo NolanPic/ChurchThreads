@@ -136,7 +136,7 @@ export default function FeedCard({
         </div>
       </CardHeader>
 
-      <CardBody>
+      <CardBody className={styles.cardBody}>
         <div className={styles.bodyRow}>
           <Button variant="primary" onClick={onPrimaryAction}>
             {primaryActionLabel}

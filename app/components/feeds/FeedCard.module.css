@@ -1,4 +1,9 @@
 
+.header,
+.cardBody {
+    padding: var(--spacing4);
+}
+
 .header {
     display: flex;
     align-items: center;
