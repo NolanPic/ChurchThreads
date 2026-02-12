@@ -86,7 +86,7 @@ export default function FeedCard({
   };
 
   return (
-    <Card>
+    <Card onClick={onPrimaryAction} className={styles.clickableCard}>
       <CardHeader className={styles.header}>
         <h2 className={styles.title}>{feed.name}</h2>
         {feed.privacy === "public" && (
@@ -138,7 +138,13 @@ export default function FeedCard({
 
       <CardBody className={styles.cardBody}>
         <div className={styles.bodyRow}>
-          <Button variant="primary" onClick={onPrimaryAction}>
+          <Button
+            variant="primary"
+            onClick={(e) => {
+              e.stopPropagation();
+              onPrimaryAction();
+            }}
+          >
             {primaryActionLabel}
           </Button>
           <StackedUsers

@@ -1,3 +1,6 @@
+.clickableCard {
+    cursor: pointer;
+}
 
 .header,
 .cardBody {
