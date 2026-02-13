@@ -1,3 +1,10 @@
 .stepWrapper {
   width: 100%;
 }
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing8);
+  width: 100%;
+}

@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import classnames from "classnames";
 import styles from "./Stepper.module.css";
 
 // --- Context ---
@@ -62,8 +63,13 @@ const slideTransition = {
 
 // --- Step ---
 
-export function Step({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+interface StepProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export function Step({ children, className }: StepProps) {
+  return <div className={classnames(styles.step, className)}>{children}</div>;
 }
 
 // --- Stepper ---

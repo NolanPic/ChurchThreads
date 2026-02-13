@@ -9,6 +9,8 @@ import SelectFeedsStep from "./steps/SelectFeedsStep";
 import QRCodeStep from "./steps/QRCodeStep";
 import EmailInviteStep from "./steps/EmailInviteStep";
 import styles from "./InviteModal.module.css";
+import methodStyles from "./steps/InviteMethodStep.module.css";
+import feedsStyles from "./steps/SelectFeedsStep.module.css";
 
 interface InviteModalProps {
   isOpen: boolean;
@@ -75,10 +77,10 @@ export default function InviteModal({
       dragToClose
     >
       <Stepper ref={stepperRef} className={styles.content}>
-        <Step>
+        <Step className={methodStyles.step}>
           <InviteMethodStep onSelectMethod={setInviteMethod} />
         </Step>
-        <Step>
+        <Step className={feedsStyles.step}>
           <SelectFeedsStep
             feed={feed}
             selectedFeedIds={selectedFeedIds}

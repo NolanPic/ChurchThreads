@@ -1,7 +1,6 @@
 "use client";
 
 import { StepOptionCard } from "@/app/components/ui/Stepper";
-import styles from "./InviteMethodStep.module.css";
 
 interface InviteMethodStepProps {
   onSelectMethod: (method: "email" | "qr") => void;
@@ -11,7 +10,7 @@ export default function InviteMethodStep({
   onSelectMethod,
 }: InviteMethodStepProps) {
   return (
-    <div className={styles.methods}>
+    <>
       <StepOptionCard
         title="By email"
         titleIcon="send-alt"
@@ -31,6 +30,6 @@ export default function InviteMethodStep({
           nextStep();
         }}
       />
-    </div>
+    </>
   );
 }

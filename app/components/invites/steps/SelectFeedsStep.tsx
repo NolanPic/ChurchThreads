@@ -116,7 +116,7 @@ export default function SelectFeedsStep({
     : "Select feeds to add the invited user(s) to.";
 
   return (
-    <div className={styles.options}>
+    <>
       <StepOptionCard
         title="Back"
         titleIcon="arrow-left"
@@ -162,9 +162,8 @@ export default function SelectFeedsStep({
               next();
             }
           }}
-          className={styles.skipAction}
         />
       )}
-    </div>
+    </>
   );
 }
