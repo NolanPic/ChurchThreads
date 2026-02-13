@@ -5,7 +5,7 @@ import { useQuery, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useOrganization } from "@/app/context/OrganizationProvider";
-import { useStepper, StepOptionCard } from "@/app/components/ui/Stepper";
+import { Step, useStepper, StepOptionCard } from "@/app/components/ui/Stepper";
 import MultiSelectComboBox, {
   MultiSelectOption,
 } from "../../ui/MultiSelectComboBox";
@@ -116,7 +116,7 @@ export default function SelectFeedsStep({
     : "Select feeds to add the invited user(s) to.";
 
   return (
-    <>
+    <Step className={styles.step}>
       <StepOptionCard
         title="Back"
         titleIcon="arrow-left"
@@ -164,6 +164,6 @@ export default function SelectFeedsStep({
           }}
         />
       )}
-    </>
+    </Step>
   );
 }

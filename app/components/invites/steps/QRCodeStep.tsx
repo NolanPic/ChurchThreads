@@ -3,6 +3,7 @@
 import { QRCodeSVG } from "qrcode.react";
 import Image from "next/image";
 import { useOrganization } from "@/app/context/OrganizationProvider";
+import { Step } from "@/app/components/ui/Stepper";
 import styles from "./QRCodeStep.module.css";
 
 interface QRCodeStepProps {
@@ -19,7 +20,7 @@ export default function QRCodeStep({ inviteToken }: QRCodeStepProps) {
   const registerUrl = `https://${org.host}/register?token=${encodeURIComponent(inviteToken)}`;
 
   return (
-    <>
+    <Step>
       <div className={styles.logo}>
         <Image
           src="/logo.svg"
@@ -43,6 +44,6 @@ export default function QRCodeStep({ inviteToken }: QRCodeStepProps) {
           fgColor="#4C5177"
         />
       </div>
-    </>
+    </Step>
   );
 }

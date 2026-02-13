@@ -5,7 +5,7 @@ import { useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useOrganization } from "@/app/context/OrganizationProvider";
-import { StepOptionCard } from "@/app/components/ui/Stepper";
+import { Step, StepOptionCard } from "@/app/components/ui/Stepper";
 import MultiSelectComboBox from "../../ui/MultiSelectComboBox";
 import Button from "../../ui/Button";
 import styles from "./EmailInviteStep.module.css";
@@ -94,16 +94,18 @@ export default function EmailInviteStep({
 
   if (showSuccess && emailAddresses.length === 0) {
     return (
-      <StepOptionCard
-        title="Invites sent!"
-        titleIcon="send-alt"
-        description="Your invitation emails have been sent successfully."
-      />
+      <Step>
+        <StepOptionCard
+          title="Invites sent!"
+          titleIcon="send-alt"
+          description="Your invitation emails have been sent successfully."
+        />
+      </Step>
     );
   }
 
   return (
-    <>
+    <Step>
       <StepOptionCard
         title="Back"
         titleIcon="arrow-left"
@@ -142,6 +144,6 @@ export default function EmailInviteStep({
           {isSending ? "Sending..." : "Send"}
         </Button>
       </StepOptionCard>
-    </>
+    </Step>
   );
 }

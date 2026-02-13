@@ -2,15 +2,13 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Doc, Id } from "@/convex/_generated/dataModel";
-import { Stepper, Step, StepperRef } from "../ui/Stepper";
+import { Stepper, StepperRef } from "../ui/Stepper";
 import Modal from "../ui/Modal";
 import InviteMethodStep from "./steps/InviteMethodStep";
 import SelectFeedsStep from "./steps/SelectFeedsStep";
 import QRCodeStep from "./steps/QRCodeStep";
 import EmailInviteStep from "./steps/EmailInviteStep";
 import styles from "./InviteModal.module.css";
-import methodStyles from "./steps/InviteMethodStep.module.css";
-import feedsStyles from "./steps/SelectFeedsStep.module.css";
 
 interface InviteModalProps {
   isOpen: boolean;
@@ -77,30 +75,24 @@ export default function InviteModal({
       dragToClose
     >
       <Stepper ref={stepperRef} className={styles.content}>
-        <Step className={methodStyles.step}>
-          <InviteMethodStep onSelectMethod={setInviteMethod} />
-        </Step>
-        <Step className={feedsStyles.step}>
-          <SelectFeedsStep
-            feed={feed}
+        <InviteMethodStep onSelectMethod={setInviteMethod} />
+        <SelectFeedsStep
+          feed={feed}
+          selectedFeedIds={selectedFeedIds}
+          onFeedIdsChange={setSelectedFeedIds}
+          onComplete={handleFeedsComplete}
+          onSkip={handleSkip}
+        />
+        {inviteMethod === "qr" ? (
+          <QRCodeStep inviteToken={inviteToken} />
+        ) : (
+          <EmailInviteStep
             selectedFeedIds={selectedFeedIds}
-            onFeedIdsChange={setSelectedFeedIds}
-            onComplete={handleFeedsComplete}
-            onSkip={handleSkip}
+            emailAddresses={emailAddresses}
+            onEmailAddressesChange={setEmailAddresses}
+            onSent={handleEmailsSent}
           />
-        </Step>
-        <Step>
-          {inviteMethod === "qr" ? (
-            <QRCodeStep inviteToken={inviteToken} />
-          ) : (
-            <EmailInviteStep
-              selectedFeedIds={selectedFeedIds}
-              emailAddresses={emailAddresses}
-              onEmailAddressesChange={setEmailAddresses}
-              onSent={handleEmailsSent}
-            />
-          )}
-        </Step>
+        )}
       </Stepper>
     </Modal>
   );
