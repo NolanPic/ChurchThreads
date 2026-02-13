@@ -153,6 +153,7 @@ export default function SelectFeedsStep({
       <StepOptionCard
         title="Back"
         titleIcon="arrow-left"
+        iconPosition="left"
         onClick={({ previousStep }) => previousStep()}
         className={styles.backStep}
       />

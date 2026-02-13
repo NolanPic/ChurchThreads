@@ -143,6 +143,7 @@ export default function EmailInviteStep({
       <StepOptionCard
         title="Back"
         titleIcon="arrow-left"
+        iconPosition="left"
         onClick={({ previousStep }) => previousStep()}
       />
     </Step>

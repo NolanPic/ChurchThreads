@@ -16,10 +16,12 @@ interface StepOptionCardProps {
   disabled?: boolean;
   className?: string;
   children?: React.ReactNode;
+  iconPosition?: "left" | "right";
 }
 
 export default function StepOptionCard({
   onClick,
+  iconPosition,
   ...rest
 }: StepOptionCardProps) {
   const { nextStep, previousStep } = useStepper();
@@ -28,5 +30,7 @@ export default function StepOptionCard({
     ? () => onClick({ nextStep, previousStep })
     : undefined;
 
-  return <ActionCard {...rest} onClick={handleClick} />;
+  return (
+    <ActionCard {...rest} onClick={handleClick} iconPosition={iconPosition} />
+  );
 }
