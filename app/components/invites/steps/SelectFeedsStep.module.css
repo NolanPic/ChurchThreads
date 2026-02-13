@@ -1,3 +1,23 @@
+.step {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr auto;
+  grid-template-areas: "addFeedsStep addFeedsStep"
+                       "backStep skipStep";
+}
+
+.addFeedsStep {
+  grid-area: addFeedsStep;
+}
+
+.backStep {
+  grid-area: backStep;
+}
+
+.skipStep {
+  grid-area: skipStep;
+}
+
 .description {
   color: var(--white);
   font-size: var(--text-base);

@@ -41,7 +41,9 @@ export default function EmailInviteStep({
   );
 
   const handleCustomValuesAdded = (values: string[]) => {
-    const validEmails = values.filter(validateEmail).map(email => email.toLowerCase());
+    const validEmails = values
+      .filter(validateEmail)
+      .map((email) => email.toLowerCase());
     onEmailAddressesChange([...emailAddresses, ...validEmails]);
   };
 
@@ -107,12 +109,6 @@ export default function EmailInviteStep({
   return (
     <Step>
       <StepOptionCard
-        title="Back"
-        titleIcon="arrow-left"
-        onClick={({ previousStep }) => previousStep()}
-      />
-
-      <StepOptionCard
         title="Send invites"
         titleIcon="send-alt"
         description="Type email addresses, then press Enter after each one (or separate by comma)."
@@ -144,6 +140,11 @@ export default function EmailInviteStep({
           {isSending ? "Sending..." : "Send"}
         </Button>
       </StepOptionCard>
+      <StepOptionCard
+        title="Back"
+        titleIcon="arrow-left"
+        onClick={({ previousStep }) => previousStep()}
+      />
     </Step>
   );
 }

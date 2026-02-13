@@ -118,12 +118,11 @@ export default function SelectFeedsStep({
   return (
     <Step className={styles.step}>
       <StepOptionCard
-        title="Back"
-        titleIcon="arrow-left"
-        onClick={({ previousStep }) => previousStep()}
-      />
-
-      <StepOptionCard title="Add to feeds" titleIcon="plus" description={message}>
+        title="Add to feeds"
+        titleIcon="plus"
+        description={message}
+        className={styles.addFeedsStep}
+      >
         {hasOtherFeeds ? (
           <MultiSelectComboBox
             options={feedOptions}
@@ -151,6 +150,12 @@ export default function SelectFeedsStep({
         </Button>
       </StepOptionCard>
 
+      <StepOptionCard
+        title="Back"
+        titleIcon="arrow-left"
+        onClick={({ previousStep }) => previousStep()}
+        className={styles.backStep}
+      />
       {feed && (
         <StepOptionCard
           title="Skip"
@@ -162,6 +167,7 @@ export default function SelectFeedsStep({
               next();
             }
           }}
+          className={styles.skipStep}
         />
       )}
     </Step>
