@@ -5,7 +5,7 @@ import { useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useOrganization } from "@/app/context/OrganizationProvider";
-import ActionCard from "../ActionCard";
+import { StepOptionCard } from "@/app/components/ui/Stepper";
 import MultiSelectComboBox from "../../ui/MultiSelectComboBox";
 import Button from "../../ui/Button";
 import styles from "./EmailInviteStep.module.css";
@@ -94,46 +94,54 @@ export default function EmailInviteStep({
 
   if (showSuccess && emailAddresses.length === 0) {
     return (
-      <ActionCard
+      <StepOptionCard
         title="Invites sent!"
         titleIcon="send-alt"
         description="Your invitation emails have been sent successfully."
-      ></ActionCard>
+      />
     );
   }
 
   return (
-    <ActionCard
-      title="Send invites"
-      titleIcon="send-alt"
-      description="Type email addresses, then press Enter after each one (or separate by comma)."
-    >
-      <MultiSelectComboBox
-        allowCustomValues
-        validateCustomValue={validateEmail}
-        onCustomValuesAdded={handleCustomValuesAdded}
-        customSelections={emailAddresses}
-        onChange={(value, isDeselecting) => {
-          if (isDeselecting) {
-            handleRemoveEmail(value);
-          }
-        }}
-        placeholder="Enter email addresses..."
-        disabled={isSending}
-        className={styles.feedSelect}
+    <>
+      <StepOptionCard
+        title="Back"
+        titleIcon="arrow-left"
+        onClick={({ previousStep }) => previousStep()}
       />
 
-      {error && <p className={styles.errorText}>{error}</p>}
-
-      <Button
-        variant="primary"
-        className={styles.primaryButton}
-        onClick={handleSend}
-        disabled={isSending || emailAddresses.length === 0}
-        icon="send"
+      <StepOptionCard
+        title="Send invites"
+        titleIcon="send-alt"
+        description="Type email addresses, then press Enter after each one (or separate by comma)."
       >
-        {isSending ? "Sending..." : "Send"}
-      </Button>
-    </ActionCard>
+        <MultiSelectComboBox
+          allowCustomValues
+          validateCustomValue={validateEmail}
+          onCustomValuesAdded={handleCustomValuesAdded}
+          customSelections={emailAddresses}
+          onChange={(value, isDeselecting) => {
+            if (isDeselecting) {
+              handleRemoveEmail(value);
+            }
+          }}
+          placeholder="Enter email addresses..."
+          disabled={isSending}
+          className={styles.feedSelect}
+        />
+
+        {error && <p className={styles.errorText}>{error}</p>}
+
+        <Button
+          variant="primary"
+          className={styles.primaryButton}
+          onClick={handleSend}
+          disabled={isSending || emailAddresses.length === 0}
+          icon="send"
+        >
+          {isSending ? "Sending..." : "Send"}
+        </Button>
+      </StepOptionCard>
+    </>
   );
 }

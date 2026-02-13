@@ -1,6 +1,6 @@
 "use client";
 
-import ActionCard from "../ActionCard";
+import { StepOptionCard } from "@/app/components/ui/Stepper";
 import styles from "./InviteMethodStep.module.css";
 
 interface InviteMethodStepProps {
@@ -12,19 +12,25 @@ export default function InviteMethodStep({
 }: InviteMethodStepProps) {
   return (
     <div className={styles.methods}>
-      <ActionCard
+      <StepOptionCard
         title="By email"
         titleIcon="send-alt"
         description="Invite one or more users by their email address."
-        onClick={() => onSelectMethod("email")}
-      ></ActionCard>
+        onClick={({ nextStep }) => {
+          onSelectMethod("email");
+          nextStep();
+        }}
+      />
 
-      <ActionCard
+      <StepOptionCard
         title="By QR Code"
         titleIcon="qr-code"
         description="Let users join by scanning a QR code on your phone."
-        onClick={() => onSelectMethod("qr")}
-      ></ActionCard>
+        onClick={({ nextStep }) => {
+          onSelectMethod("qr");
+          nextStep();
+        }}
+      />
     </div>
   );
 }

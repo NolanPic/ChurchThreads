@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Doc, Id } from "@/convex/_generated/dataModel";
-import { useInviteSteps, InviteStep } from "./hooks/useInviteSteps";
+import { Stepper, Step, StepperRef } from "../ui/Stepper";
 import Modal from "../ui/Modal";
 import InviteMethodStep from "./steps/InviteMethodStep";
 import SelectFeedsStep from "./steps/SelectFeedsStep";
@@ -17,34 +16,12 @@ interface InviteModalProps {
   feed?: Doc<"feeds">;
 }
 
-const slideVariants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? 300 : -300,
-    opacity: 0,
-  }),
-  center: {
-    zIndex: 1,
-    x: 0,
-    opacity: 1,
-  },
-  exit: (direction: number) => ({
-    zIndex: 0,
-    x: direction < 0 ? 300 : -300,
-    opacity: 0,
-  }),
-};
-
-const slideTransition = {
-  x: { type: "spring" as const, stiffness: 300, damping: 30 },
-  opacity: { duration: 0.2 },
-};
-
 export default function InviteModal({
   isOpen,
   onClose,
   feed,
 }: InviteModalProps) {
-  const { currentStep, direction, goToStep, resetSteps } = useInviteSteps();
+  const stepperRef = useRef<StepperRef>(null);
 
   // State management
   const [inviteMethod, setInviteMethod] = useState<"email" | "qr" | null>(null);
@@ -66,81 +43,28 @@ export default function InviteModal({
       setSelectedFeedIds(feed ? [feed._id] : []);
       setInviteToken(null);
       setEmailAddresses([]);
-      resetSteps();
+      stepperRef.current?.reset();
     }
-  }, [isOpen, feed, resetSteps]);
-
-  // Method selection handler
-  const handleMethodSelect = useCallback(
-    (method: "email" | "qr") => {
-      setInviteMethod(method);
-      goToStep("feeds");
-    },
-    [goToStep],
-  );
+  }, [isOpen, feed]);
 
   // Feeds selection complete handler
   const handleFeedsComplete = useCallback(
     (feedIds: Id<"feeds">[], token: string) => {
       setSelectedFeedIds(feedIds);
       setInviteToken(token);
-      if (inviteMethod === "qr") {
-        goToStep("qr");
-      } else {
-        goToStep("email");
-      }
     },
-    [inviteMethod, goToStep],
+    [],
   );
 
   // Handle skip (when a feed is pre-selected)
-  const handleSkip = useCallback(
-    (token: string) => {
-      setInviteToken(token);
-      if (inviteMethod === "qr") {
-        goToStep("qr");
-      } else {
-        goToStep("email");
-      }
-    },
-    [inviteMethod, goToStep],
-  );
+  const handleSkip = useCallback((token: string) => {
+    setInviteToken(token);
+  }, []);
 
   // Email sent handler
   const handleEmailsSent = useCallback(() => {
     // Keep modal open to show success, user can close manually
   }, []);
-
-  // Render current step
-  const renderStep = (step: InviteStep) => {
-    switch (step) {
-      case "method":
-        return <InviteMethodStep onSelectMethod={handleMethodSelect} />;
-      case "feeds":
-        return (
-          <SelectFeedsStep
-            feed={feed}
-            selectedFeedIds={selectedFeedIds}
-            onFeedIdsChange={setSelectedFeedIds}
-            onComplete={handleFeedsComplete}
-            onSkip={handleSkip}
-          />
-        );
-      case "qr":
-        return <QRCodeStep inviteToken={inviteToken} />;
-      case "email":
-        return (
-          <EmailInviteStep
-            selectedFeedIds={selectedFeedIds}
-            emailAddresses={emailAddresses}
-            onEmailAddressesChange={setEmailAddresses}
-            onSent={handleEmailsSent}
-          />
-        );
-      default:
-        return null;
-    }
-  };
 
   return (
     <Modal
@@ -150,22 +74,32 @@ export default function InviteModal({
       ariaLabel="Invite new users"
       dragToClose
     >
-      <div className={styles.content}>
-        <AnimatePresence initial={false} custom={direction} mode="wait">
-          <motion.div
-            key={currentStep}
-            custom={direction}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={slideTransition}
-            className={styles.stepWrapper}
-          >
-            {renderStep(currentStep)}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+      <Stepper ref={stepperRef} className={styles.content}>
+        <Step>
+          <InviteMethodStep onSelectMethod={setInviteMethod} />
+        </Step>
+        <Step>
+          <SelectFeedsStep
+            feed={feed}
+            selectedFeedIds={selectedFeedIds}
+            onFeedIdsChange={setSelectedFeedIds}
+            onComplete={handleFeedsComplete}
+            onSkip={handleSkip}
+          />
+        </Step>
+        <Step>
+          {inviteMethod === "qr" ? (
+            <QRCodeStep inviteToken={inviteToken} />
+          ) : (
+            <EmailInviteStep
+              selectedFeedIds={selectedFeedIds}
+              emailAddresses={emailAddresses}
+              onEmailAddressesChange={setEmailAddresses}
+              onSent={handleEmailsSent}
+            />
+          )}
+        </Step>
+      </Stepper>
     </Modal>
   );
 }
