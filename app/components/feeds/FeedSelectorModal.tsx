@@ -15,6 +15,7 @@ import FeedSelectorItems from "./FeedSelectorItems";
 import { FeedSelectorScreen } from "./FeedSelector.types";
 import styles from "./FeedSelectorModal.module.css";
 import IconButton from "../ui/IconButton";
+import CreateFeedModal from "./CreateFeedModal";
 
 interface FeedSelectorModalProps {
   isOpen: boolean;
@@ -37,6 +38,7 @@ export default function FeedSelectorModal({
   const [auth, { isLoading: isAuthLoading, user }] = useUserAuth();
   const [isUserPreviewingOpenFeed, setIsUserPreviewingOpenFeed] =
     useState(false);
+  const [isCreateFeedModalOpen, setIsCreateFeedModalOpen] = useState(false);
 
   const isAdmin = user?.role === "admin";
 
@@ -107,6 +109,7 @@ export default function FeedSelectorModal({
   }
 
   return (
+    <>
     <Modal
       isOpen={isOpen}
       onClose={onClose}
@@ -198,6 +201,7 @@ export default function FeedSelectorModal({
                 icon="plus-dark"
                 variant="primary"
                 ariaLabel="Create feed"
+                onClick={() => setIsCreateFeedModalOpen(true)}
               />
             )}
           </div>
@@ -210,5 +214,11 @@ export default function FeedSelectorModal({
         </motion.div>
       </AnimatePresence>
     </Modal>
+
+    <CreateFeedModal
+      isOpen={isCreateFeedModalOpen}
+      onClose={() => setIsCreateFeedModalOpen(false)}
+    />
+  </>
   );
 }
