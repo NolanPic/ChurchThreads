@@ -38,9 +38,3 @@
   font-size: var(--text-base);
   line-height: 1.5;
 }
-
-@media(--tablet) {
-  .step {
-    flex-direction: row;
-  }
-}
