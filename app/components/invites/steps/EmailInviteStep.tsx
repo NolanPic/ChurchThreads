@@ -145,6 +145,7 @@ export default function EmailInviteStep({
         titleIcon="arrow-left"
         iconPosition="left"
         onClick={({ previousStep }) => previousStep()}
+        disabled={isSending}
       />
     </Step>
   );
