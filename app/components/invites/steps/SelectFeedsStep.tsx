@@ -155,6 +155,7 @@ export default function SelectFeedsStep({
         titleIcon="arrow-left"
         iconPosition="left"
         onClick={({ previousStep }) => previousStep()}
+        disabled={isCreating}
         className={styles.backStep}
       />
       {feed && (
@@ -162,12 +163,14 @@ export default function SelectFeedsStep({
           title="Skip"
           titleIcon="arrow-right"
           onClick={async ({ nextStep: next }) => {
+            if (isCreating) return;
             const token = await handleCreateInvitation([feed._id]);
             if (token) {
               onSkip(token);
               next();
             }
           }}
+          disabled={isCreating}
           className={styles.skipStep}
         />
       )}
