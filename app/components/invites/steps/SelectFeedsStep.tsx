@@ -5,7 +5,7 @@ import { useQuery, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useOrganization } from "@/app/context/OrganizationProvider";
-import ActionCard from "../ActionCard";
+import { Step, useStepper, StepOptionCard } from "@/app/components/ui/Stepper";
 import MultiSelectComboBox, {
   MultiSelectOption,
 } from "../../ui/MultiSelectComboBox";
@@ -33,6 +33,7 @@ export default function SelectFeedsStep({
 }: SelectFeedsStepProps) {
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
+  const { nextStep } = useStepper();
 
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -104,14 +105,7 @@ export default function SelectFeedsStep({
     const token = await handleCreateInvitation(feedIds);
     if (token) {
       onComplete(feedIds, token);
-    }
-  };
-
-  const handleSkip = async () => {
-    if (!feed) return;
-    const token = await handleCreateInvitation([feed._id]);
-    if (token) {
-      onSkip(token);
+      nextStep();
     }
   };
 
@@ -122,8 +116,13 @@ export default function SelectFeedsStep({
     : "Select feeds to add the invited user(s) to.";
 
   return (
-    <div className={styles.options}>
-      <ActionCard title="Add to feeds" titleIcon="plus" description={message}>
+    <Step className={styles.step}>
+      <StepOptionCard
+        title="Add to feeds"
+        titleIcon="plus"
+        description={message}
+        className={styles.addFeedsStep}
+      >
         {hasOtherFeeds ? (
           <MultiSelectComboBox
             options={feedOptions}
@@ -149,16 +148,32 @@ export default function SelectFeedsStep({
         >
           {isCreating ? "Preparing invite..." : "Continue"}
         </Button>
-      </ActionCard>
+      </StepOptionCard>
 
+      <StepOptionCard
+        title="Back"
+        titleIcon="arrow-left"
+        iconPosition="left"
+        onClick={({ previousStep }) => previousStep()}
+        disabled={isCreating}
+        className={styles.backStep}
+      />
       {feed && (
-        <ActionCard
+        <StepOptionCard
           title="Skip"
           titleIcon="arrow-right"
-          onClick={handleSkip}
-          className={styles.skipAction}
-        ></ActionCard>
+          onClick={async ({ nextStep: next }) => {
+            if (isCreating) return;
+            const token = await handleCreateInvitation([feed._id]);
+            if (token) {
+              onSkip(token);
+              next();
+            }
+          }}
+          disabled={isCreating}
+          className={styles.skipStep}
+        />
       )}
-    </div>
+    </Step>
   );
 }

@@ -40,13 +40,17 @@
     display: flex;
     align-items: center;
     gap: var(--spacing2);
-    
+
     & h2 {
       font-family: var(--font-gentium-plus);
       font-size: var(--text-lg);
       font-weight: 400;
       color: var(--white);
     }
+  }
+
+  .leftIcon {
+    flex-direction: row-reverse;
   }
   
   .description {

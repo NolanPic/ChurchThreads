@@ -1,11 +1,21 @@
-.options {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing8);
+.step {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr auto;
+  grid-template-areas: "addFeedsStep addFeedsStep"
+                       "backStep skipStep";
 }
 
-.skipAction {
-  align-self: stretch;
+.addFeedsStep {
+  grid-area: addFeedsStep;
+}
+
+.backStep {
+  grid-area: backStep;
+}
+
+.skipStep {
+  grid-area: skipStep;
 }
 
 .description {
@@ -27,10 +37,4 @@
   color: var(--error);
   font-size: var(--text-base);
   line-height: 1.5;
-}
-
-@media(--tablet) {
-  .options {
-    flex-direction: row;
-  }
 }

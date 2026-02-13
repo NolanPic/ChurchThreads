@@ -11,6 +11,7 @@ interface ActionCardProps {
   disabled?: boolean;
   className?: string;
   children?: React.ReactNode;
+  iconPosition?: "left" | "right";
 }
 
 export default function ActionCard({
@@ -21,17 +22,24 @@ export default function ActionCard({
   disabled,
   className,
   children,
+  iconPosition = "right",
 }: ActionCardProps) {
   const useShortCard = !description && !children;
 
+  const titleElement = title && (
+    <div
+      className={classnames(styles.title, {
+        [styles.leftIcon]: iconPosition === "left",
+      })}
+    >
+      <h2>{title}</h2>
+      {titleIcon && <Icon name={titleIcon} size={24} />}
+    </div>
+  );
+
   const card = (
     <Card className={styles.card}>
-      {title && (
-        <div className={styles.title}>
-          <h2>{title}</h2>
-          {titleIcon && <Icon name={titleIcon} size={24} />}
-        </div>
-      )}
+      {titleElement}
       {description && <p className={styles.description}>{description}</p>}
       {children}
     </Card>
