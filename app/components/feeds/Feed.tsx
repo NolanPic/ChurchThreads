@@ -50,7 +50,6 @@ export default function Feed({
   const [settingsActiveTab, setSettingsActiveTab] = useState("members");
   const [isFeedOwner, setIsFeedOwner] = useState(false);
   const [, setIsFeedMember] = useState(false);
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [auth, { isLoading: isAuthLoading }] = useUserAuth();
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
@@ -94,17 +93,6 @@ export default function Feed({
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
   }, [setOpenThreadId]);
-
-  // Auto-open invite modal from query parameter
-  useEffect(() => {
-    if (searchParams.get("invite") === "true" && feedSettingsFeedIdSlug) {
-      setIsInviteModalOpen(true);
-      // Clean up URL after triggering
-      const url = new URL(window.location.href);
-      url.searchParams.delete("invite");
-      window.history.replaceState({}, "", url.toString());
-    }
-  }, [searchParams, feedSettingsFeedIdSlug]);
 
   const threadsQueryArgs = isAuthLoading
     ? "skip"
@@ -263,11 +251,7 @@ export default function Feed({
     id: "members",
     label: "Members",
     content: feedSettingsFeedIdSlug ? (
-      <FeedMembersTab
-        feedId={feedSettingsFeedIdSlug}
-        isInviteModalOpen={isInviteModalOpen}
-        setIsInviteModalOpen={setIsInviteModalOpen}
-      />
+      <FeedMembersTab feedId={feedSettingsFeedIdSlug} />
     ) : null,
   };
 

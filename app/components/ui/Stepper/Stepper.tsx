@@ -77,14 +77,20 @@ export function Step({ children, className }: StepProps) {
 interface StepperProps {
   children: React.ReactNode;
   className?: string;
+  currentStep?: number;
+  onStepChange?: (step: number) => void;
 }
 
 export const Stepper = forwardRef<StepperRef, StepperProps>(function Stepper(
-  { children, className },
+  { children, className, currentStep: controlledStep, onStepChange },
   ref,
 ) {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [internalStep, setInternalStep] = useState(0);
   const [direction, setDirection] = useState(1);
+
+  // Use controlled step if provided, otherwise use internal state
+  const currentStep = controlledStep ?? internalStep;
+  const setCurrentStep = onStepChange ?? setInternalStep;
 
   // Collect Step children
   const steps = Array.isArray(children) ? children : [children];

@@ -18,27 +18,17 @@ import styles from "./FeedMembersTab.module.css";
 
 interface FeedMembersTabProps {
   feedId: Id<"feeds">;
-  isInviteModalOpen?: boolean;
-  setIsInviteModalOpen?: (open: boolean) => void;
 }
 
 const MEMBERS_PER_PAGE = 10;
 
-export default function FeedMembersTab({
-  feedId,
-  isInviteModalOpen: externalIsInviteModalOpen,
-  setIsInviteModalOpen: externalSetIsInviteModalOpen,
-}: FeedMembersTabProps) {
+export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
   const [auth] = useUserAuth();
   const currentUser = auth?.getUser();
   const [isFeedOwner, setIsFeedOwner] = useState(false);
-  const [internalIsInviteModalOpen, setInternalIsInviteModalOpen] = useState(false);
-
-  // Use external state if provided, otherwise use internal state
-  const isInviteModalOpen = externalIsInviteModalOpen ?? internalIsInviteModalOpen;
-  const setIsInviteModalOpen = externalSetIsInviteModalOpen ?? setInternalIsInviteModalOpen;
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const feed = useQuery(api.feeds.getFeed, { orgId, feedId });
   const {

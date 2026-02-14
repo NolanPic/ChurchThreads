@@ -30,6 +30,9 @@ export default function CreateFeedModal({
   const org = useOrganization();
   const createFeed = useMutation(api.feeds.createFeed);
 
+  // Step state
+  const [currentStep, setCurrentStep] = useState(0);
+
   // Form state
   const [feedName, setFeedName] = useState("");
   const [feedDescription, setFeedDescription] = useState("");
@@ -47,6 +50,7 @@ export default function CreateFeedModal({
   // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
+      setCurrentStep(0);
       setFeedName("");
       setFeedDescription("");
       setFeedPrivacy("private");
@@ -96,7 +100,7 @@ export default function CreateFeedModal({
 
   const handleNavigateToInvite = () => {
     onClose();
-    router.push(`/feed/${createdFeedId}/settings?invite=true`);
+    router.push(`/feed/${createdFeedId}/settings`);
   };
 
   return (
@@ -107,7 +111,12 @@ export default function CreateFeedModal({
       ariaLabel="Create a new feed"
       dragToClose
     >
-      <Stepper ref={stepperRef} className={styles.content}>
+      <Stepper
+        ref={stepperRef}
+        className={styles.content}
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
+      >
         <FeedNameStep value={feedName} onChange={setFeedName} />
         <FeedDescriptionStep
           value={feedDescription}
