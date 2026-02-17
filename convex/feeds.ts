@@ -27,7 +27,7 @@ export const getUserFeeds = query({
         feed => !publicFeedIds.has(feed._id)
       );
 
-      let finalFeeds = [...publicFeeds, ...uniqueFeedsUserIsMemberOf]
+      let finalFeeds = [...publicFeeds, ...uniqueFeedsUserIsMemberOf];
 
       if(onlyIncludeFeedsUserCanPostIn) {
         const feedChecks = await Promise.all(
