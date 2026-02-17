@@ -1,5 +1,10 @@
+
+.inputWrap {
+  margin: var(--spacing8) 0;
+}
+
 .input {
-  margin-bottom: 1rem;
+  background-color: var(--mid);
 }
 
 .continueButton {
@@ -8,5 +13,5 @@
 }
 
 .error {
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing4);
 }

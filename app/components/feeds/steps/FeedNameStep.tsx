@@ -30,17 +30,17 @@ export default function FeedNameStep({ value, onChange }: FeedNameStepProps) {
       >
         <Input
           ref={inputRef}
-          label="Feed name"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="e.g., Youth Group, Prayer Requests"
+          placeholder="Feed name"
           validationConfig={{
             required: true,
             minLength: 4,
             maxLength: 25,
           }}
           fieldName="Feed name"
-          className={styles.input}
+          inputClassName={styles.input}
+          className={styles.inputWrap}
         />
         <Button
           variant="primary"

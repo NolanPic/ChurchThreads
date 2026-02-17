@@ -11,9 +11,12 @@ interface FeedDescriptionStepProps {
   onChange: (value: string) => void;
 }
 
-export default function FeedDescriptionStep({ value, onChange }: FeedDescriptionStepProps) {
+export default function FeedDescriptionStep({
+  value,
+  onChange,
+}: FeedDescriptionStepProps) {
   const inputRef = useRef<InputHandle>(null);
-  const { nextStep, previousStep } = useStepper();
+  const { nextStep } = useStepper();
 
   const handleContinue = () => {
     if (inputRef.current?.validate()) {
@@ -30,7 +33,6 @@ export default function FeedDescriptionStep({ value, onChange }: FeedDescription
       >
         <Input
           ref={inputRef}
-          label="Description (optional)"
           multiline
           rows={4}
           value={value}
@@ -40,7 +42,8 @@ export default function FeedDescriptionStep({ value, onChange }: FeedDescription
             maxLength: 100,
           }}
           fieldName="Description"
-          className={styles.input}
+          className={styles.inputWrap}
+          inputClassName={styles.input}
         />
         <Button
           variant="primary"
