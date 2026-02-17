@@ -6,6 +6,7 @@ import {
   useImperativeHandle,
   useRef,
 } from "react";
+import cx from "classnames";
 import styles from "./Input.module.css";
 import {
   validateTextField,
@@ -26,6 +27,8 @@ export interface InputProps
   disabled?: boolean;
   placeholder?: string;
   className?: string;
+  inputClassName?: string;
+  labelClassName?: string;
   validationConfig?: TextFieldValidationOptions;
   fieldName?: string;
 }
@@ -50,6 +53,8 @@ export const Input = forwardRef<InputHandle, InputProps>(
       disabled = false,
       placeholder,
       className,
+      inputClassName,
+      labelClassName,
       id,
       validationConfig,
       fieldName,
@@ -127,10 +132,10 @@ export const Input = forwardRef<InputHandle, InputProps>(
     const maxLengthAttr = validationConfig?.maxLength;
 
     return (
-      <div className={`${styles.inputWrapper} ${className || ""}`}>
+      <div className={cx(styles.inputWrapper, className)}>
         <label
           htmlFor={inputId}
-          className={`${styles.label} ${disabled ? styles.disabled : ""}`}
+          className={cx(styles.label, { [styles.disabled]: disabled }, labelClassName)}
         >
           {label}
         </label>
@@ -148,7 +153,7 @@ export const Input = forwardRef<InputHandle, InputProps>(
             aria-describedby={
               [errorId, helperTextId].filter(Boolean).join(" ") || undefined
             }
-            className={`${styles.input} ${styles.textarea} ${hasError ? styles.error : ""} ${disabled ? styles.disabled : ""}`}
+            className={cx(styles.input, styles.textarea, { [styles.error]: hasError, [styles.disabled]: disabled }, inputClassName)}
             {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
             onBlur={handleBlur as any}
           />
@@ -165,7 +170,7 @@ export const Input = forwardRef<InputHandle, InputProps>(
             aria-describedby={
               [errorId, helperTextId].filter(Boolean).join(" ") || undefined
             }
-            className={`${styles.input} ${hasError ? styles.error : ""} ${disabled ? styles.disabled : ""}`}
+            className={cx(styles.input, { [styles.error]: hasError, [styles.disabled]: disabled }, inputClassName)}
             {...props}
             onBlur={handleBlur}
           />
