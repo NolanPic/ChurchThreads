@@ -17,7 +17,7 @@ import {
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>, "type"> {
-  label: string;
+  label?: string;
   type?: "text" | "email" | "number";
   multiline?: boolean;
   rows?: number;
@@ -77,7 +77,7 @@ export const Input = forwardRef<InputHandle, InputProps>(
       (value: string) => {
         if (!validationConfig) return true;
 
-        const name = fieldName || label;
+        const name = fieldName || label || "";
         let result;
 
         if (type === "email") {
@@ -133,12 +133,14 @@ export const Input = forwardRef<InputHandle, InputProps>(
 
     return (
       <div className={cx(styles.inputWrapper, className)}>
-        <label
-          htmlFor={inputId}
-          className={cx(styles.label, { [styles.disabled]: disabled }, labelClassName)}
-        >
-          {label}
-        </label>
+        {label && (
+          <label
+            htmlFor={inputId}
+            className={cx(styles.label, { [styles.disabled]: disabled }, labelClassName)}
+          >
+            {label}
+          </label>
+        )}
 
         {multiline ? (
           <textarea
