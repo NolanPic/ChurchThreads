@@ -52,6 +52,6 @@
     color: var(--white);
     font-size: var(--text-base);
     line-height: 1.5;
-    padding: 0 var(--spacing6);
+    padding: 0 var(--spacing6) var(--spacing3);
     text-align: center;
   }
