@@ -1,7 +1,7 @@
 "use client";
 
 import { Step, StepOptionCard } from "@/app/components/ui/Stepper";
-import StepTitle from "@/app/components/ui/StepTitle";
+import StepTitle from "@/app/components/ui/Stepper/StepTitle";
 
 interface FeedPostingPermissionStepProps {
   feedName: string;

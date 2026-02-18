@@ -1,7 +1,7 @@
 "use client";
 
 import { Step, StepOptionCard, useStepper } from "@/app/components/ui/Stepper";
-import StepTitle from "@/app/components/ui/StepTitle";
+import StepTitle from "@/app/components/ui/Stepper/StepTitle";
 import Hint from "@/app/components/ui/Hint";
 import { Id } from "@/convex/_generated/dataModel";
 import styles from "./FeedSteps.module.css";

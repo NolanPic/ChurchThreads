@@ -1,7 +1,7 @@
 "use client";
 
 import { Step, StepOptionCard } from "@/app/components/ui/Stepper";
-import StepTitle from "@/app/components/ui/StepTitle";
+import StepTitle from "@/app/components/ui/Stepper/StepTitle";
 import { Id } from "@/convex/_generated/dataModel";
 
 interface FeedCreationSuccessStepProps {
@@ -13,7 +13,6 @@ interface FeedCreationSuccessStepProps {
 
 export default function FeedCreationSuccessStep({
   feedName,
-  feedId,
   onInvite,
   onSkip,
 }: FeedCreationSuccessStepProps) {
