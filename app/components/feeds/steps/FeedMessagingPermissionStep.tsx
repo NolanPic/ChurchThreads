@@ -38,7 +38,8 @@ export default function FeedMessagingPermissionStep({
   return (
     <Step>
       <StepTitle>
-        Should members of {feedName} be able to send messages in threads?
+        Should members of <span>{feedName}</span> be able to send messages in
+        threads?
       </StepTitle>
 
       {error && (

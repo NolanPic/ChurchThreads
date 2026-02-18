@@ -15,7 +15,9 @@ export default function FeedPrivacyStep({
 }: FeedPrivacyStepProps) {
   return (
     <Step>
-      <StepTitle>Who can access {feedName}?</StepTitle>
+      <StepTitle>
+        Who do you want to access <span>{feedName}</span>?
+      </StepTitle>
 
       <StepOptionCard
         title="Invited users"

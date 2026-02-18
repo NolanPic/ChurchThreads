@@ -19,7 +19,8 @@ export default function FeedCreationSuccessStep({
   return (
     <Step>
       <StepTitle>
-        Your feed "{feedName}" has been created. Would you like to invite users?
+        Your feed <span>{feedName}</span> has been created. Would you like to
+        invite users?
       </StepTitle>
 
       <StepOptionCard

@@ -17,7 +17,7 @@ export default function FeedPostingPermissionStep({
   return (
     <Step>
       <StepTitle>
-        Should members of {feedName} be able to start new threads?
+        Should members of <span>{feedName}</span> be able to start new threads?
       </StepTitle>
 
       <StepOptionCard
