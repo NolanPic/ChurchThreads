@@ -9,7 +9,10 @@ interface FeedPrivacyStepProps {
   onChange: (value: "public" | "private" | "open") => void;
 }
 
-export default function FeedPrivacyStep({ feedName, value, onChange }: FeedPrivacyStepProps) {
+export default function FeedPrivacyStep({
+  feedName,
+  onChange,
+}: FeedPrivacyStepProps) {
   return (
     <Step>
       <StepTitle>Who can access {feedName}?</StepTitle>

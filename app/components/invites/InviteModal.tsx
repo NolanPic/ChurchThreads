@@ -23,7 +23,6 @@ export default function InviteModal({
 }: InviteModalProps) {
   const stepperRef = useRef<StepperRef>(null);
 
-  // Step state
   const [currentStep, setCurrentStep] = useState(0);
 
   // State management
