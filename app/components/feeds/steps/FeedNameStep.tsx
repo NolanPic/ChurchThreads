@@ -32,7 +32,7 @@ export default function FeedNameStep({ value, onChange }: FeedNameStepProps) {
           ref={inputRef}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Feed name"
+          placeholder="Name of your feed"
           validationConfig={{
             required: true,
             minLength: 4,
