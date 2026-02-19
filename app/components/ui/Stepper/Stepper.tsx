@@ -100,23 +100,23 @@ export const Stepper = forwardRef<StepperRef, StepperProps>(function Stepper(
       setDirection(step >= currentStep ? 1 : -1);
       setCurrentStep(step);
     },
-    [currentStep],
+    [currentStep, setCurrentStep],
   );
 
   const nextStep = useCallback(() => {
     setDirection(1);
-    setCurrentStep((prev) => prev + 1);
-  }, []);
+    setCurrentStep(currentStep + 1);
+  }, [currentStep, setCurrentStep]);
 
   const previousStep = useCallback(() => {
     setDirection(-1);
-    setCurrentStep((prev) => Math.max(0, prev - 1));
-  }, []);
+    setCurrentStep(Math.max(0, currentStep - 1));
+  }, [currentStep, setCurrentStep]);
 
   const reset = useCallback(() => {
     setCurrentStep(0);
     setDirection(1);
-  }, []);
+  }, [setCurrentStep]);
 
   useImperativeHandle(ref, () => ({ reset, goToStep }), [reset, goToStep]);
 
