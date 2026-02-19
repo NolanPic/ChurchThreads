@@ -6,7 +6,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useOrganization } from "@/app/context/OrganizationProvider";
-import { Stepper, StepperRef } from "../ui/Stepper";
+import { Stepper, StepperRef } from "../../ui/Stepper";
 import FeedNameStep from "./steps/FeedNameStep";
 import FeedDescriptionStep from "./steps/FeedDescriptionStep";
 import FeedPrivacyStep from "./steps/FeedPrivacyStep";

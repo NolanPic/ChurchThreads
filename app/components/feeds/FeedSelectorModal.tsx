@@ -15,7 +15,7 @@ import FeedSelectorItems from "./FeedSelectorItems";
 import { FeedSelectorScreen } from "./FeedSelector.types";
 import styles from "./FeedSelectorModal.module.css";
 import IconButton from "../ui/IconButton";
-import CreateFeedStepper from "./CreateFeedStepper";
+import CreateFeedStepper from "./creation/CreateFeedStepper";
 
 interface FeedSelectorModalProps {
   isOpen: boolean;
