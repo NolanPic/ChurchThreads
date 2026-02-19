@@ -166,18 +166,15 @@ export default function CreateFeedStepper({ onClose, onBack }: CreateFeedStepper
       />
       <FeedPrivacyStep
         feedName={feedName}
-        value={feedPrivacy}
         onChange={setFeedPrivacySync}
       />
       <FeedPostingPermissionStep
         feedName={feedName}
         feedPrivacy={feedPrivacy}
-        value={canPost}
         onChange={setCanPostSync}
       />
       <FeedMessagingPermissionStep
         feedName={feedName}
-        value={canMessage}
         onChange={setCanMessageSync}
         onComplete={handleCreateFeed}
         isCreating={isCreating}

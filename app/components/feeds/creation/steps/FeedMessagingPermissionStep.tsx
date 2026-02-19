@@ -8,7 +8,6 @@ import styles from "./FeedSteps.module.css";
 
 interface FeedMessagingPermissionStepProps {
   feedName: string;
-  value: boolean;
   onChange: (value: boolean) => void;
   onComplete: () => Promise<Id<"feeds"> | null>;
   isCreating: boolean;
@@ -17,7 +16,6 @@ interface FeedMessagingPermissionStepProps {
 
 export default function FeedMessagingPermissionStep({
   feedName,
-  value,
   onChange,
   onComplete,
   isCreating,

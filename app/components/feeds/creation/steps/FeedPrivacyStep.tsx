@@ -5,7 +5,6 @@ import StepTitle from "@/app/components/ui/Stepper/StepTitle";
 
 interface FeedPrivacyStepProps {
   feedName: string;
-  value: "public" | "private" | "open";
   onChange: (value: "public" | "private" | "open") => void;
 }
 

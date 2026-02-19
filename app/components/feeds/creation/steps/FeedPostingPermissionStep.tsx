@@ -6,7 +6,6 @@ import StepTitle from "@/app/components/ui/Stepper/StepTitle";
 interface FeedPostingPermissionStepProps {
   feedName: string;
   feedPrivacy: "public" | "private" | "open";
-  value: boolean;
   onChange: (value: boolean) => void;
 }
 
