@@ -1,9 +1,4 @@
-.shortCard {
-  min-height: 100px;
-}
-
 .actionButton {
-    min-height: 100%;
     width: 100%;
     background: none;
     border: none;
@@ -24,7 +19,6 @@
     grid-template-rows: 50px 1fr;
     place-items: center;
     border: 1px solid var(--accent);
-    min-height: 100%;
   }
 
   .shortCard .card {
