@@ -42,7 +42,7 @@ export default function FeedPrivacyStep({
       <StepOptionCard
         title="Anyone"
         titleIcon="globe"
-        description="Anyone, regardless of being logged in, can view. Ideal for announcements, sermons, or anything you want public."
+        description="Anyone, regardless of being logged in, can see it. Ideal for announcements, sermons, or anything you want public."
         onClick={({ nextStep }) => {
           onChange("public");
           nextStep();

@@ -167,6 +167,7 @@ export default function CreateFeedStepper({ onClose, onBack }: CreateFeedStepper
       />
       <FeedPostingPermissionStep
         feedName={feedName}
+        feedPrivacy={feedPrivacy}
         value={canPost}
         onChange={setCanPostSync}
       />
