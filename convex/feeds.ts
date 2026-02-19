@@ -321,6 +321,27 @@ export const createFeed = mutation({
   },
 });
 
+export const feedNameExists = query({
+  args: {
+    orgId: v.id("organizations"),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const auth = await getUserAuth(ctx, args.orgId);
+    const isAdminCheck = auth.hasRole("admin");
+    if (!isAdminCheck.allowed) {
+      throw new Error("Only organization admins can check feed names.");
+    }
+    const trimmedName = args.name.trim();
+    const existing = await ctx.db
+      .query("feeds")
+      .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+      .filter((q) => q.eq(q.field("name"), trimmedName))
+      .first();
+    return existing !== null;
+  },
+});
+
 /**
  * Get all open and public feeds in an organization with pagination
  * Only authenticated users can call this query
