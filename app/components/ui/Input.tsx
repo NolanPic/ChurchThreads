@@ -16,7 +16,8 @@ import {
 } from "@/validation";
 
 export interface InputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>, "type"> {
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>, "type" | "onBlur"> {
+  onBlur?: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   label?: string;
   type?: "text" | "email" | "number";
   multiline?: boolean;
@@ -120,7 +121,7 @@ export const Input = forwardRef<InputHandle, InputProps>(
         if (validationConfig) {
           handleValidation(e.target.value);
         }
-        onBlur?.(e as any);
+        onBlur?.(e);
       },
       [validationConfig, handleValidation, onBlur]
     );
