@@ -277,8 +277,9 @@ export const createFeed = mutation({
     }
 
     // Validate name (4-25 characters, required)
+    const trimmedName = name.trim();
     const nameValidation = validateTextField(
-      name,
+      trimmedName,
       { required: true, minLength: 4, maxLength: 25 },
       "Name"
     );
@@ -301,7 +302,7 @@ export const createFeed = mutation({
     // Create the feed
     const feedId = await ctx.db.insert("feeds", {
       orgId,
-      name,
+      name: trimmedName,
       description,
       privacy,
       memberPermissions,
