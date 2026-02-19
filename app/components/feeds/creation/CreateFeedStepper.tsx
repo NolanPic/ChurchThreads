@@ -133,11 +133,13 @@ export default function CreateFeedStepper({ onClose, onBack }: CreateFeedStepper
   };
 
   const handleNavigateToFeed = () => {
+    if (!createdFeedId) return;
     onClose();
     router.push(`/feed/${createdFeedId}`);
   };
 
   const handleNavigateToInvite = () => {
+    if (!createdFeedId) return;
     onClose();
     router.push(`/feed/${createdFeedId}/settings`);
   };
@@ -181,7 +183,6 @@ export default function CreateFeedStepper({ onClose, onBack }: CreateFeedStepper
       />
       <FeedCreationSuccessStep
         feedName={feedName}
-        feedId={createdFeedId!}
         onInvite={handleNavigateToInvite}
         onSkip={handleNavigateToFeed}
       />

@@ -2,11 +2,9 @@
 
 import { Step, StepOptionCard } from "@/app/components/ui/Stepper";
 import StepTitle from "@/app/components/ui/Stepper/StepTitle";
-import { Id } from "@/convex/_generated/dataModel";
 
 interface FeedCreationSuccessStepProps {
   feedName: string;
-  feedId: Id<"feeds">;
   onInvite: () => void;
   onSkip: () => void;
 }
