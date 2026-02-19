@@ -1,7 +1,6 @@
 import React from "react";
 import { render, RenderOptions } from "@testing-library/react";
-import { ConvexReactClient, ConvexProvider, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { ConvexReactClient, ConvexProvider } from "convex/react";
 import Feed from "../feeds/Feed";
 import { config } from "dotenv";
 
@@ -24,22 +23,7 @@ export function renderWithConvex(
 }
 
 export function FeedWithOrg() {
-  const testOrgHost = global.TEST_ORG_HOST;
-  const subdomain = testOrgHost.split(".")[0];
-
-  const org = useQuery(api.organizations.getOrganizationBySubdomain, {
-    subdomain: subdomain,
-  });
-
-  if (org === undefined) {
-    return <div data-testid="loading">Loading...</div>;
-  }
-
-  if (org === null) {
-    return <div data-testid="error">Org not found</div>;
-  }
-
-  return <Feed orgId={org._id} />;
+  return <Feed feedIdSlug={null} />;
 }
 
 export * from "@testing-library/react";
