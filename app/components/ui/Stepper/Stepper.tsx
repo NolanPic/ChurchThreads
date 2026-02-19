@@ -77,14 +77,20 @@ export function Step({ children, className }: StepProps) {
 interface StepperProps {
   children: React.ReactNode;
   className?: string;
+  currentStep?: number;
+  onStepChange?: (step: number) => void;
 }
 
 export const Stepper = forwardRef<StepperRef, StepperProps>(function Stepper(
-  { children, className },
+  { children, className, currentStep: controlledStep, onStepChange },
   ref,
 ) {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [internalStep, setInternalStep] = useState(0);
   const [direction, setDirection] = useState(1);
+
+  // Use controlled step if provided, otherwise use internal state
+  const currentStep = controlledStep ?? internalStep;
+  const setCurrentStep = onStepChange ?? setInternalStep;
 
   // Collect Step children
   const steps = Array.isArray(children) ? children : [children];
@@ -94,23 +100,23 @@ export const Stepper = forwardRef<StepperRef, StepperProps>(function Stepper(
       setDirection(step >= currentStep ? 1 : -1);
       setCurrentStep(step);
     },
-    [currentStep],
+    [currentStep, setCurrentStep],
   );
 
   const nextStep = useCallback(() => {
     setDirection(1);
-    setCurrentStep((prev) => prev + 1);
-  }, []);
+    setCurrentStep(currentStep + 1);
+  }, [currentStep, setCurrentStep]);
 
   const previousStep = useCallback(() => {
     setDirection(-1);
-    setCurrentStep((prev) => Math.max(0, prev - 1));
-  }, []);
+    setCurrentStep(Math.max(0, currentStep - 1));
+  }, [currentStep, setCurrentStep]);
 
   const reset = useCallback(() => {
     setCurrentStep(0);
     setDirection(1);
-  }, []);
+  }, [setCurrentStep]);
 
   useImperativeHandle(ref, () => ({ reset, goToStep }), [reset, goToStep]);
 

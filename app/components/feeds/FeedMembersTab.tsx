@@ -28,6 +28,7 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
   const [auth] = useUserAuth();
   const currentUser = auth?.getUser();
   const [isFeedOwner, setIsFeedOwner] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const feed = useQuery(api.feeds.getFeed, { orgId, feedId });
   const {
@@ -56,7 +57,6 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
   const [isInviting, setIsInviting] = useState(false);
   const [showInvited, setShowInvited] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   // Error state for general errors (role change, remove)
   const [generalError, setGeneralError] = useState<string | null>(null);

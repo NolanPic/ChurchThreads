@@ -27,7 +27,7 @@ export const getUserFeeds = query({
         feed => !publicFeedIds.has(feed._id)
       );
 
-      let finalFeeds = [...publicFeeds, ...uniqueFeedsUserIsMemberOf]
+      let finalFeeds = [...publicFeeds, ...uniqueFeedsUserIsMemberOf];
 
       if(onlyIncludeFeedsUserCanPostIn) {
         const feedChecks = await Promise.all(
@@ -244,6 +244,102 @@ export const updateFeed = mutation({
     // Return the updated feed
     const updatedFeed = await ctx.db.get(feedId);
     return updatedFeed;
+  },
+});
+
+/**
+ * Create a new feed (admin-only)
+ */
+export const createFeed = mutation({
+  args: {
+    orgId: v.id("organizations"),
+    name: v.string(),
+    description: v.optional(v.string()),
+    privacy: v.union(
+      v.literal("public"),
+      v.literal("private"),
+      v.literal("open")
+    ),
+    memberPermissions: v.optional(
+      v.array(v.union(v.literal("post"), v.literal("message")))
+    ),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, name, description, privacy, memberPermissions } = args;
+
+    // Authenticate and verify admin role
+    const auth = await getUserAuth(ctx, orgId);
+    const user = auth.getUserOrThrow();
+    const isAdminCheck = auth.hasRole("admin");
+
+    if (!isAdminCheck.allowed) {
+      throw new Error("Only organization admins can create feeds.");
+    }
+
+    // Validate name (4-25 characters, required)
+    const trimmedName = name.trim();
+    const nameValidation = validateTextField(
+      trimmedName,
+      { required: true, minLength: 4, maxLength: 25 },
+      "Name"
+    );
+    if (!nameValidation.valid) {
+      throw new Error(nameValidation.errors[0].message);
+    }
+
+    // Validate description (max 100 characters, optional)
+    if (description) {
+      const descValidation = validateTextField(
+        description,
+        { maxLength: 100 },
+        "Description"
+      );
+      if (!descValidation.valid) {
+        throw new Error(descValidation.errors[0].message);
+      }
+    }
+
+    // Create the feed
+    const feedId = await ctx.db.insert("feeds", {
+      orgId,
+      name: trimmedName,
+      description,
+      privacy,
+      memberPermissions,
+      updatedAt: Date.now(),
+    });
+
+    // Add creator as feed owner
+    await ctx.db.insert("userFeeds", {
+      orgId,
+      userId: user._id,
+      feedId,
+      owner: true,
+      updatedAt: Date.now(),
+    });
+
+    return feedId;
+  },
+});
+
+export const feedNameExists = query({
+  args: {
+    orgId: v.id("organizations"),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const auth = await getUserAuth(ctx, args.orgId);
+    const isAdminCheck = auth.hasRole("admin");
+    if (!isAdminCheck.allowed) {
+      throw new Error("Only organization admins can check feed names.");
+    }
+    const trimmedName = args.name.trim();
+    const existing = await ctx.db
+      .query("feeds")
+      .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+      .filter((q) => q.eq(q.field("name"), trimmedName))
+      .first();
+    return existing !== null;
   },
 });
 

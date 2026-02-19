@@ -1,0 +1,11 @@
+.stepTitle {
+  font-family: var(--font-gentium-plus);
+  font-weight: 400;
+  font-size: var(--text-lg);
+  margin-bottom: var(--spacing4);
+  text-align: center;
+
+  & span {
+    color: var(--accent);
+  }
+}

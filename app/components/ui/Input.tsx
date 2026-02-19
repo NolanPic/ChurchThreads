@@ -6,6 +6,7 @@ import {
   useImperativeHandle,
   useRef,
 } from "react";
+import cx from "classnames";
 import styles from "./Input.module.css";
 import {
   validateTextField,
@@ -15,15 +16,20 @@ import {
 } from "@/validation";
 
 export interface InputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
-  label: string;
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>, "type" | "onBlur"> {
+  onBlur?: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  label?: string;
   type?: "text" | "email" | "number";
+  multiline?: boolean;
+  rows?: number;
   error?: string;
   helperText?: string;
   required?: boolean;
   disabled?: boolean;
   placeholder?: string;
   className?: string;
+  inputClassName?: string;
+  labelClassName?: string;
   validationConfig?: TextFieldValidationOptions;
   fieldName?: string;
 }
@@ -40,12 +46,16 @@ export const Input = forwardRef<InputHandle, InputProps>(
     {
       label,
       type = "text",
+      multiline = false,
+      rows = 4,
       error,
       helperText,
       required = false,
       disabled = false,
       placeholder,
       className,
+      inputClassName,
+      labelClassName,
       id,
       validationConfig,
       fieldName,
@@ -55,7 +65,7 @@ export const Input = forwardRef<InputHandle, InputProps>(
     ref
   ) => {
     const [internalError, setInternalError] = useState<string>("");
-    const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
     // Generate unique IDs for accessibility
     const generatedId = useId();
@@ -68,7 +78,7 @@ export const Input = forwardRef<InputHandle, InputProps>(
       (value: string) => {
         if (!validationConfig) return true;
 
-        const name = fieldName || label;
+        const name = fieldName || label || "";
         let result;
 
         if (type === "email") {
@@ -107,7 +117,7 @@ export const Input = forwardRef<InputHandle, InputProps>(
 
     // Handle blur event
     const handleBlur = useCallback(
-      (e: React.FocusEvent<HTMLInputElement>) => {
+      (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         if (validationConfig) {
           handleValidation(e.target.value);
         }
@@ -123,30 +133,51 @@ export const Input = forwardRef<InputHandle, InputProps>(
     const maxLengthAttr = validationConfig?.maxLength;
 
     return (
-      <div className={`${styles.inputWrapper} ${className || ""}`}>
-        <label
-          htmlFor={inputId}
-          className={`${styles.label} ${disabled ? styles.disabled : ""}`}
-        >
-          {label}
-        </label>
+      <div className={cx(styles.inputWrapper, className)}>
+        {label && (
+          <label
+            htmlFor={inputId}
+            className={cx(styles.label, { [styles.disabled]: disabled }, labelClassName)}
+          >
+            {label}
+          </label>
+        )}
 
-        <input
-          ref={inputRef}
-          id={inputId}
-          type={type}
-          placeholder={placeholder}
-          disabled={disabled}
-          required={required}
-          maxLength={maxLengthAttr}
-          aria-invalid={hasError}
-          aria-describedby={
-            [errorId, helperTextId].filter(Boolean).join(" ") || undefined
-          }
-          className={`${styles.input} ${hasError ? styles.error : ""} ${disabled ? styles.disabled : ""}`}
-          {...props}
-          onBlur={handleBlur}
-        />
+        {multiline ? (
+          <textarea
+            ref={inputRef as React.Ref<HTMLTextAreaElement>}
+            id={inputId}
+            placeholder={placeholder}
+            disabled={disabled}
+            required={required}
+            maxLength={maxLengthAttr}
+            rows={rows}
+            aria-invalid={hasError}
+            aria-describedby={
+              [errorId, helperTextId].filter(Boolean).join(" ") || undefined
+            }
+            className={cx(styles.input, styles.textarea, { [styles.error]: hasError, [styles.disabled]: disabled }, inputClassName)}
+            {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+            onBlur={handleBlur as any}
+          />
+        ) : (
+          <input
+            ref={inputRef as React.Ref<HTMLInputElement>}
+            id={inputId}
+            type={type}
+            placeholder={placeholder}
+            disabled={disabled}
+            required={required}
+            maxLength={maxLengthAttr}
+            aria-invalid={hasError}
+            aria-describedby={
+              [errorId, helperTextId].filter(Boolean).join(" ") || undefined
+            }
+            className={cx(styles.input, { [styles.error]: hasError, [styles.disabled]: disabled }, inputClassName)}
+            {...props}
+            onBlur={handleBlur}
+          />
+        )}
 
         {helperText && !displayError && (
           <div id={helperTextId} className={styles.helperText}>

@@ -23,6 +23,8 @@ export default function InviteModal({
 }: InviteModalProps) {
   const stepperRef = useRef<StepperRef>(null);
 
+  const [currentStep, setCurrentStep] = useState(0);
+
   // State management
   const [inviteMethod, setInviteMethod] = useState<"email" | "qr" | null>(null);
   const [selectedFeedIds, setSelectedFeedIds] = useState<Id<"feeds">[]>([]);
@@ -39,6 +41,7 @@ export default function InviteModal({
   // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
+      setCurrentStep(0);
       setInviteMethod(null);
       setSelectedFeedIds(feed ? [feed._id] : []);
       setInviteToken(null);
@@ -74,7 +77,12 @@ export default function InviteModal({
       ariaLabel="Invite new users"
       dragToClose
     >
-      <Stepper ref={stepperRef} className={styles.content}>
+      <Stepper
+        ref={stepperRef}
+        className={styles.content}
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
+      >
         <InviteMethodStep onSelectMethod={setInviteMethod} />
         <SelectFeedsStep
           feed={feed}

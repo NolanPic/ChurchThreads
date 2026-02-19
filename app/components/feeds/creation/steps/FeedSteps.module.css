@@ -1,0 +1,17 @@
+
+.inputWrap {
+  margin: var(--spacing8) 0;
+}
+
+.input {
+  background-color: var(--mid);
+}
+
+.continueButton {
+  width: 100%;
+  margin-top: var(--spacing2);
+}
+
+.error {
+  margin-bottom: var(--spacing4);
+}
