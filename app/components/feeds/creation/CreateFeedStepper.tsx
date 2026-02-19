@@ -34,9 +34,6 @@ export default function CreateFeedStepper({ onClose, onBack }: CreateFeedStepper
   const [feedPrivacy, setFeedPrivacy] = useState<"public" | "private" | "open">(
     "private",
   );
-  const [canPost, setCanPost] = useState(false);
-  const [canMessage, setCanMessage] = useState(false);
-
   // formDataRef mirrors state so handleCreateFeed (an async function) always
   // reads the latest values at call time, even if React hasn't flushed state
   // updates by the time the mutation fires.
@@ -66,12 +63,10 @@ export default function CreateFeedStepper({ onClose, onBack }: CreateFeedStepper
 
   const setCanPostSync = (value: boolean) => {
     formDataRef.current.canPost = value;
-    setCanPost(value);
   };
 
   const setCanMessageSync = (value: boolean) => {
     formDataRef.current.canMessage = value;
-    setCanMessage(value);
   };
 
   // Name check state
