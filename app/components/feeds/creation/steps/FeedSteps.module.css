@@ -9,7 +9,7 @@
 
 .continueButton {
   width: 100%;
-  margin-top: 0.5rem;
+  margin-top: var(--spacing2);
 }
 
 .error {
