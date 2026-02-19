@@ -71,7 +71,7 @@ export const OneTimePassword = forwardRef<
 
   const handleKeyDown = (
     index: number,
-    e: React.KeyboardEvent<HTMLInputElement>
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     if (e.key === "Backspace" && !values[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
