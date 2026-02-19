@@ -50,7 +50,7 @@ export default function FeedPostingPermissionStep({
         Should members of <span>{feedName}</span> be able to start new threads?
       </StepTitle>
 
-      {isPublic ? yesNoOptions.reverse() : yesNoOptions}
+      {isPublic ? [...yesNoOptions].reverse() : yesNoOptions}
 
       <StepOptionCard
         title="Back"
