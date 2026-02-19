@@ -37,7 +37,9 @@ export default function CreateFeedStepper({ onClose, onBack }: CreateFeedStepper
   const [canPost, setCanPost] = useState(false);
   const [canMessage, setCanMessage] = useState(false);
 
-  // Ref to track form data synchronously (no batching delays)
+  // formDataRef mirrors state so handleCreateFeed (an async function) always
+  // reads the latest values at call time, even if React hasn't flushed state
+  // updates by the time the mutation fires.
   const formDataRef = useRef({
     feedName: "",
     feedDescription: "",
