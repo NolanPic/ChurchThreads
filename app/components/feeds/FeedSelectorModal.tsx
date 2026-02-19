@@ -15,7 +15,7 @@ import FeedSelectorItems from "./FeedSelectorItems";
 import { FeedSelectorScreen } from "./FeedSelector.types";
 import styles from "./FeedSelectorModal.module.css";
 import IconButton from "../ui/IconButton";
-import CreateFeedModal from "./CreateFeedModal";
+import CreateFeedStepper from "./CreateFeedStepper";
 
 interface FeedSelectorModalProps {
   isOpen: boolean;
@@ -38,8 +38,6 @@ export default function FeedSelectorModal({
   const [auth, { isLoading: isAuthLoading, user }] = useUserAuth();
   const [isUserPreviewingOpenFeed, setIsUserPreviewingOpenFeed] =
     useState(false);
-  const [isCreateFeedModalOpen, setIsCreateFeedModalOpen] = useState(false);
-
   const isAdmin = user?.role === "admin";
 
   const previewFeed = useQuery(
@@ -109,7 +107,6 @@ export default function FeedSelectorModal({
   }
 
   return (
-    <>
     <Modal
       isOpen={isOpen}
       onClose={onClose}
@@ -136,12 +133,12 @@ export default function FeedSelectorModal({
           className={styles.container}
           initial={{
             opacity: 0,
-            x: currentScreen === "openFeeds" ? "100%" : "-100%",
+            x: currentScreen === "yourFeeds" ? "-100%" : "100%",
           }}
           animate={{ opacity: 1, x: 0 }}
           exit={{
             opacity: 0,
-            x: currentScreen === "openFeeds" ? "100%" : "-100%",
+            x: currentScreen === "yourFeeds" ? "-100%" : "100%",
           }}
           transition={{ duration: 0.1 }}
         >
@@ -194,31 +191,31 @@ export default function FeedSelectorModal({
                 ? "Choose a feed"
                 : currentScreen === "openFeeds"
                   ? "Open feeds"
-                  : "Your feeds"}
+                  : currentScreen === "createFeed"
+                    ? "Create feed"
+                    : "Your feeds"}
             </h1>
             {currentScreen === "yourFeeds" && isAdmin && (
               <IconButton
                 icon="plus-dark"
                 variant="primary"
                 ariaLabel="Create feed"
-                onClick={() => setIsCreateFeedModalOpen(true)}
+                onClick={() => onScreenChange("createFeed")}
               />
             )}
           </div>
 
-          <FeedSelectorItems
-            currentScreen={currentScreen}
-            selectedFeedId={selectedFeedId}
-            onSelectFeed={onSelectFeed}
-          />
+          {currentScreen === "createFeed" ? (
+            <CreateFeedStepper onClose={onClose} onBack={() => onScreenChange("yourFeeds")} />
+          ) : (
+            <FeedSelectorItems
+              currentScreen={currentScreen}
+              selectedFeedId={selectedFeedId}
+              onSelectFeed={onSelectFeed}
+            />
+          )}
         </motion.div>
       </AnimatePresence>
     </Modal>
-
-    <CreateFeedModal
-      isOpen={isCreateFeedModalOpen}
-      onClose={() => setIsCreateFeedModalOpen(false)}
-    />
-  </>
   );
 }
